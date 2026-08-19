@@ -1,0 +1,8 @@
+# Example Release Signing Configuration
+# Copy this file to 'signing.properties' (in project root) or '~/.android/kharchaflow-signing.properties'
+# DO NOT commit signing.properties containing real credentials to version control.
+
+STORE_FILE=/path/to/your/upload-keystore.jks
+STORE_PASSWORD=your_keystore_password
+KEY_ALIAS=your_key_alias
+KEY_PASSWORD=your_key_password

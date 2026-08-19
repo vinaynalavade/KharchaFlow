@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">KharchaFlow</string>
+    <string name="app_descriptor">Expense Tracker</string>
+    <string name="app_creator">Vinay Nalavade</string>
+    <string name="app_version">1.0.0</string>
+    <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_transactions">Transactions</string>
+    <string name="nav_categories">Categories</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_add_expense">Add Expense</string>
+    <string name="nav_add_income">Add Income</string>
+    <string name="nav_budgets">Budgets</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="action_add_transaction">Add Transaction</string>
+
+    <!-- Accessibility / Actions -->
+    <string name="cd_back">Navigate back</string>
+    <string name="cd_add_transaction">Add transaction</string>
+    <string name="cd_category_icon">Category icon</string>
+    <string name="cd_filter">Filter transactions</string>
+    <string name="cd_settings">Open settings</string>
+    <string name="cd_search">Search transactions</string>
+    <string name="cd_clear">Clear</string>
+
+    <!-- Financial -->
+    <string name="total_balance">Total Balance</string>
+    <string name="total_income">Income</string>
+    <string name="total_expense">Expense</string>
+    <string name="recent_transactions">Recent Transactions</string>
+    <string name="view_all">View All</string>
+    <string name="no_transactions_title">No Transactions Yet</string>
+    <string name="no_transactions_desc">Start tracking your spending by adding your first transaction.</string>
+    <string name="no_categories_title">No Categories Found</string>
+    <string name="no_categories_desc">Categories will appear here once configured.</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow System</string>
+    <string name="settings_theme_light">Light Mode</string>
+    <string name="settings_theme_dark">Dark Mode</string>
+    <string name="settings_currency">Default Currency</string>
+    <string name="settings_about">About</string>
+    <string name="settings_developer_title">Developer</string>
+    <string name="settings_developer_value">Vinay Nalavade</string>
+    <string name="settings_privacy_note">Financial records stored securely on-device.</string>
+</resources>

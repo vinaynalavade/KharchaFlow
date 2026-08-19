@@ -1,0 +1,47 @@
+# Built application binaries & bundles
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Java / Android keystores and signing credentials
+*.jks
+*.keystore
+*.p12
+*.pem
+signing.properties
+keystore.properties
+local.properties
+
+# Gradle files and cache
+.gradle/
+build/
+app/build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android Studio & IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Kotlin compiler & temporary logs
+.kotlin/
+*.log
+output.json
