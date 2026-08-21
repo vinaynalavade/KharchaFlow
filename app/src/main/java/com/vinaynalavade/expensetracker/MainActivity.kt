@@ -43,6 +43,17 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+    private val pendingNavRoute = mutableStateOf<String?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val route = intent.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
+        if (route != null) {
+            pendingNavRoute.value = route
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -63,11 +74,14 @@ class MainActivity : ComponentActivity() {
             ) {
                 val navController = rememberNavController()
 
-                LaunchedEffect(initialStartRoute) {
-                    if (initialStartRoute == NotificationHelper.ROUTE_ADD_EXPENSE) {
+                LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
+                    val route = pendingNavRoute.value ?: initialStartRoute
+                    if (route == NotificationHelper.ROUTE_ADD_EXPENSE) {
                         navController.navigate(Screen.AddExpense.route)
-                    } else if (initialStartRoute == NotificationHelper.ROUTE_ADD_INCOME) {
+                        pendingNavRoute.value = null
+                    } else if (route == NotificationHelper.ROUTE_ADD_INCOME) {
                         navController.navigate(Screen.AddIncome.route)
+                        pendingNavRoute.value = null
                     }
                 }
 

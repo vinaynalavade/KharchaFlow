@@ -15,7 +15,13 @@ sealed class Screen(
     val icon: ImageVector? = null
 ) {
     data object Dashboard : Screen("dashboard", R.string.nav_dashboard, Icons.Default.Dashboard)
-    data object Transactions : Screen("transactions", R.string.nav_transactions, Icons.AutoMirrored.Filled.ReceiptLong)
+    data object Transactions : Screen("transactions?filter={filter}&query={query}", R.string.nav_transactions, Icons.AutoMirrored.Filled.ReceiptLong) {
+        fun createRoute(filter: String? = null, query: String? = null): String {
+            val f = filter ?: "ALL"
+            val q = query ?: ""
+            return "transactions?filter=$f&query=$q"
+        }
+    }
     data object Categories : Screen("categories", R.string.nav_categories, Icons.Default.Category)
     data object Settings : Screen("settings", R.string.nav_settings, Icons.Default.Settings)
 
@@ -34,4 +40,5 @@ sealed class Screen(
     data object RecurringTransactions : Screen("recurring_transactions")
     data object Statements : Screen("statements")
     data object Calendar : Screen("calendar")
+    data object BackupRestore : Screen("backup_restore")
 }

@@ -19,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -61,13 +63,14 @@ fun AddEditCategoryDialog(
     categoryToEdit: Category?,
     defaultType: TransactionType,
     onDismiss: () -> Unit,
-    onSave: (name: String, iconName: String, colorHex: String, type: TransactionType, id: Long) -> Unit,
+    onSave: (name: String, iconName: String, colorHex: String, type: TransactionType, id: Long, isDefault: Boolean) -> Unit,
     errorMessage: String? = null
 ) {
     var name by remember { mutableStateOf(categoryToEdit?.name ?: "") }
     var selectedIcon by remember { mutableStateOf(categoryToEdit?.iconName ?: "restaurant") }
     var selectedColor by remember { mutableStateOf(categoryToEdit?.colorHex ?: "#EF4444") }
     val type = categoryToEdit?.type ?: defaultType
+    val isDefault = categoryToEdit?.isDefault ?: false
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -91,6 +94,45 @@ fun AddEditCategoryDialog(
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(bottom = MaterialTheme.spacing.sm)
                     )
+                }
+
+                // Live Preview Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = MaterialTheme.spacing.md),
+                    shape = CardShape,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(MaterialTheme.spacing.sm),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CategoryIcon(
+                            iconName = selectedIcon,
+                            colorHex = selectedColor,
+                            size = 40.dp,
+                            iconSize = 22.dp
+                        )
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+                        Column {
+                            Text(
+                                text = name.ifBlank { "Category Name" },
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = if (name.isBlank()) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "${type.displayName} • ${if (isDefault) "Default System Category" else "Custom Category"}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
                 // Name Input
@@ -120,13 +162,16 @@ fun AddEditCategoryDialog(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    AVAILABLE_ICONS.take(16).forEach { iconName ->
+                    AVAILABLE_ICONS.forEach { iconName ->
                         val isSelected = selectedIcon == iconName
                         Box(
                             modifier = Modifier
                                 .size(38.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .background(
+                                    if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
                                 .border(
                                     width = if (isSelected) 2.dp else 0.dp,
                                     color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -135,7 +180,12 @@ fun AddEditCategoryDialog(
                                 .clickable { selectedIcon = iconName },
                             contentAlignment = Alignment.Center
                         ) {
-                            CategoryIcon(iconName = iconName, colorHex = selectedColor, size = 32.dp, iconSize = 18.dp)
+                            CategoryIcon(
+                                iconName = iconName,
+                                colorHex = selectedColor,
+                                size = 32.dp,
+                                iconSize = 18.dp
+                            )
                         }
                     }
                 }
@@ -184,7 +234,14 @@ fun AddEditCategoryDialog(
             TextButton(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onSave(name.trim(), selectedIcon, selectedColor, type, categoryToEdit?.id ?: 0L)
+                        onSave(
+                            name.trim(),
+                            selectedIcon,
+                            selectedColor,
+                            type,
+                            categoryToEdit?.id ?: 0L,
+                            isDefault
+                        )
                     }
                 },
                 enabled = name.isNotBlank()

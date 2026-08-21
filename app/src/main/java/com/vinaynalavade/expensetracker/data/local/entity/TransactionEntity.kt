@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 
@@ -42,6 +43,9 @@ data class TransactionEntity(
     @ColumnInfo(name = "category_id")
     val categoryId: Long,
 
+    @ColumnInfo(name = "payment_method", defaultValue = "CASH")
+    val paymentMethod: String = "CASH",
+
     @ColumnInfo(name = "note")
     val note: String? = null,
 
@@ -61,6 +65,7 @@ data class TransactionEntity(
                 amountSubunits = transaction.amount.subunits,
                 type = transaction.type.name,
                 categoryId = transaction.category.id,
+                paymentMethod = transaction.paymentMethod.name,
                 note = transaction.note,
                 timestamp = transaction.timestamp,
                 createdAt = transaction.createdAt,
@@ -89,6 +94,7 @@ data class TransactionWithCategory(
             amount = Amount.fromSubunits(transaction.amountSubunits),
             type = TransactionType.fromString(transaction.type),
             category = category?.toDomainModel() ?: Category.UNCATEGORIZED,
+            paymentMethod = PaymentMethod.fromString(transaction.paymentMethod),
             note = transaction.note,
             timestamp = transaction.timestamp,
             createdAt = transaction.createdAt,

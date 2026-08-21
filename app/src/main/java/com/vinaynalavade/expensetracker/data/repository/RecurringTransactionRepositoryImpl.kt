@@ -79,6 +79,7 @@ class RecurringTransactionRepositoryImpl(
                         amountSubunits = recurring.amountSubunits,
                         type = recurring.type,
                         categoryId = recurring.categoryId,
+                        paymentMethod = recurring.paymentMethod,
                         note = recurring.note ?: recurring.title,
                         timestamp = nowEpoch,
                         createdAt = nowEpoch,

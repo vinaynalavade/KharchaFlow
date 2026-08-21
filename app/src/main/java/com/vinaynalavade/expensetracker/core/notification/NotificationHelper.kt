@@ -72,14 +72,14 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val title = context.getString(R.string.reminder_daily_title)
+        val content = context.getString(R.string.reminder_daily_content)
+
         val notification = NotificationCompat.Builder(context, CHANNEL_DAILY_REMINDER)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Daily Expense Reminder")
-            .setContentText("Have you recorded today's transactions?")
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                    .bigText("Keeping your finances up-to-date takes just 10 seconds. Tap to record today's expenses.")
-            )
+            .setContentTitle(title)
+            .setContentText(content)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -131,53 +131,5 @@ object NotificationHelper {
         } catch (_: SecurityException) {
             // Handled safely if permission is revoked
         }
-    }
-
-    fun scheduleDailyReminder(context: Context, hour: Int, minute: Int) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
-
-        val intent = Intent(context, ReminderReceiver::class.java).apply {
-            action = ACTION_DAILY_REMINDER
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            NOTIFICATION_ID_DAILY,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-
-            // If time is already past for today, schedule for tomorrow
-            if (timeInMillis <= System.currentTimeMillis()) {
-                add(Calendar.DAY_OF_YEAR, 1)
-            }
-        }
-
-        alarmManager.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
-    }
-
-    fun cancelDailyReminder(context: Context) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
-        val intent = Intent(context, ReminderReceiver::class.java).apply {
-            action = ACTION_DAILY_REMINDER
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            NOTIFICATION_ID_DAILY,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.cancel(pendingIntent)
     }
 }

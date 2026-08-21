@@ -25,4 +25,8 @@ interface UserPreferencesRepository {
     suspend fun setDailyReminder(enabled: Boolean, hour: Int, minute: Int): AppResult<Unit>
 
     suspend fun setEmiReminders(enabled: Boolean): AppResult<Unit>
+
+    fun getLastBackupTimestamp(): Flow<Long?>
+
+    suspend fun setLastBackupTimestamp(timestamp: Long): AppResult<Unit>
 }

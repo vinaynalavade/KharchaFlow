@@ -21,26 +21,33 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vinaynalavade.expensetracker.R
+import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.presentation.components.EmptyStateView
 import com.vinaynalavade.expensetracker.presentation.components.LoadingView
 import com.vinaynalavade.expensetracker.presentation.components.SectionHeader
 import com.vinaynalavade.expensetracker.presentation.components.TransactionItem
 import com.vinaynalavade.expensetracker.presentation.dashboard.components.BalanceHeroCard
-import com.vinaynalavade.expensetracker.presentation.dashboard.components.MonthlyOverviewCard
+import com.vinaynalavade.expensetracker.presentation.dashboard.components.CategoryAnalysisSection
 import com.vinaynalavade.expensetracker.presentation.dashboard.components.GreetingHeader
+import com.vinaynalavade.expensetracker.presentation.dashboard.components.MonthlyOverviewCard
 import com.vinaynalavade.expensetracker.presentation.dashboard.components.QuickActionsSection
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
+import java.time.YearMonth
 
 /**
- * Modern, calm financial dashboard screen.
+ * Modern, calm financial dashboard screen with interactive category analysis.
  */
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
+    currency: Currency = Currency.DEFAULT,
     onNavigateToAddExpense: () -> Unit,
     onNavigateToAddIncome: () -> Unit,
     onNavigateToTransactions: () -> Unit,
     onNavigateToCategories: () -> Unit,
+    onNavigateToCategoryTransactions: (YearMonth, String, TransactionType) -> Unit = { _, _, _ -> },
+    onNavigateToTransactionDetail: (Long) -> Unit = {},
     onOpenQuickAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,6 +88,22 @@ fun DashboardScreen(
 
                 item {
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.lg))
+                    CategoryAnalysisSection(
+                        analysisResult = uiState.categoryAnalysis,
+                        selectedMonth = uiState.selectedMonth,
+                        selectedType = uiState.categoryAnalysisType,
+                        currency = currency,
+                        onTypeChange = { type -> viewModel.onCategoryAnalysisTypeChange(type) },
+                        onPreviousMonth = { viewModel.onPreviousMonth() },
+                        onNextMonth = { viewModel.onNextMonth() },
+                        onCategoryClick = { category ->
+                            onNavigateToCategoryTransactions(uiState.selectedMonth, category.categoryName, uiState.categoryAnalysisType)
+                        }
+                    )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.lg))
                     QuickActionsSection(
                         onAddExpenseClick = onNavigateToAddExpense,
                         onAddIncomeClick = onNavigateToAddIncome,
@@ -114,7 +137,7 @@ fun DashboardScreen(
                     ) { transaction ->
                         TransactionItem(
                             transaction = transaction,
-                            onClick = { /* Transaction details in future phase */ },
+                            onClick = { onNavigateToTransactionDetail(transaction.id) },
                             showDateInSubtitle = false
                         )
                         HorizontalDivider(

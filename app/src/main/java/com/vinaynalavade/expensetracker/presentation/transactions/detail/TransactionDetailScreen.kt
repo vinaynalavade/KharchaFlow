@@ -48,7 +48,6 @@ import com.vinaynalavade.expensetracker.presentation.components.CategoryIcon
 import com.vinaynalavade.expensetracker.presentation.components.LoadingView
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
-import com.vinaynalavade.expensetracker.presentation.theme.PureWhite
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 @Composable
@@ -98,7 +97,7 @@ fun TransactionDetailScreen(
                         shape = ButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = PureWhite
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier
                             .weight(1f)
@@ -188,6 +187,8 @@ fun TransactionDetailScreen(
                     ) {
                         Column(modifier = Modifier.padding(MaterialTheme.spacing.lg)) {
                             DetailRow(label = "Type", value = tx.type.displayName)
+                            HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                            DetailRow(label = "Payment Method", value = tx.paymentMethod.displayName)
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                             DetailRow(label = "Date", value = DateTimeUtils.formatDate(tx.timestamp))
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))

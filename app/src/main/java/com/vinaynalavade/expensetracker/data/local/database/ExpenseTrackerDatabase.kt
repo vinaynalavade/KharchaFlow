@@ -20,7 +20,7 @@ import com.vinaynalavade.expensetracker.data.local.entity.TransactionEntity
         CategoryEntity::class,
         RecurringTransactionEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class ExpenseTrackerDatabase : RoomDatabase() {
@@ -61,6 +61,13 @@ abstract class ExpenseTrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `transactions` ADD COLUMN `payment_method` TEXT NOT NULL DEFAULT 'CASH'")
+                db.execSQL("ALTER TABLE `recurring_transactions` ADD COLUMN `payment_method` TEXT NOT NULL DEFAULT 'CASH'")
+            }
+        }
+
         fun getInstance(context: Context): ExpenseTrackerDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -68,7 +75,7 @@ abstract class ExpenseTrackerDatabase : RoomDatabase() {
                     ExpenseTrackerDatabase::class.java,
                     AppConstants.DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .addCallback(DatabaseCallback())
                     .build()
                 INSTANCE = instance

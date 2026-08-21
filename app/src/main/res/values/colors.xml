@@ -8,4 +8,16 @@
     <color name="surface_dark">#0F172A</color>
     <color name="background_light">#FFFFFF</color>
     <color name="background_dark">#090D16</color>
+
+    <!-- Theme-Aware Widget Colors (Light Theme) -->
+    <color name="widget_bg_color">#F2FFFFFF</color>
+    <color name="widget_border_color">#260F172A</color>
+    <color name="widget_text_brand">#059669</color>
+    <color name="widget_text_primary">#0F172A</color>
+    <color name="widget_text_secondary">#64748B</color>
+    <color name="widget_pill_bg">#E2E8F0</color>
+    <color name="widget_pill_text">#334155</color>
+    <color name="widget_btn_expense_bg">#EF4444</color>
+    <color name="widget_btn_income_bg">#10B981</color>
+    <color name="widget_btn_text">#FFFFFF</color>
 </resources>

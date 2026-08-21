@@ -49,7 +49,6 @@ import com.vinaynalavade.expensetracker.presentation.components.EmptyStateView
 import com.vinaynalavade.expensetracker.presentation.components.LoadingView
 import com.vinaynalavade.expensetracker.presentation.components.UiState
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
-import com.vinaynalavade.expensetracker.presentation.theme.PureWhite
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 @Composable
@@ -85,7 +84,7 @@ fun RecurringTransactionsScreen(
                     showAddDialog = true
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = PureWhite,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp)
             ) {

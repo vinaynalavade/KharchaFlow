@@ -35,7 +35,14 @@ class UserPreferencesDataStore(private val context: Context) {
         val DAILY_REMINDER_HOUR = intPreferencesKey("pref_daily_reminder_hour")
         val DAILY_REMINDER_MINUTE = intPreferencesKey("pref_daily_reminder_minute")
         val EMI_REMINDERS_ENABLED = booleanPreferencesKey("pref_emi_reminders_enabled")
+        val LAST_BACKUP_TIMESTAMP = longPreferencesKey("pref_last_backup_timestamp")
     }
+
+    val lastBackupTimestampFlow: Flow<Long?> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .map { preferences -> preferences[PreferencesKeys.LAST_BACKUP_TIMESTAMP] }
 
     val userPreferencesFlow: Flow<UserPreferences> = context.dataStore.data
         .catch { exception ->
@@ -114,6 +121,12 @@ class UserPreferencesDataStore(private val context: Context) {
     suspend fun setEmiReminders(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.EMI_REMINDERS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setLastBackupTimestamp(timestamp: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LAST_BACKUP_TIMESTAMP] = timestamp
         }
     }
 }

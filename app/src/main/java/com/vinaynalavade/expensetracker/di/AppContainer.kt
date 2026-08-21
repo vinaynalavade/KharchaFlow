@@ -17,6 +17,7 @@ import com.vinaynalavade.expensetracker.domain.usecase.DeleteRecurringTransactio
 import com.vinaynalavade.expensetracker.domain.usecase.DeleteTransactionUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GenerateStatementUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetCategoriesUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.GetCategoryAnalysisUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetFinancialSummaryUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetMonthlyLedgerUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetRecurringTransactionsUseCase
@@ -50,6 +51,7 @@ interface AppContainer {
 
     val getFinancialSummaryUseCase: GetFinancialSummaryUseCase
     val getMonthlyLedgerUseCase: GetMonthlyLedgerUseCase
+    val getCategoryAnalysisUseCase: GetCategoryAnalysisUseCase
     val generateStatementUseCase: GenerateStatementUseCase
 
     val getRecurringTransactionsUseCase: GetRecurringTransactionsUseCase
@@ -62,6 +64,15 @@ interface AppContainer {
     val setCurrencyUseCase: SetCurrencyUseCase
     val setOpeningBalanceUseCase: SetOpeningBalanceUseCase
     val setDailyReminderUseCase: SetDailyReminderUseCase
+    val dailyReminderScheduler: com.vinaynalavade.expensetracker.core.notification.DailyReminderScheduler
+
+    val backupRepository: com.vinaynalavade.expensetracker.domain.repository.BackupRepository
+    val createBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.CreateBackupUseCase
+    val validateBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase
+    val restoreBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase
+    val exportTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase
+    val validateImportUseCase: com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase
+    val importTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -86,8 +97,22 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         UserPreferencesRepositoryImpl(dataStore)
     }
 
+    override val dailyReminderScheduler: com.vinaynalavade.expensetracker.core.notification.DailyReminderScheduler by lazy {
+        com.vinaynalavade.expensetracker.core.notification.AlarmDailyReminderScheduler(context, userPreferencesRepository)
+    }
+
     override val recurringTransactionRepository: RecurringTransactionRepository by lazy {
         RecurringTransactionRepositoryImpl(database.recurringTransactionDao(), database.transactionDao())
+    }
+
+    override val backupRepository: com.vinaynalavade.expensetracker.domain.repository.BackupRepository by lazy {
+        com.vinaynalavade.expensetracker.data.repository.BackupRepositoryImpl(
+            database,
+            transactionRepository,
+            categoryRepository,
+            recurringTransactionRepository,
+            userPreferencesRepository
+        )
     }
 
     override val getTransactionsUseCase: GetTransactionsUseCase by lazy {
@@ -130,6 +155,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         GetMonthlyLedgerUseCase(transactionRepository, userPreferencesRepository)
     }
 
+    override val getCategoryAnalysisUseCase: GetCategoryAnalysisUseCase by lazy {
+        GetCategoryAnalysisUseCase(transactionRepository)
+    }
+
     override val generateStatementUseCase: GenerateStatementUseCase by lazy {
         GenerateStatementUseCase(transactionRepository, userPreferencesRepository)
     }
@@ -168,5 +197,36 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val setDailyReminderUseCase: SetDailyReminderUseCase by lazy {
         SetDailyReminderUseCase(userPreferencesRepository)
+    }
+
+    override val createBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.CreateBackupUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.CreateBackupUseCase(backupRepository)
+    }
+
+    override val validateBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase(backupRepository)
+    }
+
+    override val restoreBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase(backupRepository)
+    }
+
+    override val exportTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase(
+            backupRepository,
+            categoryRepository,
+            userPreferencesRepository
+        )
+    }
+
+    override val validateImportUseCase: com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase(
+            backupRepository,
+            userPreferencesRepository
+        )
+    }
+
+    override val importTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase(backupRepository)
     }
 }

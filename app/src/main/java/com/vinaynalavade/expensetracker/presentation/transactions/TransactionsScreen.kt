@@ -53,7 +53,6 @@ import com.vinaynalavade.expensetracker.presentation.components.LoadingView
 import com.vinaynalavade.expensetracker.presentation.components.TransactionItem
 import com.vinaynalavade.expensetracker.presentation.components.UiState
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
-import com.vinaynalavade.expensetracker.presentation.theme.PureWhite
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -100,7 +99,7 @@ fun TransactionsScreen(
             FloatingActionButton(
                 onClick = onOpenQuickAdd,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = PureWhite,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp)
             ) {

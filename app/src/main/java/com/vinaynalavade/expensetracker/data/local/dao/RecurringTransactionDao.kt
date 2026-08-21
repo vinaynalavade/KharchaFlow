@@ -28,9 +28,15 @@ interface RecurringTransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecurringTransaction(entity: RecurringTransactionEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRecurringTransactions(entities: List<RecurringTransactionEntity>)
+
     @Update
     suspend fun updateRecurringTransaction(entity: RecurringTransactionEntity)
 
     @Query("DELETE FROM recurring_transactions WHERE id = :id")
     suspend fun deleteRecurringTransactionById(id: Long)
+
+    @Query("DELETE FROM recurring_transactions")
+    suspend fun deleteAllRecurringTransactions()
 }

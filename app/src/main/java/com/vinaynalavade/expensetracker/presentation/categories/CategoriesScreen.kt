@@ -58,7 +58,6 @@ import com.vinaynalavade.expensetracker.presentation.components.LoadingView
 import com.vinaynalavade.expensetracker.presentation.components.UiState
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
-import com.vinaynalavade.expensetracker.presentation.theme.PureWhite
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 import kotlinx.coroutines.launch
 
@@ -101,7 +100,7 @@ fun CategoriesScreen(
                     showAddEditDialog = true
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = PureWhite,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp)
             ) {
@@ -224,8 +223,8 @@ fun CategoriesScreen(
                 showAddEditDialog = false
                 viewModel.clearDialogError()
             },
-            onSave = { name, icon, color, type, id ->
-                viewModel.saveCategory(name, icon, color, type, id) {
+            onSave = { name, icon, color, type, id, isDefault ->
+                viewModel.saveCategory(name, icon, color, type, id, isDefault) {
                     showAddEditDialog = false
                 }
             }
@@ -295,12 +294,24 @@ private fun CategoryCard(
                 )
             }
 
-            if (!category.isDefault) {
-                IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Category",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                if (!category.isDefault) {
+                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Category",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }

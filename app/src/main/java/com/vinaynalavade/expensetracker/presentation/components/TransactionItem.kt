@@ -6,7 +6,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,11 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 /**
- * Clean, scannable transaction list item with category icon, title, contextual metadata, and amount.
+ * Clean, scannable transaction list item with category icon, title, contextual metadata, payment method, and amount.
  */
 @Composable
 fun TransactionItem(
@@ -58,28 +65,59 @@ fun TransactionItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            val subtitle = when {
-                !transaction.note.isNullOrBlank() && showDateInSubtitle -> {
-                    "${transaction.note} • ${DateTimeUtils.formatDate(transaction.timestamp)}"
-                }
-                !transaction.note.isNullOrBlank() -> {
-                    "${transaction.note} • ${DateTimeUtils.formatTime(transaction.timestamp)}"
-                }
-                showDateInSubtitle -> {
-                    DateTimeUtils.formatDate(transaction.timestamp)
-                }
-                else -> {
-                    DateTimeUtils.formatTime(transaction.timestamp)
-                }
+            val timeOrDate = if (showDateInSubtitle) {
+                DateTimeUtils.formatDate(transaction.timestamp)
+            } else {
+                DateTimeUtils.formatTime(transaction.timestamp)
             }
 
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            val notePrefix = if (!transaction.note.isNullOrBlank()) {
+                "${transaction.note} • "
+            } else {
+                ""
+            }
+
+            val methodIcon = when (transaction.paymentMethod) {
+                PaymentMethod.CASH -> Icons.Default.Payments
+                PaymentMethod.BANK_ACCOUNT -> Icons.Default.AccountBalance
+                PaymentMethod.UPI -> Icons.Default.QrCode
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$notePrefix$timeOrDate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                Text(
+                    text = " • ",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                )
+
+                Icon(
+                    imageVector = methodIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                    modifier = Modifier.size(12.dp)
+                )
+
+                Spacer(modifier = Modifier.width(3.dp))
+
+                Text(
+                    text = transaction.paymentMethod.displayName,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.sm))

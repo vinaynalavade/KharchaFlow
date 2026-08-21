@@ -40,13 +40,15 @@ data class MonthlyTransactionGroup(
 
 class TransactionsViewModel(
     getTransactionsUseCase: GetTransactionsUseCase,
-    private val addTransactionUseCase: AddTransactionUseCase
+    private val addTransactionUseCase: AddTransactionUseCase,
+    initialFilter: TransactionFilter = TransactionFilter.ALL,
+    initialSearchQuery: String = ""
 ) : ViewModel() {
 
-    private val _selectedFilter = MutableStateFlow(TransactionFilter.ALL)
+    private val _selectedFilter = MutableStateFlow(initialFilter)
     val selectedFilter: StateFlow<TransactionFilter> = _selectedFilter
 
-    private val _searchQuery = MutableStateFlow("")
+    private val _searchQuery = MutableStateFlow(initialSearchQuery)
     val searchQuery: StateFlow<String> = _searchQuery
 
     val uiState: StateFlow<UiState<List<MonthlyTransactionGroup>>> = combine(
@@ -129,11 +131,18 @@ class TransactionsViewModel(
 
     class Factory(
         private val getTransactionsUseCase: GetTransactionsUseCase,
-        private val addTransactionUseCase: AddTransactionUseCase
+        private val addTransactionUseCase: AddTransactionUseCase,
+        private val initialFilter: TransactionFilter = TransactionFilter.ALL,
+        private val initialSearchQuery: String = ""
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return TransactionsViewModel(getTransactionsUseCase, addTransactionUseCase) as T
+            return TransactionsViewModel(
+                getTransactionsUseCase,
+                addTransactionUseCase,
+                initialFilter,
+                initialSearchQuery
+            ) as T
         }
     }
 }

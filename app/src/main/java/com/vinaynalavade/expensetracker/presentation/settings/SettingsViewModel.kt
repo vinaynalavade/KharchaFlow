@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.core.notification.DailyReminderScheduler
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.domain.usecase.GetUserPreferencesUseCase
@@ -21,7 +22,8 @@ class SettingsViewModel(
     private val setThemeModeUseCase: SetThemeModeUseCase,
     private val setCurrencyUseCase: SetCurrencyUseCase,
     private val setOpeningBalanceUseCase: SetOpeningBalanceUseCase,
-    private val setDailyReminderUseCase: SetDailyReminderUseCase
+    private val setDailyReminderUseCase: SetDailyReminderUseCase,
+    private val dailyReminderScheduler: DailyReminderScheduler
 ) : ViewModel() {
 
     val userPreferences: StateFlow<UserPreferences> = getUserPreferencesUseCase()
@@ -49,9 +51,26 @@ class SettingsViewModel(
         }
     }
 
-    fun onDailyReminderToggled(enabled: Boolean, hour: Int = 21, minute: Int = 0) {
+    fun onDailyReminderToggled(enabled: Boolean) {
+        val currentHour = userPreferences.value.dailyReminderHour
+        val currentMinute = userPreferences.value.dailyReminderMinute
         viewModelScope.launch {
-            setDailyReminderUseCase(enabled, hour, minute)
+            setDailyReminderUseCase(enabled, currentHour, currentMinute)
+            if (enabled) {
+                dailyReminderScheduler.schedule(currentHour, currentMinute)
+            } else {
+                dailyReminderScheduler.cancel()
+            }
+        }
+    }
+
+    fun onReminderTimeSelected(hour: Int, minute: Int) {
+        val isEnabled = userPreferences.value.dailyReminderEnabled
+        viewModelScope.launch {
+            setDailyReminderUseCase(isEnabled, hour, minute)
+            if (isEnabled) {
+                dailyReminderScheduler.schedule(hour, minute)
+            }
         }
     }
 
@@ -60,7 +79,8 @@ class SettingsViewModel(
         private val setThemeModeUseCase: SetThemeModeUseCase,
         private val setCurrencyUseCase: SetCurrencyUseCase,
         private val setOpeningBalanceUseCase: SetOpeningBalanceUseCase,
-        private val setDailyReminderUseCase: SetDailyReminderUseCase
+        private val setDailyReminderUseCase: SetDailyReminderUseCase,
+        private val dailyReminderScheduler: DailyReminderScheduler
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -69,7 +89,8 @@ class SettingsViewModel(
                 setThemeModeUseCase,
                 setCurrencyUseCase,
                 setOpeningBalanceUseCase,
-                setDailyReminderUseCase
+                setDailyReminderUseCase,
+                dailyReminderScheduler
             ) as T
         }
     }

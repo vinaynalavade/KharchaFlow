@@ -65,10 +65,12 @@ import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
 import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.di.AppContainer
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.presentation.components.CategoryIcon
+import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.TransactionDateSelector
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
@@ -87,6 +89,10 @@ import kotlinx.coroutines.launch
  */
 class QuickAddTransactionActivity : ComponentActivity() {
 
+    companion object {
+        const val EXTRA_TRANSACTION_TYPE = "extra_transaction_type"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -94,11 +100,16 @@ class QuickAddTransactionActivity : ComponentActivity() {
         val app = application as ExpenseTrackerApp
         val container = app.container
 
+        val rawType = intent?.getStringExtra(EXTRA_TRANSACTION_TYPE)
         val startRoute = intent?.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
-        val transactionType = if (startRoute == NotificationHelper.ROUTE_ADD_INCOME) {
-            TransactionType.INCOME
-        } else {
-            TransactionType.EXPENSE
+        val transactionType = when {
+            rawType != null -> try {
+                TransactionType.valueOf(rawType.uppercase())
+            } catch (_: Exception) {
+                TransactionType.EXPENSE
+            }
+            startRoute == NotificationHelper.ROUTE_ADD_INCOME -> TransactionType.INCOME
+            else -> TransactionType.EXPENSE
         }
 
         setContent {
@@ -136,6 +147,7 @@ private fun QuickAddOverlay(
 ) {
     var amountText by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var selectedPaymentMethod by remember { mutableStateOf(PaymentMethod.CASH) }
     var selectedDateEpoch by remember { mutableStateOf(System.currentTimeMillis()) }
     var note by remember { mutableStateOf("") }
     var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
@@ -171,6 +183,7 @@ private fun QuickAddOverlay(
                 amount = parsedAmount,
                 type = transactionType,
                 category = cat,
+                paymentMethod = selectedPaymentMethod,
                 note = note.trim().ifBlank { null },
                 timestamp = selectedDateEpoch,
                 createdAt = now,
@@ -368,6 +381,16 @@ private fun QuickAddOverlay(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.lg))
+
+                // Payment Method Selector
+                PaymentMethodSelector(
+                    selectedMethod = selectedPaymentMethod,
+                    onMethodSelect = { selectedPaymentMethod = it },
+                    isCompact = true,
+                    horizontalPadding = 0.dp
+                )
 
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.lg))
 

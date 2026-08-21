@@ -2,8 +2,10 @@ package com.vinaynalavade.expensetracker
 
 import android.app.Application
 import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
+import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.di.AppContainer
 import com.vinaynalavade.expensetracker.di.DefaultAppContainer
+import com.vinaynalavade.expensetracker.presentation.widget.ExpenseTrackerWidgetProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +25,10 @@ class ExpenseTrackerApp : Application() {
         // Process any due recurring transactions / salary in background
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                container.processDueRecurringTransactionsUseCase()
+                val result = container.processDueRecurringTransactionsUseCase()
+                if (result is AppResult.Success && result.data > 0) {
+                    ExpenseTrackerWidgetProvider.updateAll(this@ExpenseTrackerApp)
+                }
             } catch (_: Exception) {
                 // Safe background launch
             }

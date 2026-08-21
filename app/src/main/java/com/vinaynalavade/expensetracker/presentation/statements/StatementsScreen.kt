@@ -50,7 +50,6 @@ import com.vinaynalavade.expensetracker.presentation.components.UiState
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
-import com.vinaynalavade.expensetracker.presentation.theme.PureWhite
 import com.vinaynalavade.expensetracker.presentation.theme.financialColors
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
@@ -87,7 +86,7 @@ fun StatementsScreen(
                     shape = ButtonShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = PureWhite
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -96,7 +95,7 @@ fun StatementsScreen(
                         .height(52.dp)
                 ) {
                     if (isGeneratingPdf) {
-                        CircularProgressIndicator(color = PureWhite, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
                     } else {
                         Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.xs))

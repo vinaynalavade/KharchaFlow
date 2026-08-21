@@ -32,9 +32,11 @@ import androidx.compose.ui.unit.dp
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.RecurrenceFrequency
 import com.vinaynalavade.expensetracker.domain.model.RecurringTransaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
+import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.CategorySelector
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
@@ -54,6 +56,9 @@ fun AddEditRecurringDialog(
     var selectedType by remember { mutableStateOf(itemToEdit?.type ?: TransactionType.EXPENSE) }
     var selectedCategory by remember {
         mutableStateOf(itemToEdit?.category ?: availableCategories.firstOrNull { it.type == selectedType })
+    }
+    var selectedPaymentMethod by remember {
+        mutableStateOf(itemToEdit?.paymentMethod ?: PaymentMethod.CASH)
     }
     var selectedFrequency by remember { mutableStateOf(itemToEdit?.frequency ?: RecurrenceFrequency.MONTHLY) }
     var dayOfMonth by remember { mutableIntStateOf(itemToEdit?.dayOfMonth ?: 1) }
@@ -129,6 +134,16 @@ fun AddEditRecurringDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
 
+                // Payment Method Selector
+                PaymentMethodSelector(
+                    selectedMethod = selectedPaymentMethod,
+                    onMethodSelect = { selectedPaymentMethod = it },
+                    isCompact = true,
+                    horizontalPadding = 0.dp
+                )
+
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
+
                 // Day of Month
                 OutlinedTextField(
                     value = dayOfMonth.toString(),
@@ -171,6 +186,7 @@ fun AddEditRecurringDialog(
                             amount = parsedAmount,
                             type = selectedType,
                             category = cat,
+                            paymentMethod = selectedPaymentMethod,
                             frequency = selectedFrequency,
                             dayOfMonth = dayOfMonth,
                             isEnabled = true,

@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.RecurrenceFrequency
 import com.vinaynalavade.expensetracker.domain.model.RecurringTransaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
@@ -42,6 +43,9 @@ data class RecurringTransactionEntity(
 
     @ColumnInfo(name = "category_id")
     val categoryId: Long,
+
+    @ColumnInfo(name = "payment_method", defaultValue = "CASH")
+    val paymentMethod: String = "CASH",
 
     @ColumnInfo(name = "note")
     val note: String? = null,
@@ -87,6 +91,7 @@ data class RecurringTransactionEntity(
                 amountSubunits = model.amount.subunits,
                 type = model.type.name,
                 categoryId = model.category.id,
+                paymentMethod = model.paymentMethod.name,
                 note = model.note,
                 frequency = model.frequency.name,
                 dayOfMonth = model.dayOfMonth,
@@ -124,6 +129,7 @@ data class RecurringWithCategory(
             amount = Amount.fromSubunits(recurring.amountSubunits),
             type = TransactionType.fromString(recurring.type),
             category = category?.toDomainModel() ?: Category.UNCATEGORIZED,
+            paymentMethod = PaymentMethod.fromString(recurring.paymentMethod),
             note = recurring.note,
             frequency = RecurrenceFrequency.fromString(recurring.frequency),
             dayOfMonth = recurring.dayOfMonth,

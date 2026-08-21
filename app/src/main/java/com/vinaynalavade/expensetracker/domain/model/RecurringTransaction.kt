@@ -25,6 +25,7 @@ data class RecurringTransaction(
     val amount: Amount,
     val type: TransactionType,
     val category: Category,
+    val paymentMethod: PaymentMethod = PaymentMethod.CASH,
     val note: String? = null,
     val frequency: RecurrenceFrequency = RecurrenceFrequency.MONTHLY,
     val dayOfMonth: Int = 1, // 1 - 31 for monthly / yearly

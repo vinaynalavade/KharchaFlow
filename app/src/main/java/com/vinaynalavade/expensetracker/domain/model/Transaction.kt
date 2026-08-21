@@ -10,6 +10,7 @@ data class Transaction(
     val amount: Amount,
     val type: TransactionType,
     val category: Category,
+    val paymentMethod: PaymentMethod = PaymentMethod.CASH,
     val note: String? = null,
     val timestamp: Long,
     val createdAt: Long = timestamp,

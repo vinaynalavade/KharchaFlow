@@ -48,4 +48,16 @@
     <string name="settings_developer_title">Developer</string>
     <string name="settings_developer_value">Vinay Nalavade</string>
     <string name="settings_privacy_note">Financial records stored securely on-device.</string>
+
+    <!-- Widgets -->
+    <string name="widget_overview_description">View your current balance, today\'s expenses, and quick transaction actions.</string>
+    <string name="widget_quick_add_description">Quick shortcut buttons to instantly record income or expense.</string>
+
+    <!-- Reminders & Notifications -->
+    <string name="reminder_daily_title">Track today\'s expenses</string>
+    <string name="reminder_daily_content">You haven\'t added any transactions today. Take a moment to update KharchaFlow.</string>
+    <string name="settings_daily_reminder_title">Daily Smart Reminder</string>
+    <string name="settings_daily_reminder_desc">Notifies you only if no transactions have been recorded today</string>
+    <string name="settings_reminder_time_title">Reminder Time</string>
+    <string name="settings_select_time">Select Reminder Time</string>
 </resources>

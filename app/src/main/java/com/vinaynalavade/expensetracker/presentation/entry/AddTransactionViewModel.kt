@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.usecase.AddTransactionUseCase
@@ -29,6 +30,7 @@ data class AddTransactionUiState(
     val amountInput: String = "",
     val selectedCategory: Category? = null,
     val availableCategories: List<Category> = emptyList(),
+    val selectedPaymentMethod: PaymentMethod = PaymentMethod.CASH,
     val selectedDateEpoch: Long = System.currentTimeMillis(),
     val note: String = "",
     val amountError: String? = null,
@@ -82,6 +84,7 @@ class AddTransactionViewModel(
                             transactionType = tx.type,
                             amountInput = tx.amount.toInputString(currency),
                             selectedCategory = tx.category,
+                            selectedPaymentMethod = tx.paymentMethod,
                             selectedDateEpoch = tx.timestamp,
                             note = tx.note ?: "",
                             originalCreatedAt = tx.createdAt
@@ -122,6 +125,15 @@ class AddTransactionViewModel(
             it.copy(
                 selectedCategory = category,
                 categoryError = null,
+                generalError = null
+            )
+        }
+    }
+
+    fun onPaymentMethodSelect(paymentMethod: PaymentMethod) {
+        _uiState.update {
+            it.copy(
+                selectedPaymentMethod = paymentMethod,
                 generalError = null
             )
         }
@@ -178,6 +190,7 @@ class AddTransactionViewModel(
                 amount = amount,
                 type = currentState.transactionType,
                 category = category,
+                paymentMethod = currentState.selectedPaymentMethod,
                 note = currentState.note.trim().ifBlank { null },
                 timestamp = currentState.selectedDateEpoch,
                 createdAt = if (currentState.isEditMode) currentState.originalCreatedAt else now,

@@ -8,8 +8,11 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import com.vinaynalavade.expensetracker.ExpenseTrackerApp
+import com.vinaynalavade.expensetracker.MainActivity
+import com.vinaynalavade.expensetracker.QuickAddTransactionActivity
 import com.vinaynalavade.expensetracker.R
 import com.vinaynalavade.expensetracker.core.model.Amount
+import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
 import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
@@ -19,6 +22,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+/**
+ * Financial Overview AppWidget Provider.
+ * Displays live Current Balance, Today's Expenses, and direct action triggers.
+ */
 class ExpenseTrackerWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -28,10 +35,13 @@ class ExpenseTrackerWidgetProvider : AppWidgetProvider() {
     companion object {
         fun updateAll(context: Context) {
             val appWidgetManager = AppWidgetManager.getInstance(context)
-            val ids = appWidgetManager.getAppWidgetIds(
+            val overviewIds = appWidgetManager.getAppWidgetIds(
                 ComponentName(context, ExpenseTrackerWidgetProvider::class.java)
             )
-            updateWidget(context, appWidgetManager, ids)
+            if (overviewIds.isNotEmpty()) {
+                updateWidget(context, appWidgetManager, overviewIds)
+            }
+            QuickAddWidgetProvider.updateAll(context)
         }
 
         private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -41,20 +51,31 @@ class ExpenseTrackerWidgetProvider : AppWidgetProvider() {
             CoroutineScope(Dispatchers.IO).launch {
                 val summary = container.getFinancialSummaryUseCase().firstOrNull()
                 val prefs = container.getUserPreferencesUseCase().firstOrNull()
-                val currency = prefs?.currency ?: com.vinaynalavade.expensetracker.core.model.Currency.DEFAULT
+                val currency = prefs?.currency ?: Currency.DEFAULT
 
                 val todayStartEpoch = DateTimeUtils.getStartOfDayEpoch(LocalDate.now())
-                val allTx = container.getTransactionsUseCase().firstOrNull() ?: emptyList()
-                val todayExpenseSubunits = allTx
-                    .filter { it.type == TransactionType.EXPENSE && it.timestamp >= todayStartEpoch }
-                    .sumOf { it.amount.subunits }
+                val todayEndEpoch = DateTimeUtils.getEndOfDayEpoch(LocalDate.now())
+                val todaySummary = container.getFinancialSummaryUseCase.getByDateRange(todayStartEpoch, todayEndEpoch).firstOrNull()
 
                 val balanceStr = summary?.currentBalance?.format(currency) ?: "₹0.00"
-                val todayStr = "Today: - ${Amount(todayExpenseSubunits).format(currency)}"
+                val todayExpenseAmount = todaySummary?.totalExpense ?: Amount.ZERO
+                val todayStr = "Today: - ${todayExpenseAmount.format(currency)}"
 
-                // Intent for Add Expense
-                val expenseIntent = Intent(context, com.vinaynalavade.expensetracker.QuickAddTransactionActivity::class.java).apply {
+                // 1. Root tap -> Open MainActivity (Dashboard)
+                val mainIntent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                val mainPendingIntent = PendingIntent.getActivity(
+                    context,
+                    100,
+                    mainIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                // 2. Expense tap -> Directly open QuickAddTransactionActivity over launcher
+                val expenseIntent = Intent(context, QuickAddTransactionActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    putExtra(QuickAddTransactionActivity.EXTRA_TRANSACTION_TYPE, TransactionType.EXPENSE.name)
                     putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_EXPENSE)
                 }
                 val expensePendingIntent = PendingIntent.getActivity(
@@ -64,9 +85,9 @@ class ExpenseTrackerWidgetProvider : AppWidgetProvider() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                // Intent for Add Income
-                val incomeIntent = Intent(context, com.vinaynalavade.expensetracker.QuickAddTransactionActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                // 3. Income tap -> Open MainActivity navigating directly to Add Income
+                val incomeIntent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_INCOME)
                 }
                 val incomePendingIntent = PendingIntent.getActivity(
@@ -80,6 +101,7 @@ class ExpenseTrackerWidgetProvider : AppWidgetProvider() {
                     val views = RemoteViews(context.packageName, R.layout.widget_expense_tracker).apply {
                         setTextViewText(R.id.widget_total_balance, balanceStr)
                         setTextViewText(R.id.widget_today_expense, todayStr)
+                        setOnClickPendingIntent(R.id.widget_root, mainPendingIntent)
                         setOnClickPendingIntent(R.id.widget_btn_add_expense, expensePendingIntent)
                         setOnClickPendingIntent(R.id.widget_btn_add_income, incomePendingIntent)
                     }

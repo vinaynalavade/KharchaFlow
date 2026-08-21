@@ -14,6 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.vinaynalavade.expensetracker.di.AppContainer
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vinaynalavade.expensetracker.domain.model.UserPreferences
+import com.vinaynalavade.expensetracker.presentation.transactions.TransactionFilter
+import com.vinaynalavade.expensetracker.presentation.backup.BackupScreen
+import com.vinaynalavade.expensetracker.presentation.backup.BackupViewModel
 import com.vinaynalavade.expensetracker.presentation.calendar.CalendarScreen
 import com.vinaynalavade.expensetracker.presentation.calendar.CalendarViewModel
 import com.vinaynalavade.expensetracker.presentation.categories.CategoriesScreen
@@ -71,11 +77,16 @@ fun NavGraph(
             val viewModel: DashboardViewModel = viewModel(
                 factory = DashboardViewModel.Factory(
                     container.getFinancialSummaryUseCase,
-                    container.getTransactionsUseCase
+                    container.getTransactionsUseCase,
+                    container.getCategoryAnalysisUseCase
                 )
             )
+            val userPrefs by container.getUserPreferencesUseCase()
+                .collectAsStateWithLifecycle(initialValue = UserPreferences())
+
             DashboardScreen(
                 viewModel = viewModel,
+                currency = userPrefs.currency,
                 onNavigateToAddExpense = {
                     navController.navigate(Screen.AddExpense.route)
                 },
@@ -83,20 +94,56 @@ fun NavGraph(
                     navController.navigate(Screen.AddIncome.route)
                 },
                 onNavigateToTransactions = {
-                    navController.navigate(Screen.Transactions.route)
+                    navController.navigate(Screen.Transactions.createRoute())
                 },
                 onNavigateToCategories = {
                     navController.navigate(Screen.Categories.route)
+                },
+                onNavigateToCategoryTransactions = { month, categoryName, type ->
+                    navController.navigate(
+                        Screen.Transactions.createRoute(
+                            filter = type.name,
+                            query = categoryName
+                        )
+                    )
+                },
+                onNavigateToTransactionDetail = { id ->
+                    navController.navigate(Screen.TransactionDetail.createRoute(id))
                 },
                 onOpenQuickAdd = onOpenQuickAdd
             )
         }
 
-        composable(Screen.Transactions.route) {
+        composable(
+            route = Screen.Transactions.route,
+            arguments = listOf(
+                navArgument("filter") {
+                    type = NavType.StringType
+                    defaultValue = "ALL"
+                    nullable = true
+                },
+                navArgument("query") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val filterParam = backStackEntry.arguments?.getString("filter")
+            val queryParam = backStackEntry.arguments?.getString("query") ?: ""
+            val initialFilter = when (filterParam?.uppercase()) {
+                "EXPENSE" -> TransactionFilter.EXPENSE
+                "INCOME" -> TransactionFilter.INCOME
+                else -> TransactionFilter.ALL
+            }
+
             val viewModel: TransactionsViewModel = viewModel(
+                key = "tx_${filterParam}_${queryParam}",
                 factory = TransactionsViewModel.Factory(
                     container.getTransactionsUseCase,
-                    container.addTransactionUseCase
+                    container.addTransactionUseCase,
+                    initialFilter = initialFilter,
+                    initialSearchQuery = queryParam
                 )
             )
             TransactionsScreen(
@@ -198,14 +245,17 @@ fun NavGraph(
                     container.setThemeModeUseCase,
                     container.setCurrencyUseCase,
                     container.setOpeningBalanceUseCase,
-                    container.setDailyReminderUseCase
+                    container.setDailyReminderUseCase,
+                    container.dailyReminderScheduler
                 )
             )
             SettingsScreen(
                 viewModel = viewModel,
+                onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
                 onNavigateToRecurring = { navController.navigate(Screen.RecurringTransactions.route) },
                 onNavigateToStatements = { navController.navigate(Screen.Statements.route) },
-                onNavigateToMonthlySummary = { navController.navigate(Screen.MonthlySummary.route) }
+                onNavigateToMonthlySummary = { navController.navigate(Screen.MonthlySummary.route) },
+                onNavigateToBackup = { navController.navigate(Screen.BackupRestore.route) }
             )
         }
 
@@ -288,6 +338,25 @@ fun NavGraph(
                     navController.popBackStack()
                     onShowSnackbar(confirmationMessage)
                 }
+            )
+        }
+
+        composable(Screen.BackupRestore.route) {
+            val viewModel: BackupViewModel = viewModel(
+                factory = BackupViewModel.Factory(
+                    backupRepository = container.backupRepository,
+                    createBackupUseCase = container.createBackupUseCase,
+                    validateBackupUseCase = container.validateBackupUseCase,
+                    restoreBackupUseCase = container.restoreBackupUseCase,
+                    exportTransactionsUseCase = container.exportTransactionsUseCase,
+                    validateImportUseCase = container.validateImportUseCase,
+                    importTransactionsUseCase = container.importTransactionsUseCase,
+                    getCategoriesUseCase = container.getCategoriesUseCase
+                )
+            )
+            BackupScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

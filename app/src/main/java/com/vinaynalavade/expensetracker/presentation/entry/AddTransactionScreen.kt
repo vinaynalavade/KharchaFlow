@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.presentation.components.AppTopBar
+import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.AmountInput
 import com.vinaynalavade.expensetracker.presentation.entry.components.CategorySelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.DiscardChangesDialog
@@ -166,7 +167,15 @@ fun AddTransactionScreen(
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.xl))
 
-            // 3. Transaction Date Selection
+            // 3. Payment Method Selection
+            PaymentMethodSelector(
+                selectedMethod = uiState.selectedPaymentMethod,
+                onMethodSelect = viewModel::onPaymentMethodSelect
+            )
+
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.xl))
+
+            // 4. Transaction Date Selection
             TransactionDateSelector(
                 selectedDateEpoch = uiState.selectedDateEpoch,
                 onDateSelect = viewModel::onDateSelect
@@ -174,7 +183,7 @@ fun AddTransactionScreen(
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.xl))
 
-            // 4. Optional Note Field
+            // 5. Optional Note Field
             TransactionNoteField(
                 note = uiState.note,
                 onNoteChange = viewModel::onNoteChange,

@@ -78,4 +78,17 @@ class UserPreferencesRepositoryImpl(
             AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set EMI reminders.", e))
         }
     }
+
+    override fun getLastBackupTimestamp(): Flow<Long?> {
+        return dataStore.lastBackupTimestampFlow
+    }
+
+    override suspend fun setLastBackupTimestamp(timestamp: Long): AppResult<Unit> {
+        return try {
+            dataStore.setLastBackupTimestamp(timestamp)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set backup timestamp.", e))
+        }
+    }
 }

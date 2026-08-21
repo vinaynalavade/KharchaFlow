@@ -61,6 +61,7 @@ class CategoriesViewModel(
         colorHex: String,
         type: TransactionType,
         id: Long,
+        isDefault: Boolean = false,
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
@@ -71,7 +72,7 @@ class CategoriesViewModel(
                 iconName = iconName,
                 colorHex = colorHex,
                 type = type,
-                isDefault = false
+                isDefault = isDefault
             )
 
             when (val result = saveCategoryUseCase(category)) {
