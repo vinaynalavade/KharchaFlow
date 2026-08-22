@@ -64,5 +64,11 @@ data class BackupPreferences(
     val dailyReminderEnabled: Boolean = false,
     val dailyReminderHour: Int = 21,
     val dailyReminderMinute: Int = 0,
-    val emiRemindersEnabled: Boolean = true
+    val emiRemindersEnabled: Boolean = true,
+    val notificationsMasterEnabled: Boolean = false,
+    val budgetAlertsEnabled: Boolean = false,
+    val monthlyBudgetLimitSubunits: Long = 0L,
+    val recurringRemindersEnabled: Boolean = false,
+    val recurringReminderAdvanceDays: Int = 1,
+    val savingsGoalNotificationsEnabled: Boolean = false
 )

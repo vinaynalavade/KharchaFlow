@@ -30,6 +30,7 @@ class DailyReminderSchedulerTest {
 
     private val testScheduler = object : DailyReminderScheduler {
         override fun schedule(hour: Int, minute: Int) {}
+        override fun scheduleFinancialChecks() {}
         override fun cancel() {}
         override fun reschedule() {}
 

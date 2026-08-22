@@ -28,6 +28,7 @@ class WidgetIntentRoutingTest {
         assertEquals("extra_start_route", NotificationHelper.EXTRA_START_ROUTE)
         assertEquals("add_expense", NotificationHelper.ROUTE_ADD_EXPENSE)
         assertEquals("add_income", NotificationHelper.ROUTE_ADD_INCOME)
+        assertEquals("transactions", NotificationHelper.ROUTE_TRANSACTIONS)
     }
 
     @Test
@@ -118,5 +119,15 @@ class WidgetIntentRoutingTest {
         override suspend fun setEmiReminders(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
         override fun getLastBackupTimestamp(): Flow<Long?> = flowOf(null)
         override suspend fun setLastBackupTimestamp(timestamp: Long) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setAppLockEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setBiometricEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setAutoLockDurationSeconds(seconds: Long) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setHideContentInRecents(hide: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setNotificationsMasterEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setBudgetAlertsEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setMonthlyBudgetLimit(subunits: Long) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setRecurringRemindersEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setRecurringReminderAdvanceDays(days: Int) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
     }
 }

@@ -15,7 +15,7 @@ class NavigationHierarchyAndRoutingTest {
         val routes = BottomNavItems.map { it.route }
         assertTrue(routes.contains(Screen.Dashboard.route))
         assertTrue(routes.contains(Screen.Transactions.route))
-        assertTrue(routes.contains(Screen.Categories.route))
+        assertTrue(routes.contains(Screen.Analytics.route))
         assertTrue(routes.contains(Screen.Settings.route))
         assertEquals(4, BottomNavItems.size)
     }
@@ -70,9 +70,12 @@ class NavigationHierarchyAndRoutingTest {
     @Test
     fun testSecondaryScreenRoutes() {
         assertEquals("monthly_summary", Screen.MonthlySummary.route)
+        assertEquals("categories", Screen.Categories.route)
         assertEquals("recurring_transactions", Screen.RecurringTransactions.route)
         assertEquals("statements", Screen.Statements.route)
         assertEquals("calendar", Screen.Calendar.route)
         assertEquals("backup_restore", Screen.BackupRestore.route)
+        assertEquals("welcome", Screen.Welcome.route)
+        assertEquals("about", Screen.About.route)
     }
 }

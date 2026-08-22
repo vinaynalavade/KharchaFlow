@@ -22,6 +22,12 @@ class TransactionRepositoryImpl(
         }
     }
 
+    override fun getRecentTransactions(limit: Int): Flow<List<Transaction>> {
+        return transactionDao.getRecentTransactionsWithCategory(limit).map { list ->
+            list.map { it.toDomainModel() }
+        }
+    }
+
     override fun getTransactionById(id: Long): Flow<Transaction?> {
         return transactionDao.getTransactionWithCategoryById(id).map { item ->
             item?.toDomainModel()

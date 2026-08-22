@@ -78,7 +78,7 @@ import com.vinaynalavade.expensetracker.presentation.theme.ExpenseTrackerTheme
 import com.vinaynalavade.expensetracker.presentation.theme.SheetShape
 import com.vinaynalavade.expensetracker.presentation.theme.financialColors
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
-import com.vinaynalavade.expensetracker.presentation.widget.ExpenseTrackerWidgetProvider
+import com.vinaynalavade.expensetracker.presentation.widget.WidgetUpdateManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -115,22 +115,42 @@ class QuickAddTransactionActivity : ComponentActivity() {
         setContent {
             val userPreferences by container.getUserPreferencesUseCase()
                 .collectAsStateWithLifecycle(initialValue = UserPreferences())
+            val isSessionUnlocked by container.appLockManager.isSessionUnlocked
+                .collectAsStateWithLifecycle()
+
+            val isLocked = userPreferences.appLockEnabled && !isSessionUnlocked
+
+            LaunchedEffect(isLocked) {
+                if (isLocked) {
+                    val mainIntent = android.content.Intent(this@QuickAddTransactionActivity, MainActivity::class.java).apply {
+                        flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra(
+                            NotificationHelper.EXTRA_START_ROUTE,
+                            if (transactionType == TransactionType.INCOME) NotificationHelper.ROUTE_ADD_INCOME else NotificationHelper.ROUTE_ADD_EXPENSE
+                        )
+                    }
+                    startActivity(mainIntent)
+                    finish()
+                }
+            }
 
             ExpenseTrackerTheme(
                 themeMode = userPreferences.themeMode,
                 dynamicColor = userPreferences.useDynamicColors,
                 currency = userPreferences.currency
             ) {
-                QuickAddOverlay(
-                    transactionType = transactionType,
-                    container = container,
-                    currency = userPreferences.currency,
-                    onDismiss = { finish() },
-                    onSaved = {
-                        ExpenseTrackerWidgetProvider.updateAll(this@QuickAddTransactionActivity)
-                        finish()
-                    }
-                )
+                if (!isLocked) {
+                    QuickAddOverlay(
+                        transactionType = transactionType,
+                        container = container,
+                        currency = userPreferences.currency,
+                        onDismiss = { finish() },
+                        onSaved = {
+                            WidgetUpdateManager.refreshAllWidgets(this@QuickAddTransactionActivity)
+                            finish()
+                        }
+                    )
+                }
             }
         }
     }

@@ -1,7 +1,8 @@
 package com.vinaynalavade.expensetracker
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.view.WindowManager
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +26,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -36,12 +43,14 @@ import com.vinaynalavade.expensetracker.presentation.components.BottomNavItems
 import com.vinaynalavade.expensetracker.presentation.components.QuickAddBottomSheet
 import com.vinaynalavade.expensetracker.presentation.navigation.NavGraph
 import com.vinaynalavade.expensetracker.presentation.navigation.Screen
+import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
+import com.vinaynalavade.expensetracker.presentation.security.UnlockScreen
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.ExpenseTrackerTheme
-import com.vinaynalavade.expensetracker.presentation.widget.ExpenseTrackerWidgetProvider
+import com.vinaynalavade.expensetracker.presentation.widget.WidgetUpdateManager
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val pendingNavRoute = mutableStateOf<String?>(null)
 
@@ -52,6 +61,19 @@ class MainActivity : ComponentActivity() {
         if (route != null) {
             pendingNavRoute.value = route
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val app = application as ExpenseTrackerApp
+        val prefs = app.container.userPreferencesRepository
+        // Note: auto-lock check is evaluated in Compose lifecycle observer with latest preferences
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val app = application as ExpenseTrackerApp
+        app.container.appLockManager.onAppBackgrounded()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,29 +88,116 @@ class MainActivity : ComponentActivity() {
         setContent {
             val userPreferences by container.getUserPreferencesUseCase()
                 .collectAsStateWithLifecycle(initialValue = UserPreferences())
+            val isSessionUnlocked by container.appLockManager.isSessionUnlocked
+                .collectAsStateWithLifecycle()
+
+            val isLocked = userPreferences.appLockEnabled && !isSessionUnlocked
+
+            // Apply Window Privacy Flag (FLAG_SECURE)
+            LaunchedEffect(userPreferences.appLockEnabled, userPreferences.hideContentInRecents) {
+                if (userPreferences.appLockEnabled && userPreferences.hideContentInRecents) {
+                    window.setFlags(
+                        WindowManager.LayoutParams.FLAG_SECURE,
+                        WindowManager.LayoutParams.FLAG_SECURE
+                    )
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
+            }
+
+            // Lifecycle Observer for Auto-Lock
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(lifecycleOwner, userPreferences.appLockEnabled, userPreferences.autoLockDurationSeconds) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_START) {
+                        container.appLockManager.onAppForegrounded(
+                            appLockEnabled = userPreferences.appLockEnabled,
+                            autoLockDurationSeconds = userPreferences.autoLockDurationSeconds
+                        )
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
 
             ExpenseTrackerTheme(
                 themeMode = userPreferences.themeMode,
                 dynamicColor = userPreferences.useDynamicColors,
                 currency = userPreferences.currency
             ) {
-                val navController = rememberNavController()
-
-                LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
-                    val route = pendingNavRoute.value ?: initialStartRoute
-                    if (route == NotificationHelper.ROUTE_ADD_EXPENSE) {
-                        navController.navigate(Screen.AddExpense.route)
-                        pendingNavRoute.value = null
-                    } else if (route == NotificationHelper.ROUTE_ADD_INCOME) {
-                        navController.navigate(Screen.AddIncome.route)
-                        pendingNavRoute.value = null
+                if (isLocked) {
+                    BackHandler {
+                        moveTaskToBack(true)
                     }
-                }
 
-                MainAppScaffold(
-                    navController = navController,
-                    app = app
-                )
+                    val unlockViewModel: AppLockViewModel = viewModel(
+                        factory = AppLockViewModel.Factory(
+                            container.getUserPreferencesUseCase,
+                            container.appLockManager,
+                            container.securePinManager,
+                            container.verifyPinUseCase,
+                            container.savePinUseCase,
+                            container.changePinUseCase,
+                            container.setAppLockEnabledUseCase,
+                            container.setBiometricEnabledUseCase,
+                            container.disableAppLockUseCase
+                        )
+                    )
+
+                    UnlockScreen(
+                        viewModel = unlockViewModel,
+                        onUnlockSuccess = {
+                            container.appLockManager.unlock()
+                        }
+                    )
+                } else {
+                    val navController = rememberNavController()
+
+                    LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
+                        val route = pendingNavRoute.value ?: initialStartRoute
+                        when (route) {
+                            NotificationHelper.ROUTE_ADD_EXPENSE -> {
+                                navController.navigate(Screen.AddExpense.route)
+                                pendingNavRoute.value = null
+                            }
+                            NotificationHelper.ROUTE_ADD_INCOME -> {
+                                navController.navigate(Screen.AddIncome.route)
+                                pendingNavRoute.value = null
+                            }
+                            NotificationHelper.ROUTE_TRANSACTIONS, "transactions" -> {
+                                navController.navigate(Screen.Transactions.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                                pendingNavRoute.value = null
+                            }
+                            NotificationHelper.ROUTE_RECURRING -> {
+                                navController.navigate(Screen.RecurringTransactions.route)
+                                pendingNavRoute.value = null
+                            }
+                            NotificationHelper.ROUTE_DASHBOARD -> {
+                                navController.navigate(Screen.Dashboard.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                                pendingNavRoute.value = null
+                            }
+                        }
+                    }
+
+                    MainAppScaffold(
+                        navController = navController,
+                        app = app,
+                        isFirstLaunch = userPreferences.isFirstLaunch
+                    )
+                }
             }
         }
     }
@@ -99,6 +208,7 @@ class MainActivity : ComponentActivity() {
 fun MainAppScaffold(
     navController: NavHostController,
     app: ExpenseTrackerApp,
+    isFirstLaunch: Boolean,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -148,11 +258,12 @@ fun MainAppScaffold(
         NavGraph(
             navController = navController,
             container = app.container,
+            isFirstLaunch = isFirstLaunch,
             onOpenQuickAdd = {
                 showQuickAddSheet = true
             },
             onShowSnackbar = { message ->
-                ExpenseTrackerWidgetProvider.updateAll(context)
+                WidgetUpdateManager.refreshAllWidgets(context)
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = message,
@@ -161,7 +272,7 @@ fun MainAppScaffold(
                 }
             },
             onShowUndoSnackbar = { message, onUndo ->
-                ExpenseTrackerWidgetProvider.updateAll(context)
+                WidgetUpdateManager.refreshAllWidgets(context)
                 scope.launch {
                     val result = snackbarHostState.showSnackbar(
                         message = message,
@@ -170,7 +281,7 @@ fun MainAppScaffold(
                     )
                     if (result == SnackbarResult.ActionPerformed) {
                         onUndo()
-                        ExpenseTrackerWidgetProvider.updateAll(context)
+                        WidgetUpdateManager.refreshAllWidgets(context)
                     }
                 }
             },

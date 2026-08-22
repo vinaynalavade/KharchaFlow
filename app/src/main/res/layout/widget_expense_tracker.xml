@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="14dp"
+    android:padding="12dp"
     android:background="@drawable/bg_widget_card">
 
-    <!-- Top Header: Logo / Branding & Today's Stat Pill -->
+    <!-- Top Header: Logo / Branding, Month Pill, & Refresh Icon -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,19 +39,28 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/widget_today_expense"
+            android:id="@+id/widget_month_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Today: - ₹0.00"
-            android:textSize="11sp"
+            android:text="This Month"
+            android:textSize="10sp"
             android:textStyle="bold"
             android:textColor="@color/widget_pill_text"
             android:background="@drawable/bg_widget_stat_pill"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp" />
+            android:paddingHorizontal="7dp"
+            android:paddingVertical="3dp"
+            android:layout_marginEnd="6dp" />
+
+        <ImageView
+            android:id="@+id/widget_btn_refresh"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_widget_refresh"
+            android:contentDescription="Refresh Widget"
+            android:padding="2dp" />
     </LinearLayout>
 
-    <!-- Middle: Current Balance -->
+    <!-- Middle Top: Current Balance -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,34 +69,96 @@
         android:textStyle="bold"
         android:textColor="@color/widget_text_secondary"
         android:letterSpacing="0.08"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="6dp" />
 
     <TextView
         android:id="@+id/widget_total_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="₹0.00"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/widget_text_primary"
         android:includeFontPadding="false"
         android:layout_marginTop="1dp" />
+
+    <!-- Monthly Summary Row: Income & Expense -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp">
+
+        <!-- Monthly Income -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INCOME"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:textColor="@color/widget_text_secondary"
+                android:letterSpacing="0.06" />
+
+            <TextView
+                android:id="@+id/widget_monthly_income"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+₹0.00"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/widget_income_text"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Monthly Expenses -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EXPENSES"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:textColor="@color/widget_text_secondary"
+                android:letterSpacing="0.06" />
+
+            <TextView
+                android:id="@+id/widget_monthly_expense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-₹0.00"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/widget_expense_text"
+                android:singleLine="true" />
+        </LinearLayout>
+    </LinearLayout>
 
     <!-- Bottom: Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:weightSum="2">
 
         <Button
             android:id="@+id/widget_btn_add_expense"
             android:layout_width="0dp"
-            android:layout_height="36dp"
+            android:layout_height="34dp"
             android:layout_weight="1"
             android:text="+ Expense"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:background="@drawable/bg_widget_btn_expense"
             android:textColor="@color/widget_btn_text"
@@ -97,10 +168,10 @@
         <Button
             android:id="@+id/widget_btn_add_income"
             android:layout_width="0dp"
-            android:layout_height="36dp"
+            android:layout_height="34dp"
             android:layout_weight="1"
             android:text="+ Income"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:background="@drawable/bg_widget_btn_income"
             android:textColor="@color/widget_btn_text"

@@ -2,12 +2,13 @@
     <string name="app_name">KharchaFlow</string>
     <string name="app_descriptor">Expense Tracker</string>
     <string name="app_creator">Vinay Nalavade</string>
-    <string name="app_version">1.0.0</string>
+    <string name="app_version">1.0.2</string>
     <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
 
     <!-- Navigation -->
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_transactions">Transactions</string>
+    <string name="nav_analytics">Analytics</string>
     <string name="nav_categories">Categories</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_calendar">Calendar</string>
@@ -56,8 +57,66 @@
     <!-- Reminders & Notifications -->
     <string name="reminder_daily_title">Track today\'s expenses</string>
     <string name="reminder_daily_content">You haven\'t added any transactions today. Take a moment to update KharchaFlow.</string>
-    <string name="settings_daily_reminder_title">Daily Smart Reminder</string>
+    <string name="settings_notifications_master_title">Allow Notifications</string>
+    <string name="settings_notifications_master_desc">Smart reminders, budget alerts, and upcoming bills</string>
+    <string name="settings_daily_reminder_title">Daily Expense Reminder</string>
     <string name="settings_daily_reminder_desc">Notifies you only if no transactions have been recorded today</string>
     <string name="settings_reminder_time_title">Reminder Time</string>
     <string name="settings_select_time">Select Reminder Time</string>
+    <string name="settings_budget_alerts_title">Monthly Budget Alerts</string>
+    <string name="settings_budget_alerts_desc" formatted="false">Alerts at 50%, 75%, 90%, 100%, and over budget</string>
+    <string name="settings_budget_limit_title">Monthly Budget Limit</string>
+    <string name="settings_recurring_reminders_title">Bill &amp; Payment Reminders</string>
+    <string name="settings_recurring_reminders_desc">Alerts before recurring transactions and EMIs are due</string>
+    <string name="settings_recurring_advance_title">Reminder Timing</string>
+    <string name="settings_savings_goals_title">Savings Goal Milestones</string>
+    <string name="settings_savings_goals_desc">Get notified when achieving goal progress milestones</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_add_expense_short">Add Expense</string>
+    <string name="shortcut_add_expense_long">Record New Expense</string>
+    <string name="shortcut_add_income_short">Add Income</string>
+    <string name="shortcut_add_income_long">Record New Income</string>
+    <string name="shortcut_view_transactions_short">Transactions</string>
+    <string name="shortcut_view_transactions_long">View Transaction History</string>
+
+    <!-- App Lock & Privacy -->
+    <string name="settings_security_privacy_title">App Lock &amp; Privacy</string>
+    <string name="settings_app_lock_title">App Lock</string>
+    <string name="settings_app_lock_desc">Protect your financial information with PIN or biometrics</string>
+    <string name="settings_unlock_method_title">Unlock Method</string>
+    <string name="settings_unlock_method_pin">PIN Only</string>
+    <string name="settings_unlock_method_biometric">PIN + Biometrics</string>
+    <string name="settings_auto_lock_title">Lock Automatically</string>
+    <string name="settings_auto_lock_immediately">Immediately</string>
+    <string name="settings_auto_lock_30s">After 30 seconds</string>
+    <string name="settings_auto_lock_1m">After 1 minute</string>
+    <string name="settings_auto_lock_5m">After 5 minutes</string>
+    <string name="settings_change_pin">Change PIN</string>
+    <string name="settings_disable_app_lock">Disable App Lock</string>
+    <string name="settings_hide_recents_title">Hide app content in Recents</string>
+    <string name="settings_hide_recents_desc">Mask financial records when switching apps</string>
+
+    <!-- Unlock & PIN Management -->
+    <string name="unlock_title">Unlock KharchaFlow</string>
+    <string name="unlock_subtitle">Your financial data is protected</string>
+    <string name="unlock_use_biometrics">Use Biometrics</string>
+    <string name="unlock_incorrect_pin">Incorrect PIN. Please try again.</string>
+    <string name="unlock_lockout_message">Too many incorrect attempts. Try again in %1$d seconds.</string>
+    <string name="setup_pin_title">Set Security PIN</string>
+    <string name="setup_pin_subtitle">Enter a 4-digit PIN to protect your records</string>
+    <string name="setup_pin_confirm_title">Confirm Security PIN</string>
+    <string name="setup_pin_confirm_subtitle">Re-enter your 4-digit PIN to confirm</string>
+    <string name="setup_pin_mismatch">PINs do not match. Please try again.</string>
+    <string name="setup_biometric_title">Enable Biometric Unlock?</string>
+    <string name="setup_biometric_subtitle">Unlock KharchaFlow quickly and securely using fingerprint or face recognition.</string>
+    <string name="change_pin_current_title">Enter Current PIN</string>
+    <string name="change_pin_current_subtitle">Verify your identity before setting a new PIN</string>
+    <string name="change_pin_new_title">Enter New PIN</string>
+    <string name="change_pin_new_subtitle">Enter your new 4-digit security PIN</string>
+    <string name="change_pin_confirm_title">Confirm New PIN</string>
+    <string name="change_pin_confirm_subtitle">Re-enter your new PIN to confirm</string>
+    <string name="change_pin_success">PIN successfully updated</string>
+    <string name="app_lock_enabled_success">App Lock enabled successfully</string>
+    <string name="app_lock_disabled_success">App Lock disabled</string>
 </resources>

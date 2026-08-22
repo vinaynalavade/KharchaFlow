@@ -25,7 +25,13 @@ object JsonBackupParser {
         sb.append("    \"dailyReminderEnabled\": ").append(backup.preferences.dailyReminderEnabled).append(",\n")
         sb.append("    \"dailyReminderHour\": ").append(backup.preferences.dailyReminderHour).append(",\n")
         sb.append("    \"dailyReminderMinute\": ").append(backup.preferences.dailyReminderMinute).append(",\n")
-        sb.append("    \"emiRemindersEnabled\": ").append(backup.preferences.emiRemindersEnabled).append("\n")
+        sb.append("    \"emiRemindersEnabled\": ").append(backup.preferences.emiRemindersEnabled).append(",\n")
+        sb.append("    \"notificationsMasterEnabled\": ").append(backup.preferences.notificationsMasterEnabled).append(",\n")
+        sb.append("    \"budgetAlertsEnabled\": ").append(backup.preferences.budgetAlertsEnabled).append(",\n")
+        sb.append("    \"monthlyBudgetLimitSubunits\": ").append(backup.preferences.monthlyBudgetLimitSubunits).append(",\n")
+        sb.append("    \"recurringRemindersEnabled\": ").append(backup.preferences.recurringRemindersEnabled).append(",\n")
+        sb.append("    \"recurringReminderAdvanceDays\": ").append(backup.preferences.recurringReminderAdvanceDays).append(",\n")
+        sb.append("    \"savingsGoalNotificationsEnabled\": ").append(backup.preferences.savingsGoalNotificationsEnabled).append("\n")
         sb.append("  },\n")
 
         // Categories
@@ -134,7 +140,13 @@ object JsonBackupParser {
             dailyReminderEnabled = prefObj.getBoolean("dailyReminderEnabled") ?: false,
             dailyReminderHour = prefObj.getInt("dailyReminderHour") ?: 21,
             dailyReminderMinute = prefObj.getInt("dailyReminderMinute") ?: 0,
-            emiRemindersEnabled = prefObj.getBoolean("emiRemindersEnabled") ?: true
+            emiRemindersEnabled = prefObj.getBoolean("emiRemindersEnabled") ?: true,
+            notificationsMasterEnabled = prefObj.getBoolean("notificationsMasterEnabled") ?: false,
+            budgetAlertsEnabled = prefObj.getBoolean("budgetAlertsEnabled") ?: false,
+            monthlyBudgetLimitSubunits = prefObj.getLong("monthlyBudgetLimitSubunits") ?: 0L,
+            recurringRemindersEnabled = prefObj.getBoolean("recurringRemindersEnabled") ?: false,
+            recurringReminderAdvanceDays = prefObj.getInt("recurringReminderAdvanceDays") ?: 1,
+            savingsGoalNotificationsEnabled = prefObj.getBoolean("savingsGoalNotificationsEnabled") ?: false
         )
 
         // Parse Categories

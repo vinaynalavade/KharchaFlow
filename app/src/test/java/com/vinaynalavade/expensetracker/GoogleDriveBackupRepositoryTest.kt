@@ -104,6 +104,40 @@ class GoogleDriveBackupRepositoryTest {
         JsonBackupParser.fromJson(malformedJson)
     }
 
+    @Test
+    fun testGoogleAuthVerificationResultSuccess() {
+        val account = GoogleAccountInfo(email = "test@gmail.com", displayName = "Test User")
+        val verified = com.vinaynalavade.expensetracker.core.google.GoogleAuthVerificationResult.Verified(
+            account = account,
+            token = "fake_oauth_token_12345"
+        )
+
+        assertEquals("test@gmail.com", verified.account.email)
+        assertEquals("fake_oauth_token_12345", verified.token)
+    }
+
+    @Test
+    fun testGoogleAuthVerificationResultConsentRequired() {
+        val account = GoogleAccountInfo(email = "test@gmail.com")
+        val fakeIntent = android.content.Intent()
+        val consent = com.vinaynalavade.expensetracker.core.google.GoogleAuthVerificationResult.ConsentRequired(
+            consentIntent = fakeIntent,
+            account = account
+        )
+
+        assertEquals(fakeIntent, consent.consentIntent)
+        assertEquals("test@gmail.com", consent.account.email)
+    }
+
+    @Test
+    fun testGoogleAuthVerificationResultError() {
+        val error = com.vinaynalavade.expensetracker.core.google.GoogleAuthVerificationResult.Error(
+            message = "Network error"
+        )
+
+        assertEquals("Network error", error.message)
+    }
+
     private class FakeGoogleDriveBackupRepository : GoogleDriveBackupRepository {
         private val accountFlow = MutableStateFlow<GoogleAccountInfo?>(null)
         private val timestampFlow = MutableStateFlow<Long?>(null)

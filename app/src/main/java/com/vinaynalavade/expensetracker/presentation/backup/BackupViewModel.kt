@@ -9,8 +9,10 @@ import com.vinaynalavade.expensetracker.core.backup.BackupValidationResult
 import com.vinaynalavade.expensetracker.core.backup.ImportValidationResult
 import com.vinaynalavade.expensetracker.core.backup.JsonBackupParser
 import com.vinaynalavade.expensetracker.core.google.GoogleAccountManager
+import com.vinaynalavade.expensetracker.core.google.GoogleAuthVerificationResult
 import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.repository.BackupRepository
@@ -29,9 +31,12 @@ import com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -74,6 +79,11 @@ class BackupViewModel(
     private val _opState = MutableStateFlow<BackupOpState>(BackupOpState.Idle)
     val opState: StateFlow<BackupOpState> = _opState.asStateFlow()
 
+    private val _consentIntentEvents = MutableSharedFlow<Intent>(extraBufferCapacity = 1)
+    val consentIntentEvents: SharedFlow<Intent> = _consentIntentEvents.asSharedFlow()
+
+    private var pendingGoogleAccount: GoogleAccountInfo? = null
+
     private val _restorePreview = MutableStateFlow<BackupValidationResult.Valid?>(null)
     val restorePreview: StateFlow<BackupValidationResult.Valid?> = _restorePreview.asStateFlow()
 
@@ -92,20 +102,58 @@ class BackupViewModel(
 
     fun onGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
-            _opState.value = BackupOpState.Loading("Connecting to Google Account...")
+            _opState.value = BackupOpState.Loading("Signing in with Google Account...")
             when (val result = googleAccountManager.parseSignInResult(data)) {
                 is AppResult.Success -> {
-                    saveConnectedGoogleAccountUseCase(result.data)
-                    _opState.value = BackupOpState.Success("Connected as ${result.data.email}")
+                    val accountInfo = result.data
+                    verifyAndCompleteConnection(accountInfo)
                 }
                 is AppResult.Error -> {
+                    pendingGoogleAccount = null
                     _opState.value = BackupOpState.Error(result.error.message)
                 }
             }
         }
     }
 
+    private suspend fun verifyAndCompleteConnection(accountInfo: GoogleAccountInfo) {
+        _opState.value = BackupOpState.Loading("Verifying Google Drive authorization...")
+        when (val authResult = googleAccountManager.verifyDriveAuthorization(accountInfo)) {
+            is GoogleAuthVerificationResult.Verified -> {
+                pendingGoogleAccount = null
+                saveConnectedGoogleAccountUseCase(authResult.account)
+                _opState.value = BackupOpState.Success("Connected as ${authResult.account.email}")
+            }
+            is GoogleAuthVerificationResult.ConsentRequired -> {
+                pendingGoogleAccount = authResult.account
+                _opState.value = BackupOpState.Idle
+                _consentIntentEvents.tryEmit(authResult.consentIntent)
+            }
+            is GoogleAuthVerificationResult.Error -> {
+                pendingGoogleAccount = null
+                _opState.value = BackupOpState.Error(authResult.message)
+            }
+        }
+    }
+
+    fun onConsentResult(resultCode: Int) {
+        val account = pendingGoogleAccount
+        if (account == null) {
+            return
+        }
+
+        if (resultCode == android.app.Activity.RESULT_OK) {
+            viewModelScope.launch {
+                verifyAndCompleteConnection(account)
+            }
+        } else {
+            pendingGoogleAccount = null
+            _opState.value = BackupOpState.Error("Google Drive permission was not granted. Please allow access to enable backups.")
+        }
+    }
+
     fun disconnectGoogleAccount() {
+        pendingGoogleAccount = null
         viewModelScope.launch {
             _opState.value = BackupOpState.Loading("Disconnecting Google Account...")
             when (val result = disconnectGoogleAccountUseCase()) {

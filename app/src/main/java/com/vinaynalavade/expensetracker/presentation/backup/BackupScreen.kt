@@ -127,6 +127,19 @@ fun BackupScreen(
         viewModel.onGoogleSignInResult(result.data)
     }
 
+    // Google OAuth Consent Launcher
+    val consentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.onConsentResult(result.resultCode)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.consentIntentEvents.collect { intent ->
+            consentLauncher.launch(intent)
+        }
+    }
+
     // SAF Launchers
     val createDocLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument(pendingSaveMimeType)

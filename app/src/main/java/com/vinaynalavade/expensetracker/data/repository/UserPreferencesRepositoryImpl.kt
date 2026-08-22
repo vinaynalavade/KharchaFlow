@@ -91,4 +91,94 @@ class UserPreferencesRepositoryImpl(
             AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set backup timestamp.", e))
         }
     }
+
+    override suspend fun setAppLockEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setAppLockEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set app lock.", e))
+        }
+    }
+
+    override suspend fun setBiometricEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setBiometricEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set biometric.", e))
+        }
+    }
+
+    override suspend fun setAutoLockDurationSeconds(seconds: Long): AppResult<Unit> {
+        return try {
+            dataStore.setAutoLockDurationSeconds(seconds)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set auto-lock duration.", e))
+        }
+    }
+
+    override suspend fun setHideContentInRecents(hide: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setHideContentInRecents(hide)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set hide content in recents.", e))
+        }
+    }
+
+    override suspend fun setNotificationsMasterEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setNotificationsMasterEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set master notifications.", e))
+        }
+    }
+
+    override suspend fun setBudgetAlertsEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setBudgetAlertsEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set budget alerts.", e))
+        }
+    }
+
+    override suspend fun setMonthlyBudgetLimit(subunits: Long): AppResult<Unit> {
+        return try {
+            dataStore.setMonthlyBudgetLimit(subunits)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set monthly budget limit.", e))
+        }
+    }
+
+    override suspend fun setRecurringRemindersEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setRecurringRemindersEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set recurring reminders.", e))
+        }
+    }
+
+    override suspend fun setRecurringReminderAdvanceDays(days: Int): AppResult<Unit> {
+        return try {
+            dataStore.setRecurringReminderAdvanceDays(days)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set recurring advance days.", e))
+        }
+    }
+
+    override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setSavingsGoalNotificationsEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set savings goal notifications.", e))
+        }
+    }
 }

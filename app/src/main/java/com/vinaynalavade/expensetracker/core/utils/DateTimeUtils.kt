@@ -59,6 +59,16 @@ object DateTimeUtils {
     fun getEndOfDayEpoch(localDate: LocalDate = LocalDate.now(), zoneId: ZoneId = ZoneId.systemDefault()): Long =
         localDate.plusDays(1).atStartOfDay(zoneId).minusNanos(1).toInstant().toEpochMilli()
 
+    fun getStartOfWeekEpoch(localDate: LocalDate = LocalDate.now(), zoneId: ZoneId = ZoneId.systemDefault()): Long {
+        val startOfWeek = localDate.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
+        return getStartOfDayEpoch(startOfWeek, zoneId)
+    }
+
+    fun getEndOfWeekEpoch(localDate: LocalDate = LocalDate.now(), zoneId: ZoneId = ZoneId.systemDefault()): Long {
+        val endOfWeek = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY))
+        return getEndOfDayEpoch(endOfWeek, zoneId)
+    }
+
     fun getStartOfMonthEpoch(yearMonth: YearMonth = YearMonth.now(), zoneId: ZoneId = ZoneId.systemDefault()): Long =
         yearMonth.atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 

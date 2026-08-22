@@ -26,7 +26,7 @@ class BootReceiver : BroadcastReceiver() {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        container.dailyReminderScheduler.reschedule()
+                        container.rescheduleAllRemindersUseCase()
                     } catch (_: Exception) {
                         // Safe execution
                     } finally {

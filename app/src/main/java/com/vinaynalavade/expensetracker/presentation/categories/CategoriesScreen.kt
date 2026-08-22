@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CategoriesScreen(
     viewModel: CategoriesViewModel,
+    onNavigateBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
@@ -80,6 +81,8 @@ fun CategoriesScreen(
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.nav_categories),
+                canNavigateBack = onNavigateBack != null,
+                onNavigateBack = { onNavigateBack?.invoke() },
                 actions = {
                     IconButton(onClick = {
                         categoryToEdit = null

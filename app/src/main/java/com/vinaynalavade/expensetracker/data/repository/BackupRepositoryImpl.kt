@@ -104,7 +104,13 @@ class BackupRepositoryImpl(
                 dailyReminderEnabled = prefs?.dailyReminderEnabled ?: false,
                 dailyReminderHour = prefs?.dailyReminderHour ?: 21,
                 dailyReminderMinute = prefs?.dailyReminderMinute ?: 0,
-                emiRemindersEnabled = prefs?.emiRemindersEnabled ?: true
+                emiRemindersEnabled = prefs?.emiRemindersEnabled ?: true,
+                notificationsMasterEnabled = prefs?.notificationsMasterEnabled ?: false,
+                budgetAlertsEnabled = prefs?.budgetAlertsEnabled ?: false,
+                monthlyBudgetLimitSubunits = prefs?.monthlyBudgetLimitSubunits ?: 0L,
+                recurringRemindersEnabled = prefs?.recurringRemindersEnabled ?: false,
+                recurringReminderAdvanceDays = prefs?.recurringReminderAdvanceDays ?: 1,
+                savingsGoalNotificationsEnabled = prefs?.savingsGoalNotificationsEnabled ?: false
             )
 
             val now = System.currentTimeMillis()
@@ -247,6 +253,12 @@ class BackupRepositoryImpl(
                 backupData.preferences.dailyReminderMinute
             )
             userPreferencesRepository.setEmiReminders(backupData.preferences.emiRemindersEnabled)
+            userPreferencesRepository.setNotificationsMasterEnabled(backupData.preferences.notificationsMasterEnabled)
+            userPreferencesRepository.setBudgetAlertsEnabled(backupData.preferences.budgetAlertsEnabled)
+            userPreferencesRepository.setMonthlyBudgetLimit(backupData.preferences.monthlyBudgetLimitSubunits)
+            userPreferencesRepository.setRecurringRemindersEnabled(backupData.preferences.recurringRemindersEnabled)
+            userPreferencesRepository.setRecurringReminderAdvanceDays(backupData.preferences.recurringReminderAdvanceDays)
+            userPreferencesRepository.setSavingsGoalNotificationsEnabled(backupData.preferences.savingsGoalNotificationsEnabled)
             userPreferencesRepository.setLastBackupTimestamp(System.currentTimeMillis())
 
             AppResult.Success(Unit)

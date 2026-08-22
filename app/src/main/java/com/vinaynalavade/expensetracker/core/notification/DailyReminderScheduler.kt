@@ -14,10 +14,11 @@ import java.time.Instant
 import java.time.ZoneId
 
 /**
- * Interface contract for scheduling, cancelling, and recalculating daily reminders.
+ * Interface contract for scheduling, cancelling, and recalculating daily reminders and financial checks.
  */
 interface DailyReminderScheduler {
     fun schedule(hour: Int, minute: Int)
+    fun scheduleFinancialChecks()
     fun cancel()
     fun reschedule()
     fun calculateNextTriggerMillis(hour: Int, minute: Int, nowMillis: Long = System.currentTimeMillis()): Long
@@ -30,6 +31,12 @@ class AlarmDailyReminderScheduler(
     private val context: Context,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : DailyReminderScheduler {
+
+    companion object {
+        const val FINANCIAL_CHECK_HOUR = 9 // 09:00 AM
+        const val FINANCIAL_CHECK_MINUTE = 0
+        const val NOTIFICATION_ID_FINANCIAL_CHECK = 1002
+    }
 
     override fun calculateNextTriggerMillis(hour: Int, minute: Int, nowMillis: Long): Long {
         val zoneId = ZoneId.systemDefault()
@@ -70,6 +77,32 @@ class AlarmDailyReminderScheduler(
         }
     }
 
+    override fun scheduleFinancialChecks() {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        val triggerMillis = calculateNextTriggerMillis(FINANCIAL_CHECK_HOUR, FINANCIAL_CHECK_MINUTE)
+
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            action = NotificationHelper.ACTION_CHECK_FINANCIAL_REMINDERS
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            NOTIFICATION_ID_FINANCIAL_CHECK,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        try {
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerMillis,
+                pendingIntent
+            )
+        } catch (_: SecurityException) {
+            // Safe fallback
+        }
+    }
+
     override fun cancel() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
         val intent = Intent(context, ReminderReceiver::class.java).apply {
@@ -90,8 +123,16 @@ class AlarmDailyReminderScheduler(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val prefs = userPreferencesRepository.getUserPreferences().firstOrNull()
-                if (prefs?.dailyReminderEnabled == true) {
-                    schedule(prefs.dailyReminderHour, prefs.dailyReminderMinute)
+                if (prefs != null && prefs.notificationsMasterEnabled) {
+                    if (prefs.dailyReminderEnabled) {
+                        schedule(prefs.dailyReminderHour, prefs.dailyReminderMinute)
+                    } else {
+                        cancel()
+                    }
+
+                    if (prefs.budgetAlertsEnabled || prefs.recurringRemindersEnabled) {
+                        scheduleFinancialChecks()
+                    }
                 } else {
                     cancel()
                 }

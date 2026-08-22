@@ -42,6 +42,12 @@ import com.vinaynalavade.expensetracker.presentation.transactions.TransactionsSc
 import com.vinaynalavade.expensetracker.presentation.transactions.TransactionsViewModel
 import com.vinaynalavade.expensetracker.presentation.transactions.detail.TransactionDetailScreen
 import com.vinaynalavade.expensetracker.presentation.transactions.detail.TransactionDetailViewModel
+import com.vinaynalavade.expensetracker.presentation.security.AppLockSetupScreen
+import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
+import com.vinaynalavade.expensetracker.presentation.security.ChangePinScreen
+import com.vinaynalavade.expensetracker.presentation.onboarding.WelcomeScreen
+import com.vinaynalavade.expensetracker.presentation.onboarding.WelcomeViewModel
+import com.vinaynalavade.expensetracker.presentation.about.AboutScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +56,7 @@ private fun isPrimaryDestination(route: String?): Boolean {
     return route == Screen.Dashboard.route ||
         route == Screen.Transactions.route ||
         route?.startsWith("transactions") == true ||
-        route == Screen.Categories.route ||
+        route == Screen.MonthlySummary.route ||
         route == Screen.Settings.route
 }
 
@@ -58,6 +64,7 @@ private fun isPrimaryDestination(route: String?): Boolean {
 fun NavGraph(
     navController: NavHostController,
     container: AppContainer,
+    isFirstLaunch: Boolean = false,
     onOpenQuickAdd: () -> Unit,
     onShowSnackbar: (String) -> Unit,
     onShowUndoSnackbar: (String, () -> Unit) -> Unit,
@@ -75,7 +82,7 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Dashboard.route,
+        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Dashboard.route,
         enterTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
                 fadeIn(animationSpec = tween(Motion.DurationFast))
@@ -270,7 +277,10 @@ fun NavGraph(
                     container.deleteCategoryUseCase
                 )
             )
-            CategoriesScreen(viewModel = viewModel)
+            CategoriesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.Settings.route) {
@@ -281,16 +291,30 @@ fun NavGraph(
                     container.setCurrencyUseCase,
                     container.setOpeningBalanceUseCase,
                     container.setDailyReminderUseCase,
-                    container.dailyReminderScheduler
+                    container.dailyReminderScheduler,
+                    container.setAppLockEnabledUseCase,
+                    container.setBiometricEnabledUseCase,
+                    container.setAutoLockDurationUseCase,
+                    container.setHideContentInRecentsUseCase,
+                    container.disableAppLockUseCase,
+                    container.userPreferencesRepository,
+                    container.rescheduleAllRemindersUseCase,
+                    container.getGoogleBackupStateUseCase,
+                    container.disconnectGoogleAccountUseCase,
+                    container.googleAccountManager,
+                    container.saveConnectedGoogleAccountUseCase
                 )
             )
             SettingsScreen(
                 viewModel = viewModel,
-                onNavigateToCategories = { navigateToPrimary(Screen.Categories.route) },
+                onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
                 onNavigateToRecurring = { navController.navigate(Screen.RecurringTransactions.route) },
                 onNavigateToStatements = { navController.navigate(Screen.Statements.route) },
                 onNavigateToMonthlySummary = { navController.navigate(Screen.MonthlySummary.route) },
-                onNavigateToBackup = { navController.navigate(Screen.BackupRestore.route) }
+                onNavigateToBackup = { navController.navigate(Screen.BackupRestore.route) },
+                onNavigateToAppLockSetup = { navController.navigate(Screen.AppLockSetup.route) },
+                onNavigateToChangePin = { navController.navigate(Screen.ChangePin.route) },
+                onNavigateToAbout = { navController.navigate(Screen.About.route) }
             )
         }
 
@@ -397,6 +421,80 @@ fun NavGraph(
             )
             BackupScreen(
                 viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.AppLockSetup.route) {
+            val viewModel: AppLockViewModel = viewModel(
+                factory = AppLockViewModel.Factory(
+                    container.getUserPreferencesUseCase,
+                    container.appLockManager,
+                    container.securePinManager,
+                    container.verifyPinUseCase,
+                    container.savePinUseCase,
+                    container.changePinUseCase,
+                    container.setAppLockEnabledUseCase,
+                    container.setBiometricEnabledUseCase,
+                    container.disableAppLockUseCase
+                )
+            )
+            AppLockSetupScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onSetupComplete = {
+                    navController.popBackStack()
+                    onShowSnackbar("App Lock enabled successfully")
+                }
+            )
+        }
+
+        composable(Screen.ChangePin.route) {
+            val viewModel: AppLockViewModel = viewModel(
+                factory = AppLockViewModel.Factory(
+                    container.getUserPreferencesUseCase,
+                    container.appLockManager,
+                    container.securePinManager,
+                    container.verifyPinUseCase,
+                    container.savePinUseCase,
+                    container.changePinUseCase,
+                    container.setAppLockEnabledUseCase,
+                    container.setBiometricEnabledUseCase,
+                    container.disableAppLockUseCase
+                )
+            )
+            ChangePinScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onPinChanged = {
+                    navController.popBackStack()
+                    onShowSnackbar("PIN successfully updated")
+                }
+            )
+        }
+
+        composable(Screen.Welcome.route) {
+            val viewModel: WelcomeViewModel = viewModel(
+                factory = WelcomeViewModel.Factory(
+                    container.userPreferencesRepository,
+                    container.googleAccountManager,
+                    container.saveConnectedGoogleAccountUseCase
+                )
+            )
+            WelcomeScreen(
+                viewModel = viewModel,
+                onOnboardingComplete = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Welcome.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.About.route) {
+            AboutScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

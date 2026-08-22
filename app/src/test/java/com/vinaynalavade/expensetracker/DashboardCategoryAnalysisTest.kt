@@ -120,5 +120,15 @@ class DashboardCategoryAnalysisTest {
         override suspend fun setEmiReminders(enabled: Boolean) = AppResult.Success(Unit)
         override fun getLastBackupTimestamp(): Flow<Long?> = flowOf(null)
         override suspend fun setLastBackupTimestamp(timestamp: Long) = AppResult.Success(Unit)
+        override suspend fun setAppLockEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setBiometricEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setAutoLockDurationSeconds(seconds: Long) = AppResult.Success(Unit)
+        override suspend fun setHideContentInRecents(hide: Boolean) = AppResult.Success(Unit)
+        override suspend fun setNotificationsMasterEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setBudgetAlertsEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setMonthlyBudgetLimit(subunits: Long) = AppResult.Success(Unit)
+        override suspend fun setRecurringRemindersEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setRecurringReminderAdvanceDays(days: Int) = AppResult.Success(Unit)
+        override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) = AppResult.Success(Unit)
     }
 }

@@ -51,7 +51,7 @@ class DashboardViewModel(
     }.flatMapLatest { (month, type) ->
         combine(
             getFinancialSummaryUseCase(),
-            getTransactionsUseCase.getRecent(5),
+            getTransactionsUseCase.getRecent(3),
             getCategoryAnalysisUseCase(month, type)
         ) { summary, recentList, analysis ->
             DashboardUiState(

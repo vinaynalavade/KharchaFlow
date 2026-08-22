@@ -29,4 +29,24 @@ interface UserPreferencesRepository {
     fun getLastBackupTimestamp(): Flow<Long?>
 
     suspend fun setLastBackupTimestamp(timestamp: Long): AppResult<Unit>
+
+    suspend fun setAppLockEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setBiometricEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setAutoLockDurationSeconds(seconds: Long): AppResult<Unit>
+
+    suspend fun setHideContentInRecents(hide: Boolean): AppResult<Unit>
+
+    suspend fun setNotificationsMasterEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setBudgetAlertsEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setMonthlyBudgetLimit(subunits: Long): AppResult<Unit>
+
+    suspend fun setRecurringRemindersEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setRecurringReminderAdvanceDays(days: Int): AppResult<Unit>
+
+    suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean): AppResult<Unit>
 }

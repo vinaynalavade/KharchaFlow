@@ -18,6 +18,10 @@ interface TransactionDao {
     fun getAllTransactionsWithCategory(): Flow<List<TransactionWithCategory>>
 
     @Transaction
+    @Query("SELECT * FROM transactions ORDER BY timestamp DESC, id DESC LIMIT :limit")
+    fun getRecentTransactionsWithCategory(limit: Int): Flow<List<TransactionWithCategory>>
+
+    @Transaction
     @Query("SELECT * FROM transactions WHERE id = :id LIMIT 1")
     fun getTransactionWithCategoryById(id: Long): Flow<TransactionWithCategory?>
 

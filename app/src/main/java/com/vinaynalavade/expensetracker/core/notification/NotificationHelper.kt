@@ -1,6 +1,5 @@
 package com.vinaynalavade.expensetracker.core.notification
 
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -11,51 +10,88 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.vinaynalavade.expensetracker.MainActivity
 import com.vinaynalavade.expensetracker.R
-import com.vinaynalavade.expensetracker.core.receiver.ReminderReceiver
-import java.util.Calendar
+import com.vinaynalavade.expensetracker.core.model.Amount
+import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.domain.model.BudgetThreshold
+import com.vinaynalavade.expensetracker.domain.model.NotificationChannelType
 
 /**
- * Helper for managing Android notification channels, smart reminder notifications, and alarm scheduling.
+ * Production-ready helper for managing Android notification channels, notification builders, and action routing.
  */
 object NotificationHelper {
 
     const val CHANNEL_DAILY_REMINDER = "channel_daily_reminder"
-    const val CHANNEL_EMI_REMINDER = "channel_emi_reminder"
+    const val CHANNEL_BUDGET_ALERTS = "channel_budget_alerts"
+    const val CHANNEL_PAYMENT_REMINDERS = "channel_payment_reminders"
+    const val CHANNEL_SAVINGS_GOALS = "channel_savings_goals"
+    const val CHANNEL_FINANCIAL_INSIGHTS = "channel_financial_insights"
 
     const val NOTIFICATION_ID_DAILY = 1001
-    const val NOTIFICATION_ID_EMI_BASE = 2000
+    const val NOTIFICATION_ID_BUDGET_BASE = 2000
+    const val NOTIFICATION_ID_RECURRING_BASE = 3000
+    const val NOTIFICATION_ID_GOAL_BASE = 4000
 
     const val ACTION_DAILY_REMINDER = "com.vinaynalavade.expensetracker.ACTION_DAILY_REMINDER"
+    const val ACTION_CHECK_FINANCIAL_REMINDERS = "com.vinaynalavade.expensetracker.ACTION_CHECK_FINANCIAL_REMINDERS"
     const val ACTION_EMI_REMINDER = "com.vinaynalavade.expensetracker.ACTION_EMI_REMINDER"
 
     const val EXTRA_START_ROUTE = "extra_start_route"
     const val ROUTE_ADD_EXPENSE = "add_expense"
     const val ROUTE_ADD_INCOME = "add_income"
+    const val ROUTE_TRANSACTIONS = "transactions"
+    const val ROUTE_RECURRING = "recurring_transactions"
+    const val ROUTE_DASHBOARD = "dashboard"
 
     fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val dailyChannel = NotificationChannel(
-                CHANNEL_DAILY_REMINDER,
-                "Daily Expense Reminders",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Gentle daily evening reminder to record your financial transactions"
-                enableVibration(true)
-            }
+            val channels = listOf(
+                NotificationChannel(
+                    CHANNEL_DAILY_REMINDER,
+                    NotificationChannelType.DAILY_REMINDER.channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = NotificationChannelType.DAILY_REMINDER.description
+                    enableVibration(true)
+                },
+                NotificationChannel(
+                    CHANNEL_BUDGET_ALERTS,
+                    NotificationChannelType.BUDGET_ALERTS.channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = NotificationChannelType.BUDGET_ALERTS.description
+                    enableVibration(true)
+                },
+                NotificationChannel(
+                    CHANNEL_PAYMENT_REMINDERS,
+                    NotificationChannelType.PAYMENT_REMINDERS.channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = NotificationChannelType.PAYMENT_REMINDERS.description
+                    enableVibration(true)
+                },
+                NotificationChannel(
+                    CHANNEL_SAVINGS_GOALS,
+                    NotificationChannelType.SAVINGS_GOALS.channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = NotificationChannelType.SAVINGS_GOALS.description
+                    enableVibration(true)
+                },
+                NotificationChannel(
+                    CHANNEL_FINANCIAL_INSIGHTS,
+                    NotificationChannelType.FINANCIAL_INSIGHTS.channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = NotificationChannelType.FINANCIAL_INSIGHTS.description
+                    enableVibration(false)
+                }
+            )
 
-            val emiChannel = NotificationChannel(
-                CHANNEL_EMI_REMINDER,
-                "EMI & Recurring Alerts",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Due date reminders for scheduled EMIs and recurring transactions"
-                enableVibration(true)
+            for (channel in channels) {
+                notificationManager.createNotificationChannel(channel)
             }
-
-            notificationManager.createNotificationChannel(dailyChannel)
-            notificationManager.createNotificationChannel(emiChannel)
         }
     }
 
@@ -93,16 +129,79 @@ object NotificationHelper {
         try {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DAILY, notification)
         } catch (_: SecurityException) {
-            // Handled safely if permission is revoked
+            // Handled safely
         }
     }
 
-    fun showEmiReminderNotification(context: Context, emiTitle: String, amountString: String, daysRemaining: Int, emiId: Long) {
+    fun showBudgetAlertNotification(
+        context: Context,
+        threshold: BudgetThreshold,
+        spentAmount: Amount,
+        budgetLimit: Amount,
+        currency: Currency
+    ) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_START_ROUTE, ROUTE_TRANSACTIONS)
         }
 
-        val notificationId = NOTIFICATION_ID_EMI_BASE + emiId.toInt()
+        val notificationId = NOTIFICATION_ID_BUDGET_BASE + threshold.percentage
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notificationId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val title = when (threshold) {
+            BudgetThreshold.FIFTY -> "Budget Alert: 50% Reached"
+            BudgetThreshold.SEVENTY_FIVE -> "Budget Warning: 75% Reached"
+            BudgetThreshold.NINETY -> "Budget Critical: 90% Reached"
+            BudgetThreshold.HUNDRED -> "Monthly Budget Limit Reached (100%)"
+            BudgetThreshold.OVER_BUDGET -> "Over Budget Alert!"
+        }
+
+        val content = when (threshold) {
+            BudgetThreshold.OVER_BUDGET -> "You have exceeded your monthly budget of ${budgetLimit.format(currency)} by spending ${spentAmount.format(currency)}."
+            else -> "You have spent ${spentAmount.format(currency)} of your ${budgetLimit.format(currency)} monthly limit (${threshold.label})."
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_BUDGET_ALERTS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(content))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .addAction(
+                R.drawable.ic_launcher_foreground,
+                "View Transactions",
+                pendingIntent
+            )
+            .build()
+
+        try {
+            NotificationManagerCompat.from(context).notify(notificationId, notification)
+        } catch (_: SecurityException) {
+            // Handled safely
+        }
+    }
+
+    fun showRecurringPaymentNotification(
+        context: Context,
+        title: String,
+        amountString: String,
+        daysRemaining: Int,
+        recurringId: Long
+    ) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_START_ROUTE, ROUTE_RECURRING)
+        }
+
+        val notificationId = NOTIFICATION_ID_RECURRING_BASE + (recurringId % 1000).toInt()
 
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -112,16 +211,65 @@ object NotificationHelper {
         )
 
         val reminderText = if (daysRemaining == 0) {
-            "Your EMI '$emiTitle' of $amountString is due today."
+            "Your payment '$title' of $amountString is due today."
         } else {
-            "Your EMI '$emiTitle' of $amountString is due in $daysRemaining day${if (daysRemaining > 1) "s" else ""}."
+            "Your payment '$title' of $amountString is due in $daysRemaining day${if (daysRemaining > 1) "s" else ""}."
         }
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_EMI_REMINDER)
+        val notification = NotificationCompat.Builder(context, CHANNEL_PAYMENT_REMINDERS)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("EMI Due Reminder")
+            .setContentTitle("Payment Reminder")
             .setContentText(reminderText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(reminderText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .addAction(
+                R.drawable.ic_launcher_foreground,
+                "View Recurring",
+                pendingIntent
+            )
+            .build()
+
+        try {
+            NotificationManagerCompat.from(context).notify(notificationId, notification)
+        } catch (_: SecurityException) {
+            // Handled safely
+        }
+    }
+
+    fun showGoalMilestoneNotification(
+        context: Context,
+        title: String,
+        percentage: Int,
+        goalId: Long = 1L
+    ) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_START_ROUTE, ROUTE_DASHBOARD)
+        }
+
+        val notificationId = NOTIFICATION_ID_GOAL_BASE + (goalId % 1000).toInt() + percentage
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notificationId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val milestoneText = if (percentage >= 100) {
+            "Congratulations! You have completed your goal '$title'."
+        } else {
+            "You have achieved $percentage% of your goal '$title'."
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_SAVINGS_GOALS)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Goal Milestone Achieved")
+            .setContentText(milestoneText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(milestoneText))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
@@ -129,7 +277,7 @@ object NotificationHelper {
         try {
             NotificationManagerCompat.from(context).notify(notificationId, notification)
         } catch (_: SecurityException) {
-            // Handled safely if permission is revoked
+            // Handled safely
         }
     }
 }

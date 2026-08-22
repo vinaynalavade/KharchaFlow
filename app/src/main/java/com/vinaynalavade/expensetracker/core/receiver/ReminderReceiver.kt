@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 /**
  * Receiver invoked by AlarmManager to handle smart daily reminders and recurring transaction processing.
- * Suppresses notifications if any transaction (Expense or Income) was already recorded today.
+ * Suppresses daily reminders if any transaction (Expense or Income) was already recorded today.
  */
 class ReminderReceiver : BroadcastReceiver() {
 
@@ -26,34 +26,45 @@ class ReminderReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // 1. Process any due recurring transactions / salary deterministically
-                container.processDueRecurringTransactionsUseCase()
+                when (intent.action) {
+                    NotificationHelper.ACTION_DAILY_REMINDER -> {
+                        val prefs = container.getUserPreferencesUseCase().firstOrNull()
 
-                if (intent.action == NotificationHelper.ACTION_DAILY_REMINDER) {
-                    val prefs = container.getUserPreferencesUseCase().firstOrNull()
+                        if (prefs != null && prefs.notificationsMasterEnabled && prefs.dailyReminderEnabled) {
+                            // 1. Smart Check: Has user recorded any transaction today?
+                            val todayStartEpoch = DateTimeUtils.getStartOfDayEpoch(LocalDate.now())
+                            val todayEndEpoch = DateTimeUtils.getEndOfDayEpoch(LocalDate.now())
 
-                    if (prefs?.dailyReminderEnabled == true) {
-                        // 2. Smart Check: Has user recorded any transaction today (between 00:00 and 23:59)?
-                        val todayStartEpoch = DateTimeUtils.getStartOfDayEpoch(LocalDate.now())
-                        val todayEndEpoch = DateTimeUtils.getEndOfDayEpoch(LocalDate.now())
+                            val todayTransactions = container.transactionRepository
+                                .getTransactionsBetween(todayStartEpoch, todayEndEpoch)
+                                .firstOrNull() ?: emptyList()
 
-                        val todayTransactions = container.transactionRepository
-                            .getTransactionsBetween(todayStartEpoch, todayEndEpoch)
-                            .firstOrNull() ?: emptyList()
+                            // Suppress notification if at least 1 transaction already recorded today
+                            if (todayTransactions.isEmpty()) {
+                                NotificationHelper.showDailyReminderNotification(context)
+                            }
 
-                        // Suppress notification if at least 1 transaction already recorded today
-                        if (todayTransactions.isEmpty()) {
-                            NotificationHelper.showDailyReminderNotification(context)
+                            // 2. Schedule next occurrence for tomorrow at the configured time
+                            container.dailyReminderScheduler.schedule(
+                                prefs.dailyReminderHour,
+                                prefs.dailyReminderMinute
+                            )
+                        } else {
+                            container.dailyReminderScheduler.cancel()
                         }
+                    }
 
-                        // 3. Schedule next occurrence for tomorrow at the configured time
-                        container.dailyReminderScheduler.schedule(
-                            prefs.dailyReminderHour,
-                            prefs.dailyReminderMinute
-                        )
-                    } else {
-                        // Reminder is disabled, ensure cancelled
-                        container.dailyReminderScheduler.cancel()
+                    NotificationHelper.ACTION_CHECK_FINANCIAL_REMINDERS,
+                    NotificationHelper.ACTION_EMI_REMINDER -> {
+                        // Process due recurring transactions, budget alerts, and upcoming bills
+                        container.processFinancialRemindersUseCase()
+
+                        val prefs = container.getUserPreferencesUseCase().firstOrNull()
+                        if (prefs != null && prefs.notificationsMasterEnabled &&
+                            (prefs.budgetAlertsEnabled || prefs.recurringRemindersEnabled)
+                        ) {
+                            container.dailyReminderScheduler.scheduleFinancialChecks()
+                        }
                     }
                 }
             } catch (_: Exception) {

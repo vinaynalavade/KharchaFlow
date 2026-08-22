@@ -20,4 +20,6 @@
     <color name="widget_btn_expense_bg">#EF4444</color>
     <color name="widget_btn_income_bg">#10B981</color>
     <color name="widget_btn_text">#FFFFFF</color>
+    <color name="widget_income_text">#059669</color>
+    <color name="widget_expense_text">#DC2626</color>
 </resources>

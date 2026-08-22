@@ -22,7 +22,7 @@ import com.vinaynalavade.expensetracker.presentation.theme.PillShape
 val BottomNavItems = listOf(
     Screen.Dashboard,
     Screen.Transactions,
-    Screen.Categories,
+    Screen.Analytics,
     Screen.Settings
 )
 

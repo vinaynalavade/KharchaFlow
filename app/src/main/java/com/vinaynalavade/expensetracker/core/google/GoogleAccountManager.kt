@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.google.android.gms.auth.GoogleAuthException
 import com.google.android.gms.auth.GoogleAuthUtil
+import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -21,6 +22,27 @@ import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+
+/**
+ * Result representing the outcome of verifying Google Drive OAuth permissions.
+ */
+sealed interface GoogleAuthVerificationResult {
+    /**
+     * Account is fully authenticated and Google Drive appDataFolder OAuth access is authorized.
+     */
+    data class Verified(val account: GoogleAccountInfo, val token: String) : GoogleAuthVerificationResult
+
+    /**
+     * User consent is required for Google Drive appDataFolder scope before the account can be used.
+     * The enclosed [consentIntent] should be launched to show Google's authorization consent screen.
+     */
+    data class ConsentRequired(val consentIntent: Intent, val account: GoogleAccountInfo) : GoogleAuthVerificationResult
+
+    /**
+     * An error occurred preventing authorization.
+     */
+    data class Error(val message: String, val throwable: Throwable? = null) : GoogleAuthVerificationResult
+}
 
 /**
  * Manages Google Sign-In authentication, scopes, and OAuth2 access token acquisition
@@ -91,6 +113,40 @@ class GoogleAccountManager(private val context: Context) {
         )
     }
 
+    /**
+     * Verifies that the given [account] is authorized to access Google Drive appDataFolder.
+     * If user consent is required, returns [GoogleAuthVerificationResult.ConsentRequired]
+     * with the intent to prompt the user.
+     */
+    suspend fun verifyDriveAuthorization(account: GoogleAccountInfo): GoogleAuthVerificationResult = withContext(Dispatchers.IO) {
+        if (!isNetworkAvailable()) {
+            return@withContext GoogleAuthVerificationResult.Error("No internet connection available. Please check your network and try again.")
+        }
+
+        try {
+            val gAccount = Account(account.email, "com.google")
+            val token = GoogleAuthUtil.getToken(context, gAccount, OAUTH_SCOPE_PREFIX)
+            if (token.isNullOrBlank()) {
+                GoogleAuthVerificationResult.Error("Failed to obtain authorization token for Google Drive.")
+            } else {
+                GoogleAuthVerificationResult.Verified(account, token)
+            }
+        } catch (e: UserRecoverableAuthException) {
+            val consentIntent = e.intent
+            if (consentIntent != null) {
+                GoogleAuthVerificationResult.ConsentRequired(consentIntent, account)
+            } else {
+                GoogleAuthVerificationResult.Error("Google Drive authorization required, but consent screen could not be started.", e)
+            }
+        } catch (e: GoogleAuthException) {
+            GoogleAuthVerificationResult.Error("Google authorization failed: ${e.message}", e)
+        } catch (e: IOException) {
+            GoogleAuthVerificationResult.Error("Network error contacting Google Drive authorization service: ${e.message}", e)
+        } catch (e: Exception) {
+            GoogleAuthVerificationResult.Error("Google authorization error: ${e.message}", e)
+        }
+    }
+
     suspend fun getOAuthAccessToken(email: String): AppResult<String> = withContext(Dispatchers.IO) {
         if (!isNetworkAvailable()) {
             return@withContext AppResult.Error(AppError.UnknownError("No internet connection available."))
@@ -104,6 +160,8 @@ class GoogleAccountManager(private val context: Context) {
             } else {
                 AppResult.Success(token)
             }
+        } catch (e: UserRecoverableAuthException) {
+            AppResult.Error(AppError.UnknownError("Google Drive permission consent required. Please reconnect your Google Account.", e))
         } catch (e: GoogleAuthException) {
             AppResult.Error(AppError.UnknownError("Google authorization failed: ${e.message}", e))
         } catch (e: IOException) {

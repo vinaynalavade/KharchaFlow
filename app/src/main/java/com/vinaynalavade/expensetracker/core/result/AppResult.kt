@@ -18,6 +18,7 @@ sealed interface AppError {
     data class PreferencesError(override val message: String, val cause: Throwable? = null) : AppError
     data class ValidationError(override val message: String, val field: String? = null) : AppError
     data class NotFound(override val message: String) : AppError
+    data class SecurityError(override val message: String, val cause: Throwable? = null) : AppError
     data class UnknownError(override val message: String, val cause: Throwable? = null) : AppError
 }
 

@@ -14,8 +14,8 @@ class GetTransactionsUseCase(
     operator fun invoke(): Flow<List<Transaction>> =
         transactionRepository.getTransactions()
 
-    fun getRecent(limit: Int = 10): Flow<List<Transaction>> =
-        transactionRepository.getTransactions().map { it.take(limit) }
+    fun getRecent(limit: Int = 3): Flow<List<Transaction>> =
+        transactionRepository.getRecentTransactions(limit)
 
     fun getByDateRange(startDateEpoch: Long, endDateEpoch: Long): Flow<List<Transaction>> =
         transactionRepository.getTransactionsBetween(startDateEpoch, endDateEpoch)

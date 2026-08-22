@@ -24,6 +24,7 @@ import com.vinaynalavade.expensetracker.domain.usecase.GetRecurringTransactionsU
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionByIdUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionsUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetUserPreferencesUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.GetWidgetFinancialSummaryUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ProcessDueRecurringTransactionsUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.SaveCategoryUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.SaveRecurringTransactionUseCase
@@ -50,6 +51,7 @@ interface AppContainer {
     val deleteCategoryUseCase: DeleteCategoryUseCase
 
     val getFinancialSummaryUseCase: GetFinancialSummaryUseCase
+    val getWidgetFinancialSummaryUseCase: GetWidgetFinancialSummaryUseCase
     val getMonthlyLedgerUseCase: GetMonthlyLedgerUseCase
     val getCategoryAnalysisUseCase: GetCategoryAnalysisUseCase
     val generateStatementUseCase: GenerateStatementUseCase
@@ -81,6 +83,23 @@ interface AppContainer {
     val prepareGoogleDriveRestoreUseCase: com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase
     val disconnectGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase
     val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase
+
+    val securePinManager: com.vinaynalavade.expensetracker.core.security.SecurePinManager
+    val appLockManager: com.vinaynalavade.expensetracker.core.security.AppLockManager
+    val setAppLockEnabledUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAppLockEnabledUseCase
+    val setBiometricEnabledUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetBiometricEnabledUseCase
+    val setAutoLockDurationUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAutoLockDurationUseCase
+    val setHideContentInRecentsUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetHideContentInRecentsUseCase
+    val verifyPinUseCase: com.vinaynalavade.expensetracker.domain.usecase.VerifyPinUseCase
+    val savePinUseCase: com.vinaynalavade.expensetracker.domain.usecase.SavePinUseCase
+    val changePinUseCase: com.vinaynalavade.expensetracker.domain.usecase.ChangePinUseCase
+    val disableAppLockUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisableAppLockUseCase
+
+    val notificationStateRepository: com.vinaynalavade.expensetracker.domain.repository.NotificationStateRepository
+    val checkBudgetThresholdsUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckBudgetThresholdsUseCase
+    val checkUpcomingRecurringPaymentsUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckUpcomingRecurringPaymentsUseCase
+    val processFinancialRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.ProcessFinancialRemindersUseCase
+    val rescheduleAllRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.RescheduleAllRemindersUseCase
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -159,6 +178,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         GetFinancialSummaryUseCase(transactionRepository, userPreferencesRepository)
     }
 
+    override val getWidgetFinancialSummaryUseCase: GetWidgetFinancialSummaryUseCase by lazy {
+        GetWidgetFinancialSummaryUseCase(transactionRepository, userPreferencesRepository)
+    }
+
     override val getMonthlyLedgerUseCase: GetMonthlyLedgerUseCase by lazy {
         GetMonthlyLedgerUseCase(transactionRepository, userPreferencesRepository)
     }
@@ -216,7 +239,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val restoreBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase by lazy {
-        com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase(backupRepository)
+        com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase(backupRepository, rescheduleAllRemindersUseCase)
     }
 
     override val exportTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase by lazy {
@@ -273,5 +296,83 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase by lazy {
         com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase(googleDriveBackupRepository)
+    }
+
+    override val securePinManager: com.vinaynalavade.expensetracker.core.security.SecurePinManager by lazy {
+        com.vinaynalavade.expensetracker.core.security.SecurePinManager(context)
+    }
+
+    override val appLockManager: com.vinaynalavade.expensetracker.core.security.AppLockManager by lazy {
+        com.vinaynalavade.expensetracker.core.security.AppLockManager()
+    }
+
+    override val setAppLockEnabledUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAppLockEnabledUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetAppLockEnabledUseCase(userPreferencesRepository, appLockManager)
+    }
+
+    override val setBiometricEnabledUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetBiometricEnabledUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetBiometricEnabledUseCase(userPreferencesRepository)
+    }
+
+    override val setAutoLockDurationUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAutoLockDurationUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetAutoLockDurationUseCase(userPreferencesRepository)
+    }
+
+    override val setHideContentInRecentsUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetHideContentInRecentsUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetHideContentInRecentsUseCase(userPreferencesRepository)
+    }
+
+    override val verifyPinUseCase: com.vinaynalavade.expensetracker.domain.usecase.VerifyPinUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.VerifyPinUseCase(securePinManager, appLockManager)
+    }
+
+    override val savePinUseCase: com.vinaynalavade.expensetracker.domain.usecase.SavePinUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SavePinUseCase(securePinManager)
+    }
+
+    override val changePinUseCase: com.vinaynalavade.expensetracker.domain.usecase.ChangePinUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ChangePinUseCase(securePinManager)
+    }
+
+    override val disableAppLockUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisableAppLockUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.DisableAppLockUseCase(securePinManager, userPreferencesRepository, appLockManager)
+    }
+
+    override val notificationStateRepository: com.vinaynalavade.expensetracker.domain.repository.NotificationStateRepository by lazy {
+        com.vinaynalavade.expensetracker.data.repository.NotificationStateRepositoryImpl(context)
+    }
+
+    override val checkBudgetThresholdsUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckBudgetThresholdsUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.CheckBudgetThresholdsUseCase(
+            transactionRepository,
+            userPreferencesRepository,
+            notificationStateRepository,
+            context
+        )
+    }
+
+    override val checkUpcomingRecurringPaymentsUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckUpcomingRecurringPaymentsUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.CheckUpcomingRecurringPaymentsUseCase(
+            recurringTransactionRepository,
+            userPreferencesRepository,
+            notificationStateRepository,
+            context
+        )
+    }
+
+    override val processFinancialRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.ProcessFinancialRemindersUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.ProcessFinancialRemindersUseCase(
+            processDueRecurringTransactionsUseCase,
+            checkBudgetThresholdsUseCase,
+            checkUpcomingRecurringPaymentsUseCase,
+            notificationStateRepository
+        )
+    }
+
+    override val rescheduleAllRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.RescheduleAllRemindersUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.RescheduleAllRemindersUseCase(
+            userPreferencesRepository,
+            dailyReminderScheduler
+        )
     }
 }

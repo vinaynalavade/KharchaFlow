@@ -40,6 +40,16 @@ class UserPreferencesDataStore(private val context: Context) {
         val GOOGLE_CONNECTED_NAME = stringPreferencesKey("pref_google_connected_name")
         val GOOGLE_CONNECTED_PHOTO_URL = stringPreferencesKey("pref_google_connected_photo_url")
         val GOOGLE_LAST_BACKUP_TIMESTAMP = longPreferencesKey("pref_google_last_backup_timestamp")
+        val APP_LOCK_ENABLED = booleanPreferencesKey("pref_app_lock_enabled")
+        val BIOMETRIC_ENABLED = booleanPreferencesKey("pref_biometric_enabled")
+        val AUTO_LOCK_DURATION_SECONDS = longPreferencesKey("pref_auto_lock_duration_seconds")
+        val HIDE_CONTENT_IN_RECENTS = booleanPreferencesKey("pref_hide_content_in_recents")
+        val NOTIFICATIONS_MASTER_ENABLED = booleanPreferencesKey("pref_notifications_master_enabled")
+        val BUDGET_ALERTS_ENABLED = booleanPreferencesKey("pref_budget_alerts_enabled")
+        val MONTHLY_BUDGET_LIMIT_SUBUNITS = longPreferencesKey("pref_monthly_budget_limit_subunits")
+        val RECURRING_REMINDERS_ENABLED = booleanPreferencesKey("pref_recurring_reminders_enabled")
+        val RECURRING_REMINDER_ADVANCE_DAYS = intPreferencesKey("pref_recurring_reminder_advance_days")
+        val SAVINGS_GOAL_NOTIFICATIONS_ENABLED = booleanPreferencesKey("pref_savings_goal_notifications_enabled")
     }
 
     val googleConnectedEmailFlow: Flow<String?> = context.dataStore.data
@@ -81,7 +91,7 @@ class UserPreferencesDataStore(private val context: Context) {
             }
         }
         .map { preferences ->
-            val themeModeString = preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name
+            val themeModeString = preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.LIGHT.name
             val themeMode = ThemeMode.fromString(themeModeString)
 
             val currencyCode = preferences[PreferencesKeys.CURRENCY_CODE] ?: Currency.DEFAULT.code
@@ -94,6 +104,16 @@ class UserPreferencesDataStore(private val context: Context) {
             val dailyReminderHour = preferences[PreferencesKeys.DAILY_REMINDER_HOUR] ?: 21
             val dailyReminderMinute = preferences[PreferencesKeys.DAILY_REMINDER_MINUTE] ?: 0
             val emiRemindersEnabled = preferences[PreferencesKeys.EMI_REMINDERS_ENABLED] ?: true
+            val appLockEnabled = preferences[PreferencesKeys.APP_LOCK_ENABLED] ?: false
+            val biometricEnabled = preferences[PreferencesKeys.BIOMETRIC_ENABLED] ?: false
+            val autoLockDurationSeconds = preferences[PreferencesKeys.AUTO_LOCK_DURATION_SECONDS] ?: 0L
+            val hideContentInRecents = preferences[PreferencesKeys.HIDE_CONTENT_IN_RECENTS] ?: true
+            val notificationsMasterEnabled = preferences[PreferencesKeys.NOTIFICATIONS_MASTER_ENABLED] ?: false
+            val budgetAlertsEnabled = preferences[PreferencesKeys.BUDGET_ALERTS_ENABLED] ?: false
+            val monthlyBudgetLimitSubunits = preferences[PreferencesKeys.MONTHLY_BUDGET_LIMIT_SUBUNITS] ?: 0L
+            val recurringRemindersEnabled = preferences[PreferencesKeys.RECURRING_REMINDERS_ENABLED] ?: false
+            val recurringReminderAdvanceDays = preferences[PreferencesKeys.RECURRING_REMINDER_ADVANCE_DAYS] ?: 1
+            val savingsGoalNotificationsEnabled = preferences[PreferencesKeys.SAVINGS_GOAL_NOTIFICATIONS_ENABLED] ?: false
 
             UserPreferences(
                 themeMode = themeMode,
@@ -104,7 +124,17 @@ class UserPreferencesDataStore(private val context: Context) {
                 dailyReminderEnabled = dailyReminderEnabled,
                 dailyReminderHour = dailyReminderHour,
                 dailyReminderMinute = dailyReminderMinute,
-                emiRemindersEnabled = emiRemindersEnabled
+                emiRemindersEnabled = emiRemindersEnabled,
+                appLockEnabled = appLockEnabled,
+                biometricEnabled = biometricEnabled,
+                autoLockDurationSeconds = autoLockDurationSeconds,
+                hideContentInRecents = hideContentInRecents,
+                notificationsMasterEnabled = notificationsMasterEnabled,
+                budgetAlertsEnabled = budgetAlertsEnabled,
+                monthlyBudgetLimitSubunits = monthlyBudgetLimitSubunits,
+                recurringRemindersEnabled = recurringRemindersEnabled,
+                recurringReminderAdvanceDays = recurringReminderAdvanceDays,
+                savingsGoalNotificationsEnabled = savingsGoalNotificationsEnabled
             )
         }
 
@@ -186,6 +216,66 @@ class UserPreferencesDataStore(private val context: Context) {
     suspend fun setGoogleLastBackupTimestamp(timestamp: Long) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.GOOGLE_LAST_BACKUP_TIMESTAMP] = timestamp
+        }
+    }
+
+    suspend fun setAppLockEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.APP_LOCK_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setBiometricEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BIOMETRIC_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setAutoLockDurationSeconds(seconds: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AUTO_LOCK_DURATION_SECONDS] = seconds
+        }
+    }
+
+    suspend fun setHideContentInRecents(hide: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.HIDE_CONTENT_IN_RECENTS] = hide
+        }
+    }
+
+    suspend fun setNotificationsMasterEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.NOTIFICATIONS_MASTER_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setBudgetAlertsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BUDGET_ALERTS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setMonthlyBudgetLimit(subunits: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.MONTHLY_BUDGET_LIMIT_SUBUNITS] = subunits
+        }
+    }
+
+    suspend fun setRecurringRemindersEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.RECURRING_REMINDERS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setRecurringReminderAdvanceDays(days: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.RECURRING_REMINDER_ADVANCE_DAYS] = days
+        }
+    }
+
+    suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SAVINGS_GOAL_NOTIFICATIONS_ENABLED] = enabled
         }
     }
 }
