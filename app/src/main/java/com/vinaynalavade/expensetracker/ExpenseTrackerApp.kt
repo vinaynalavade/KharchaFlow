@@ -15,6 +15,9 @@ class ExpenseTrackerApp : Application() {
     lateinit var container: AppContainer
         private set
 
+    val isContainerInitialized: Boolean
+        get() = ::container.isInitialized
+
     override fun onCreate() {
         super.onCreate()
         container = DefaultAppContainer(this)

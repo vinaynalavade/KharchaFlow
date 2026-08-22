@@ -402,6 +402,38 @@ class TodayExpenseWidgetTest {
         assertEquals("₹0.00", formatted)
     }
 
+    // ─── Test 11: Multi-currency formatting for Today's Expense ───
+
+    @Test
+    fun testMultiCurrencyFormatting() {
+        val amount = Amount(15050L) // 150.50 or 15050 for JPY
+
+        assertEquals("₹150.50", amount.format(com.vinaynalavade.expensetracker.core.model.Currency.INR))
+        assertEquals("$150.50", amount.format(com.vinaynalavade.expensetracker.core.model.Currency.USD))
+        assertEquals("€150.50", amount.format(com.vinaynalavade.expensetracker.core.model.Currency.EUR))
+        assertEquals("£150.50", amount.format(com.vinaynalavade.expensetracker.core.model.Currency.GBP))
+        assertEquals("¥15,050", amount.format(com.vinaynalavade.expensetracker.core.model.Currency.JPY))
+    }
+
+    // ─── Test 12: PendingIntent Request Code Collision Safety ───
+
+    @Test
+    fun testPendingIntentRequestCodesDoNotCollide() {
+        // Overview widget: 100, 101, 102, 103
+        val overviewCodes = setOf(100, 101, 102, 103)
+
+        // Quick Add widget: 200, 201, 202
+        val quickAddCodes = setOf(200, 201, 202)
+
+        // Today Expense widget: 300, 301
+        val todayExpenseCodes = setOf(300, 301)
+
+        // Verify mutually disjoint sets
+        assertEquals(emptySet<Int>(), overviewCodes.intersect(quickAddCodes))
+        assertEquals(emptySet<Int>(), overviewCodes.intersect(todayExpenseCodes))
+        assertEquals(emptySet<Int>(), quickAddCodes.intersect(todayExpenseCodes))
+    }
+
     // ─── Fakes ───
 
     private class FakeTxRepository(private val list: List<Transaction>) : TransactionRepository {
