@@ -73,6 +73,14 @@ interface AppContainer {
     val exportTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase
     val validateImportUseCase: com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase
     val importTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase
+
+    val googleAccountManager: com.vinaynalavade.expensetracker.core.google.GoogleAccountManager
+    val googleDriveBackupRepository: com.vinaynalavade.expensetracker.domain.repository.GoogleDriveBackupRepository
+    val getGoogleBackupStateUseCase: com.vinaynalavade.expensetracker.domain.usecase.GetGoogleBackupStateUseCase
+    val performGoogleDriveBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.PerformGoogleDriveBackupUseCase
+    val prepareGoogleDriveRestoreUseCase: com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase
+    val disconnectGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase
+    val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -228,5 +236,42 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val importTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase by lazy {
         com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase(backupRepository)
+    }
+
+    override val googleAccountManager: com.vinaynalavade.expensetracker.core.google.GoogleAccountManager by lazy {
+        com.vinaynalavade.expensetracker.core.google.GoogleAccountManager(context)
+    }
+
+    private val googleDriveRestService: com.vinaynalavade.expensetracker.core.google.GoogleDriveRestService by lazy {
+        com.vinaynalavade.expensetracker.core.google.GoogleDriveRestService()
+    }
+
+    override val googleDriveBackupRepository: com.vinaynalavade.expensetracker.domain.repository.GoogleDriveBackupRepository by lazy {
+        com.vinaynalavade.expensetracker.data.repository.GoogleDriveBackupRepositoryImpl(
+            googleAccountManager,
+            googleDriveRestService,
+            dataStore,
+            backupRepository
+        )
+    }
+
+    override val getGoogleBackupStateUseCase: com.vinaynalavade.expensetracker.domain.usecase.GetGoogleBackupStateUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.GetGoogleBackupStateUseCase(googleDriveBackupRepository)
+    }
+
+    override val performGoogleDriveBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.PerformGoogleDriveBackupUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.PerformGoogleDriveBackupUseCase(backupRepository, googleDriveBackupRepository)
+    }
+
+    override val prepareGoogleDriveRestoreUseCase: com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase(googleDriveBackupRepository)
+    }
+
+    override val disconnectGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase(googleDriveBackupRepository)
+    }
+
+    override val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase(googleDriveBackupRepository)
     }
 }

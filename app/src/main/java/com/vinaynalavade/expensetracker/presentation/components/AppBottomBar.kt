@@ -52,13 +52,19 @@ fun AppBottomBar(
         tonalElevation = 0.dp
     ) {
         BottomNavItems.forEach { screen ->
-            val isSelected = currentRoute == screen.route
+            val isSelected = currentRoute == screen.route ||
+                (screen == Screen.Transactions && currentRoute?.startsWith("transactions") == true)
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
                     if (!isSelected) {
-                        onNavigateToRoute(screen.route)
+                        val targetRoute = if (screen == Screen.Transactions) {
+                            Screen.Transactions.createRoute()
+                        } else {
+                            screen.route
+                        }
+                        onNavigateToRoute(targetRoute)
                     }
                 },
                 icon = {

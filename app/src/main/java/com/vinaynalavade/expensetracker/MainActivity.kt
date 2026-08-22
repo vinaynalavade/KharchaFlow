@@ -132,21 +132,12 @@ fun MainAppScaffold(
                 AppBottomBar(
                     currentRoute = currentRoute,
                     onNavigateToRoute = { route ->
-                        if (route == Screen.Dashboard.route) {
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = false
-                                }
-                                launchSingleTop = true
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
-                        } else {
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     }
                 )
@@ -184,7 +175,7 @@ fun MainAppScaffold(
                 }
             },
             modifier = Modifier.padding(
-                bottom = if (shouldShowBottomBar) innerPadding.calculateBottomPadding() else innerPadding.calculateBottomPadding()
+                bottom = innerPadding.calculateBottomPadding()
             )
         )
 

@@ -1,5 +1,6 @@
 package com.vinaynalavade.expensetracker.presentation.backup
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,14 +28,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Backup
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.LinkOff
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -63,9 +67,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +77,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vinaynalavade.expensetracker.core.backup.BackupValidationResult
 import com.vinaynalavade.expensetracker.core.backup.ImportValidationResult
 import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
+import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.usecase.ExportFormat
 import com.vinaynalavade.expensetracker.domain.usecase.ExportedFileResult
@@ -87,7 +92,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.time.Instant
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -105,14 +109,23 @@ fun BackupScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val lastBackupTimestamp by viewModel.lastBackupTimestamp.collectAsStateWithLifecycle()
+    val googleBackupState by viewModel.googleBackupState.collectAsStateWithLifecycle()
     val opState by viewModel.opState.collectAsStateWithLifecycle()
     val restorePreview by viewModel.restorePreview.collectAsStateWithLifecycle()
+    val cloudRestorePreview by viewModel.cloudRestorePreview.collectAsStateWithLifecycle()
     val importPreview by viewModel.importPreview.collectAsStateWithLifecycle()
     val exportOptions by viewModel.exportOptions.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     var pendingSaveContent by remember { mutableStateOf<String?>(null) }
     var pendingSaveMimeType by remember { mutableStateOf("application/json") }
+
+    // Google Sign-In Activity Result Launcher
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.onGoogleSignInResult(result.data)
+    }
 
     // SAF Launchers
     val createDocLauncher = rememberLauncherForActivityResult(
@@ -196,6 +209,7 @@ fun BackupScreen(
         topBar = {
             AppTopBar(
                 title = "Backup & Restore",
+                canNavigateBack = true,
                 onNavigateBack = onNavigateBack
             )
         },
@@ -211,59 +225,235 @@ fun BackupScreen(
                     .padding(horizontal = MaterialTheme.spacing.lg, vertical = MaterialTheme.spacing.md),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg)
             ) {
-                // Last Backup Status Card
-                val lastBackupText = if (lastBackupTimestamp != null && lastBackupTimestamp!! > 0L) {
-                    val instant = Instant.ofEpochMilli(lastBackupTimestamp!!)
-                    val formatted = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-                        .withZone(ZoneId.systemDefault())
-                        .format(instant)
-                    "Last backup: $formatted"
-                } else {
-                    "No backup created yet on this device"
-                }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = CardShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (lastBackupTimestamp != null) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(MaterialTheme.spacing.md),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (lastBackupTimestamp != null) Icons.Default.CheckCircle else Icons.Default.Backup,
-                            contentDescription = null,
-                            tint = if (lastBackupTimestamp != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-                        Column {
-                            Text(
-                                text = "Full Local Backup Status",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = lastBackupText,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                // =========================================================================
+                // 1. GOOGLE CLOUD BACKUP SECTION
+                // =========================================================================
+                BackupSection(title = "GOOGLE CLOUD BACKUP") {
+                    when (val state = googleBackupState) {
+                        is GoogleBackupState.Disconnected -> {
+                            Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(42.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = Icons.Default.Cloud,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+                                    Column {
+                                        Text(
+                                            text = "Google Drive Cloud Backup",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "Stored privately in your Google account appDataFolder",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = "Connect your Google account to automatically back up and restore your transactions across devices with zero subscription or server costs.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
+                                Button(
+                                    onClick = {
+                                        val signInIntent = viewModel.getGoogleSignInIntent()
+                                        googleSignInLauncher.launch(signInIntent)
+                                    },
+                                    shape = ButtonShape,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CloudUpload,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.sm))
+                                    Text("Connect Google Account", fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+
+                        is GoogleBackupState.Connected -> {
+                            val cloudBackupDateStr = if (state.lastBackupTimestamp != null && state.lastBackupTimestamp > 0L) {
+                                val instant = Instant.ofEpochMilli(state.lastBackupTimestamp)
+                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                                    .withZone(ZoneId.systemDefault())
+                                    .format(instant)
+                            } else {
+                                "No cloud backup created yet"
+                            }
+
+                            Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md)) {
+                                // Account Info Header
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    imageVector = Icons.Default.AccountCircle,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+                                        Column {
+                                            Text(
+                                                text = state.account.displayName ?: "Connected Account",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                text = state.account.email,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    Surface(
+                                        shape = PillShape,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.CheckCircle,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Text(
+                                                text = "Connected",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+                                // Cloud Backup Status
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.CloudDone,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.xs))
+                                    Text(
+                                        text = "Last Cloud Backup: $cloudBackupDateStr",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+
+                                // Action Buttons
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)
+                                ) {
+                                    Button(
+                                        onClick = { viewModel.backupToGoogleDrive() },
+                                        shape = ButtonShape,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CloudUpload,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Back Up Now", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = { viewModel.initiateGoogleRestore() },
+                                        shape = ButtonShape,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CloudDownload,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Restore", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                    }
+                                }
+
+                                // Disconnect Option
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    TextButton(
+                                        onClick = { viewModel.disconnectGoogleAccount() }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.LinkOff,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.error,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "Disconnect Account",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
 
-                // 1. Full Backup & Restore Section
-                BackupSection(title = "FULL APPLICATION BACKUP & RESTORE") {
+                // =========================================================================
+                // 2. LOCAL FILE BACKUP & RESTORE SECTION
+                // =========================================================================
+                BackupSection(title = "LOCAL FILE BACKUP & RESTORE") {
                     BackupActionTile(
                         icon = Icons.Default.Backup,
-                        title = "Create Full Backup",
-                        subtitle = "Export all transactions, categories, reminders, and preferences into a structured JSON backup",
+                        title = "Create Local Backup",
+                        subtitle = "Save a structured JSON backup file to your device or SD card",
                         onClick = {
                             viewModel.createFullBackup { content, fileName ->
                                 pendingSaveContent = content
@@ -277,15 +467,17 @@ fun BackupScreen(
 
                     BackupActionTile(
                         icon = Icons.Default.Restore,
-                        title = "Restore from Backup",
-                        subtitle = "Restore a full KharchaFlow JSON backup to replace and restore application data",
+                        title = "Restore from Local File",
+                        subtitle = "Select and restore a KharchaFlow JSON backup file from your device",
                         onClick = {
                             openBackupLauncher.launch(arrayOf("application/json", "text/*"))
                         }
                     )
                 }
 
-                // 2. Export Transactions Section
+                // =========================================================================
+                // 3. EXPORT TRANSACTIONS SECTION
+                // =========================================================================
                 BackupSection(title = "EXPORT TRANSACTIONS") {
                     Text(
                         text = "Export Format",
@@ -396,7 +588,9 @@ fun BackupScreen(
                     }
                 }
 
-                // 3. Import Transactions Section
+                // =========================================================================
+                // 4. IMPORT TRANSACTIONS SECTION
+                // =========================================================================
                 BackupSection(title = "IMPORT TRANSACTIONS") {
                     BackupActionTile(
                         icon = Icons.Default.FileUpload,
@@ -408,7 +602,9 @@ fun BackupScreen(
                     )
                 }
 
-                // 4. Data & Privacy Guarantee Section
+                // =========================================================================
+                // 5. PRIVACY & SECURITY GUARANTEE
+                // =========================================================================
                 BackupSection(title = "DATA & PRIVACY GUARANTEE") {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -431,13 +627,13 @@ fun BackupScreen(
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
                         Column {
                             Text(
-                                text = "100% Local & Private",
+                                text = "100% Private & In Your Control",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "All backups and exports remain entirely in your control on your device. No cloud sync, no tracking, and no external servers.",
+                                text = "KharchaFlow has no external servers or analytics. Cloud backups are stored strictly in your own Google Drive app-specific folder, inaccessible to any third parties.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -478,7 +674,79 @@ fun BackupScreen(
         }
     }
 
-    // Restore Confirmation Dialog
+    // Cloud Restore Confirmation Dialog
+    if (cloudRestorePreview != null) {
+        val preview = cloudRestorePreview!!
+        val dateStr = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+            .withZone(ZoneId.systemDefault())
+            .format(Instant.ofEpochMilli(preview.createdAt))
+
+        AlertDialog(
+            onDismissRequest = { viewModel.cancelCloudRestore() },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.CloudDownload,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Restore Google Cloud Backup",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)
+                ) {
+                    Text(
+                        text = "Cloud Backup Details:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text("• Transactions: ${preview.transactionCount}", style = MaterialTheme.typography.bodySmall)
+                    Text("• Categories: ${preview.categoryCount}", style = MaterialTheme.typography.bodySmall)
+                    Text("• Recurring / EMIs: ${preview.recurringCount}", style = MaterialTheme.typography.bodySmall)
+                    Text("• Created: $dateStr", style = MaterialTheme.typography.bodySmall)
+                    Text("• Schema: Version ${preview.backupData.backupVersion} (App v${preview.appVersion})", style = MaterialTheme.typography.bodySmall)
+
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
+
+                    Text(
+                        text = "⚠️ Warning: Restoring this cloud backup will replace all current transactions, categories, and settings stored locally on this device.",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.confirmCloudRestore {
+                            ExpenseTrackerWidgetProvider.updateAll(context)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Replace & Restore", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.cancelCloudRestore() }) {
+                    Text("Cancel")
+                }
+            },
+            shape = CardShape,
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    }
+
+    // Local Restore Confirmation Dialog
     if (restorePreview != null) {
         val preview = restorePreview!!
         val dateStr = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
@@ -497,7 +765,7 @@ fun BackupScreen(
             },
             title = {
                 Text(
-                    text = "Restore Full Backup",
+                    text = "Restore Local Backup",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

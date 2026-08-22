@@ -13,10 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.presentation.components.AppTopBar
+import com.vinaynalavade.expensetracker.presentation.components.CalculatorBottomSheet
 import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.AmountInput
 import com.vinaynalavade.expensetracker.presentation.entry.components.CategorySelector
@@ -44,6 +47,7 @@ import com.vinaynalavade.expensetracker.presentation.theme.spacing
 /**
  * Unified, high-performance transaction entry screen for Add & Edit operations.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionScreen(
     viewModel: AddTransactionViewModel,
@@ -57,6 +61,8 @@ fun AddTransactionScreen(
     val amountFocusRequester = remember { FocusRequester() }
 
     var showDiscardDialog by remember { mutableStateOf(false) }
+    var showCalculatorSheet by remember { mutableStateOf(false) }
+    val calcSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val handleBackNavigation = {
         if (uiState.hasUnsavedChanges && !uiState.isSaveSuccess) {
@@ -145,6 +151,11 @@ fun AddTransactionScreen(
                 transactionType = uiState.transactionType,
                 errorMessage = uiState.amountError,
                 focusRequester = amountFocusRequester,
+                onOpenCalculator = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    showCalculatorSheet = true
+                },
                 onImeAction = {
                     focusManager.clearFocus()
                 }
@@ -206,6 +217,20 @@ fun AddTransactionScreen(
             },
             onDismiss = {
                 showDiscardDialog = false
+            }
+        )
+    }
+
+    if (showCalculatorSheet) {
+        CalculatorBottomSheet(
+            sheetState = calcSheetState,
+            initialAmount = uiState.amountInput,
+            onDismissRequest = {
+                showCalculatorSheet = false
+            },
+            onUseResult = { calculatedAmount ->
+                viewModel.onAmountChange(calculatedAmount)
+                showCalculatorSheet = false
             }
         )
     }

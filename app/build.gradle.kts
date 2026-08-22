@@ -53,15 +53,38 @@ android {
                 ?: props.getProperty("KEY_PASSWORD")
                 ?: storePasswordVal
 
-            if (!storeFilePath.isNullOrBlank() &&
+            val isConfigComplete = !storeFilePath.isNullOrBlank() &&
                 !storePasswordVal.isNullOrBlank() &&
                 !keyAliasVal.isNullOrBlank() &&
                 !keyPasswordVal.isNullOrBlank()
-            ) {
-                storeFile = file(storeFilePath)
+
+            if (isConfigComplete) {
+                val resolvedStoreFile = file(storeFilePath)
+                if (!resolvedStoreFile.exists()) {
+                    throw org.gradle.api.GradleException(
+                        "KharchaFlow release keystore file does not exist at specified path: ${resolvedStoreFile.absolutePath}"
+                    )
+                }
+                storeFile = resolvedStoreFile
                 storePassword = storePasswordVal
                 keyAlias = keyAliasVal
                 keyPassword = keyPasswordVal
+            } else {
+                val isReleaseBuildRequested = gradle.startParameter.taskNames.any {
+                    it.contains("Release", ignoreCase = true)
+                }
+                if (isReleaseBuildRequested) {
+                    val missingKeys = buildList {
+                        if (storeFilePath.isNullOrBlank()) add("Keystore path (STORE_FILE / ~/.android/kharchaflow-upload-key.jks)")
+                        if (storePasswordVal.isNullOrBlank()) add("STORE_PASSWORD")
+                        if (keyAliasVal.isNullOrBlank()) add("KEY_ALIAS")
+                        if (keyPasswordVal.isNullOrBlank()) add("KEY_PASSWORD")
+                    }
+                    throw org.gradle.api.GradleException(
+                        "Release signing configuration is incomplete for KharchaFlow release build. Missing: ${missingKeys.joinToString(", ")}. " +
+                        "Please configure signing.properties in the project root or ~/.android/kharchaflow-signing.properties."
+                    )
+                }
             }
         }
     }
@@ -121,6 +144,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+
+    // Google Play Services Auth
+    implementation(libs.play.services.auth)
 
     // Room Database
     implementation(libs.androidx.room.runtime)

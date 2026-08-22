@@ -1,5 +1,6 @@
 package com.vinaynalavade.expensetracker.presentation.backup
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -7,18 +8,25 @@ import com.vinaynalavade.expensetracker.core.backup.BackupData
 import com.vinaynalavade.expensetracker.core.backup.BackupValidationResult
 import com.vinaynalavade.expensetracker.core.backup.ImportValidationResult
 import com.vinaynalavade.expensetracker.core.backup.JsonBackupParser
+import com.vinaynalavade.expensetracker.core.google.GoogleAccountManager
 import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.domain.model.Category
+import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.repository.BackupRepository
 import com.vinaynalavade.expensetracker.domain.usecase.CreateBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ExportFilterOptions
 import com.vinaynalavade.expensetracker.domain.usecase.ExportFormat
 import com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ExportedFileResult
 import com.vinaynalavade.expensetracker.domain.usecase.GetCategoriesUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.GetGoogleBackupStateUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ImportTransactionsUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.PerformGoogleDriveBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ValidateImportUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,11 +53,20 @@ class BackupViewModel(
     private val exportTransactionsUseCase: ExportTransactionsUseCase,
     private val validateImportUseCase: ValidateImportUseCase,
     private val importTransactionsUseCase: ImportTransactionsUseCase,
+    private val googleAccountManager: GoogleAccountManager,
+    private val getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
+    private val performGoogleDriveBackupUseCase: PerformGoogleDriveBackupUseCase,
+    private val prepareGoogleDriveRestoreUseCase: PrepareGoogleDriveRestoreUseCase,
+    private val disconnectGoogleAccountUseCase: DisconnectGoogleAccountUseCase,
+    private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase,
     getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
     val lastBackupTimestamp: StateFlow<Long?> = backupRepository.getLastBackupTimestamp()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val googleBackupState: StateFlow<GoogleBackupState> = getGoogleBackupStateUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), GoogleBackupState.Disconnected)
 
     val categories: StateFlow<List<Category>> = getCategoriesUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -60,11 +77,103 @@ class BackupViewModel(
     private val _restorePreview = MutableStateFlow<BackupValidationResult.Valid?>(null)
     val restorePreview: StateFlow<BackupValidationResult.Valid?> = _restorePreview.asStateFlow()
 
+    private val _cloudRestorePreview = MutableStateFlow<BackupValidationResult.Valid?>(null)
+    val cloudRestorePreview: StateFlow<BackupValidationResult.Valid?> = _cloudRestorePreview.asStateFlow()
+
     private val _importPreview = MutableStateFlow<ImportValidationResult?>(null)
     val importPreview: StateFlow<ImportValidationResult?> = _importPreview.asStateFlow()
 
     private val _exportOptions = MutableStateFlow(ExportFilterOptions())
     val exportOptions: StateFlow<ExportFilterOptions> = _exportOptions.asStateFlow()
+
+    fun getGoogleSignInIntent(): Intent {
+        return googleAccountManager.getSignInIntent()
+    }
+
+    fun onGoogleSignInResult(data: Intent?) {
+        viewModelScope.launch {
+            _opState.value = BackupOpState.Loading("Connecting to Google Account...")
+            when (val result = googleAccountManager.parseSignInResult(data)) {
+                is AppResult.Success -> {
+                    saveConnectedGoogleAccountUseCase(result.data)
+                    _opState.value = BackupOpState.Success("Connected as ${result.data.email}")
+                }
+                is AppResult.Error -> {
+                    _opState.value = BackupOpState.Error(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun disconnectGoogleAccount() {
+        viewModelScope.launch {
+            _opState.value = BackupOpState.Loading("Disconnecting Google Account...")
+            when (val result = disconnectGoogleAccountUseCase()) {
+                is AppResult.Success -> {
+                    _opState.value = BackupOpState.Success("Google Account disconnected.")
+                }
+                is AppResult.Error -> {
+                    _opState.value = BackupOpState.Error(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun backupToGoogleDrive() {
+        viewModelScope.launch {
+            _opState.value = BackupOpState.Loading("Backing up your data to Google Drive...")
+            when (val result = performGoogleDriveBackupUseCase()) {
+                is AppResult.Success -> {
+                    _opState.value = BackupOpState.Success("Backup completed successfully to Google Drive!")
+                }
+                is AppResult.Error -> {
+                    _opState.value = BackupOpState.Error(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun initiateGoogleRestore() {
+        viewModelScope.launch {
+            _opState.value = BackupOpState.Loading("Downloading backup from Google Drive...")
+            when (val result = prepareGoogleDriveRestoreUseCase()) {
+                is AppResult.Success -> {
+                    val backupData = result.data
+                    val validation = validateBackupUseCase(JsonBackupParser.toJson(backupData))
+                    _opState.value = BackupOpState.Idle
+                    if (validation is BackupValidationResult.Valid) {
+                        _cloudRestorePreview.value = validation
+                    } else if (validation is BackupValidationResult.Invalid) {
+                        _opState.value = BackupOpState.Error(validation.errorMessage)
+                    }
+                }
+                is AppResult.Error -> {
+                    _opState.value = BackupOpState.Error(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun confirmCloudRestore(onSuccess: () -> Unit) {
+        val validBackup = _cloudRestorePreview.value?.backupData ?: return
+        viewModelScope.launch {
+            _opState.value = BackupOpState.Loading("Restoring data from Google Drive...")
+            when (val result = restoreBackupUseCase(validBackup)) {
+                is AppResult.Success -> {
+                    _cloudRestorePreview.value = null
+                    _opState.value = BackupOpState.Success("Cloud backup restored successfully!")
+                    onSuccess()
+                }
+                is AppResult.Error -> {
+                    _opState.value = BackupOpState.Error(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun cancelCloudRestore() {
+        _cloudRestorePreview.value = null
+    }
 
     fun updateExportFormat(format: ExportFormat) {
         _exportOptions.value = _exportOptions.value.copy(format = format)
@@ -197,6 +306,12 @@ class BackupViewModel(
         private val exportTransactionsUseCase: ExportTransactionsUseCase,
         private val validateImportUseCase: ValidateImportUseCase,
         private val importTransactionsUseCase: ImportTransactionsUseCase,
+        private val googleAccountManager: GoogleAccountManager,
+        private val getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
+        private val performGoogleDriveBackupUseCase: PerformGoogleDriveBackupUseCase,
+        private val prepareGoogleDriveRestoreUseCase: PrepareGoogleDriveRestoreUseCase,
+        private val disconnectGoogleAccountUseCase: DisconnectGoogleAccountUseCase,
+        private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase,
         private val getCategoriesUseCase: GetCategoriesUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -209,6 +324,12 @@ class BackupViewModel(
                 exportTransactionsUseCase,
                 validateImportUseCase,
                 importTransactionsUseCase,
+                googleAccountManager,
+                getGoogleBackupStateUseCase,
+                performGoogleDriveBackupUseCase,
+                prepareGoogleDriveRestoreUseCase,
+                disconnectGoogleAccountUseCase,
+                saveConnectedGoogleAccountUseCase,
                 getCategoriesUseCase
             ) as T
         }

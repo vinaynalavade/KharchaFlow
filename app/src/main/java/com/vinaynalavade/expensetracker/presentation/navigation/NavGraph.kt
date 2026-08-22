@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -45,6 +46,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private fun isPrimaryDestination(route: String?): Boolean {
+    return route == Screen.Dashboard.route ||
+        route == Screen.Transactions.route ||
+        route?.startsWith("transactions") == true ||
+        route == Screen.Categories.route ||
+        route == Screen.Settings.route
+}
+
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -54,22 +63,48 @@ fun NavGraph(
     onShowUndoSnackbar: (String, () -> Unit) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navigateToPrimary: (String) -> Unit = { route ->
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Dashboard.route,
         enterTransition = {
-            fadeIn(animationSpec = tween(Motion.DurationNormal)) +
-                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, animationSpec = tween(Motion.DurationNormal))
+            if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
+                fadeIn(animationSpec = tween(Motion.DurationFast))
+            } else {
+                fadeIn(animationSpec = tween(Motion.DurationNormal)) +
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, animationSpec = tween(Motion.DurationNormal))
+            }
         },
         exitTransition = {
-            fadeOut(animationSpec = tween(Motion.DurationFast))
+            if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
+                fadeOut(animationSpec = tween(Motion.DurationFast))
+            } else {
+                fadeOut(animationSpec = tween(Motion.DurationFast))
+            }
         },
         popEnterTransition = {
-            fadeIn(animationSpec = tween(Motion.DurationNormal))
+            if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
+                fadeIn(animationSpec = tween(Motion.DurationFast))
+            } else {
+                fadeIn(animationSpec = tween(Motion.DurationNormal))
+            }
         },
         popExitTransition = {
-            fadeOut(animationSpec = tween(Motion.DurationFast)) +
-                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, animationSpec = tween(Motion.DurationFast))
+            if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
+                fadeOut(animationSpec = tween(Motion.DurationFast))
+            } else {
+                fadeOut(animationSpec = tween(Motion.DurationFast)) +
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, animationSpec = tween(Motion.DurationFast))
+            }
         },
         modifier = modifier
     ) {
@@ -94,10 +129,10 @@ fun NavGraph(
                     navController.navigate(Screen.AddIncome.route)
                 },
                 onNavigateToTransactions = {
-                    navController.navigate(Screen.Transactions.createRoute())
+                    navigateToPrimary(Screen.Transactions.createRoute())
                 },
                 onNavigateToCategories = {
-                    navController.navigate(Screen.Categories.route)
+                    navigateToPrimary(Screen.Categories.route)
                 },
                 onNavigateToCategoryTransactions = { month, categoryName, type ->
                     navController.navigate(
@@ -251,7 +286,7 @@ fun NavGraph(
             )
             SettingsScreen(
                 viewModel = viewModel,
-                onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
+                onNavigateToCategories = { navigateToPrimary(Screen.Categories.route) },
                 onNavigateToRecurring = { navController.navigate(Screen.RecurringTransactions.route) },
                 onNavigateToStatements = { navController.navigate(Screen.Statements.route) },
                 onNavigateToMonthlySummary = { navController.navigate(Screen.MonthlySummary.route) },
@@ -351,6 +386,12 @@ fun NavGraph(
                     exportTransactionsUseCase = container.exportTransactionsUseCase,
                     validateImportUseCase = container.validateImportUseCase,
                     importTransactionsUseCase = container.importTransactionsUseCase,
+                    googleAccountManager = container.googleAccountManager,
+                    getGoogleBackupStateUseCase = container.getGoogleBackupStateUseCase,
+                    performGoogleDriveBackupUseCase = container.performGoogleDriveBackupUseCase,
+                    prepareGoogleDriveRestoreUseCase = container.prepareGoogleDriveRestoreUseCase,
+                    disconnectGoogleAccountUseCase = container.disconnectGoogleAccountUseCase,
+                    saveConnectedGoogleAccountUseCase = container.saveConnectedGoogleAccountUseCase,
                     getCategoriesUseCase = container.getCategoriesUseCase
                 )
             )
