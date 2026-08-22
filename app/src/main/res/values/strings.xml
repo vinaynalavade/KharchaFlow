@@ -53,6 +53,7 @@
     <!-- Widgets -->
     <string name="widget_overview_description">View your current balance, today\'s expenses, and quick transaction actions.</string>
     <string name="widget_quick_add_description">Quick shortcut buttons to instantly record income or expense.</string>
+    <string name="widget_today_expense_description">See how much you\'ve spent today at a glance.</string>
 
     <!-- Reminders & Notifications -->
     <string name="reminder_daily_title">Track today\'s expenses</string>

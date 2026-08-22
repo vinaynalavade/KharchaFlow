@@ -24,6 +24,7 @@ import com.vinaynalavade.expensetracker.domain.usecase.GetRecurringTransactionsU
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionByIdUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionsUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetUserPreferencesUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.GetTodayExpenseUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetWidgetFinancialSummaryUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.ProcessDueRecurringTransactionsUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.SaveCategoryUseCase
@@ -52,6 +53,7 @@ interface AppContainer {
 
     val getFinancialSummaryUseCase: GetFinancialSummaryUseCase
     val getWidgetFinancialSummaryUseCase: GetWidgetFinancialSummaryUseCase
+    val getTodayExpenseUseCase: GetTodayExpenseUseCase
     val getMonthlyLedgerUseCase: GetMonthlyLedgerUseCase
     val getCategoryAnalysisUseCase: GetCategoryAnalysisUseCase
     val generateStatementUseCase: GenerateStatementUseCase
@@ -180,6 +182,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val getWidgetFinancialSummaryUseCase: GetWidgetFinancialSummaryUseCase by lazy {
         GetWidgetFinancialSummaryUseCase(transactionRepository, userPreferencesRepository)
+    }
+
+    override val getTodayExpenseUseCase: GetTodayExpenseUseCase by lazy {
+        GetTodayExpenseUseCase(transactionRepository)
     }
 
     override val getMonthlyLedgerUseCase: GetMonthlyLedgerUseCase by lazy {

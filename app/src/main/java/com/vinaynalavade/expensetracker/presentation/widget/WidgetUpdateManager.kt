@@ -25,9 +25,10 @@ import kotlinx.coroutines.launch
 object WidgetUpdateManager {
 
     const val ACTION_WIDGET_REFRESH = "com.vinaynalavade.expensetracker.ACTION_WIDGET_REFRESH"
+    const val ACTION_TODAY_WIDGET_REFRESH = "com.vinaynalavade.expensetracker.ACTION_TODAY_WIDGET_REFRESH"
 
     /**
-     * Triggers a refresh for all active widget instances (Overview & Quick Add).
+     * Triggers a refresh for all active widget instances (Overview, Quick Add, & Today's Expense).
      */
     fun refreshAllWidgets(context: Context) {
         val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -46,6 +47,14 @@ object WidgetUpdateManager {
         )
         if (quickAddIds.isNotEmpty()) {
             updateQuickAddWidgets(context, appWidgetManager, quickAddIds)
+        }
+
+        // 3. Update Today's Expense Widgets
+        val todayExpenseIds = appWidgetManager.getAppWidgetIds(
+            ComponentName(context, TodayExpenseWidgetProvider::class.java)
+        )
+        if (todayExpenseIds.isNotEmpty()) {
+            updateTodayExpenseWidgets(context, appWidgetManager, todayExpenseIds)
         }
     }
 
@@ -184,6 +193,58 @@ object WidgetUpdateManager {
                 setOnClickPendingIntent(R.id.quick_widget_btn_income, incomePendingIntent)
             }
             appWidgetManager.updateAppWidget(widgetId, views)
+        }
+    }
+
+    /**
+     * Updates Today's Expense widget instances with the current day's total spending.
+     */
+    fun updateTodayExpenseWidgets(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        val app = context.applicationContext as? ExpenseTrackerApp ?: return
+        val container = app.container
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val todayExpense = container.getTodayExpenseUseCase().firstOrNull()
+            val prefs = container.getUserPreferencesUseCase().firstOrNull()
+            val currency = prefs?.currency ?: Currency.DEFAULT
+
+            val amountStr = todayExpense?.format(currency) ?: "₹0.00"
+
+            // 1. Root tap -> Open MainActivity (Dashboard)
+            val mainIntent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val mainPendingIntent = PendingIntent.getActivity(
+                context,
+                300,
+                mainIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // 2. Refresh icon tap -> Broadcast to update today's expense widget
+            val refreshIntent = Intent(context, TodayExpenseWidgetProvider::class.java).apply {
+                action = ACTION_TODAY_WIDGET_REFRESH
+            }
+            val refreshPendingIntent = PendingIntent.getBroadcast(
+                context,
+                301,
+                refreshIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            for (widgetId in appWidgetIds) {
+                val views = RemoteViews(context.packageName, R.layout.widget_today_expense).apply {
+                    setTextViewText(R.id.today_widget_amount, amountStr)
+
+                    setOnClickPendingIntent(R.id.today_widget_root, mainPendingIntent)
+                    setOnClickPendingIntent(R.id.today_widget_btn_refresh, refreshPendingIntent)
+                }
+                appWidgetManager.updateAppWidget(widgetId, views)
+            }
         }
     }
 }
