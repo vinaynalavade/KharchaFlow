@@ -133,21 +133,27 @@ class CheckUpcomingRecurringPaymentsUseCase(
                 candidate
             }
             RecurrenceFrequency.MONTHLY -> {
-                val dayOfMonth = item.dayOfMonth.coerceIn(1, fromDate.lengthOfMonth())
-                val thisMonthCandidate = fromDate.withDayOfMonth(dayOfMonth)
+                val thisMonth = java.time.YearMonth.from(fromDate)
+                val dayThisMonth = minOf(item.dayOfMonth.coerceIn(1, 31), thisMonth.lengthOfMonth())
+                val thisMonthCandidate = thisMonth.atDay(dayThisMonth)
                 if (!thisMonthCandidate.isBefore(fromDate)) {
                     thisMonthCandidate
                 } else {
-                    val nextMonth = fromDate.plusMonths(1)
-                    nextMonth.withDayOfMonth(item.dayOfMonth.coerceIn(1, nextMonth.lengthOfMonth()))
+                    val nextMonth = thisMonth.plusMonths(1)
+                    val dayNextMonth = minOf(item.dayOfMonth.coerceIn(1, 31), nextMonth.lengthOfMonth())
+                    nextMonth.atDay(dayNextMonth)
                 }
             }
             RecurrenceFrequency.YEARLY -> {
-                val thisYearCandidate = fromDate.withDayOfMonth(item.dayOfMonth.coerceIn(1, fromDate.lengthOfMonth()))
+                val thisYearMonth = java.time.YearMonth.of(fromDate.year, fromDate.month)
+                val dayThisYear = minOf(item.dayOfMonth.coerceIn(1, 31), thisYearMonth.lengthOfMonth())
+                val thisYearCandidate = thisYearMonth.atDay(dayThisYear)
                 if (!thisYearCandidate.isBefore(fromDate)) {
                     thisYearCandidate
                 } else {
-                    fromDate.plusYears(1).withDayOfMonth(item.dayOfMonth.coerceIn(1, fromDate.lengthOfMonth()))
+                    val nextYearMonth = thisYearMonth.plusYears(1)
+                    val dayNextYear = minOf(item.dayOfMonth.coerceIn(1, 31), nextYearMonth.lengthOfMonth())
+                    nextYearMonth.atDay(dayNextYear)
                 }
             }
         }

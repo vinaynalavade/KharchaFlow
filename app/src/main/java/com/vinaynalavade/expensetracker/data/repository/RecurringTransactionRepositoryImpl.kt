@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 
 class RecurringTransactionRepositoryImpl(
@@ -118,12 +119,16 @@ class RecurringTransactionRepositoryImpl(
                 (lastGenerated == null || lastGenerated.isBefore(today)) && today.dayOfWeek.value == recurring.dayOfWeek
             }
             RecurrenceFrequency.MONTHLY -> {
-                (lastGenerated == null || (lastGenerated.year < today.year || lastGenerated.monthValue < today.monthValue)) &&
-                        today.dayOfMonth >= recurring.dayOfMonth
+                val currentMonth = YearMonth.from(today)
+                val lastGeneratedMonth = lastGenerated?.let { YearMonth.from(it) }
+                val isNewPeriod = lastGeneratedMonth == null || lastGeneratedMonth.isBefore(currentMonth)
+                val scheduledDay = minOf(recurring.dayOfMonth.coerceIn(1, 31), today.lengthOfMonth())
+                isNewPeriod && today.dayOfMonth >= scheduledDay
             }
             RecurrenceFrequency.YEARLY -> {
-                (lastGenerated == null || lastGenerated.year < today.year) &&
-                        today.dayOfMonth >= recurring.dayOfMonth
+                val isNewPeriod = lastGenerated == null || lastGenerated.year < today.year
+                val scheduledDay = minOf(recurring.dayOfMonth.coerceIn(1, 31), today.lengthOfMonth())
+                isNewPeriod && today.dayOfMonth >= scheduledDay
             }
         }
     }

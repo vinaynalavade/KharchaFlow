@@ -9,6 +9,7 @@ import com.vinaynalavade.expensetracker.core.google.GoogleAuthVerificationResult
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.notification.DailyReminderScheduler
 import com.vinaynalavade.expensetracker.core.result.AppResult
+import com.vinaynalavade.expensetracker.core.security.SecurePinManager
 import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
@@ -54,6 +55,7 @@ class SettingsViewModel(
     private val setAutoLockDurationUseCase: SetAutoLockDurationUseCase,
     private val setHideContentInRecentsUseCase: SetHideContentInRecentsUseCase,
     private val disableAppLockUseCase: DisableAppLockUseCase,
+    private val securePinManager: SecurePinManager,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val rescheduleAllRemindersUseCase: RescheduleAllRemindersUseCase,
     getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
@@ -248,6 +250,27 @@ class SettingsViewModel(
         }
     }
 
+    fun verifyAndDisableAppLock(
+        pin: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            when (val result = disableAppLockUseCase(pin)) {
+                is AppResult.Success -> {
+                    onSuccess()
+                }
+                is AppResult.Error -> {
+                    onError(result.error.message)
+                }
+            }
+        }
+    }
+
+    fun getLockoutSecondsRemaining(): Long {
+        return securePinManager.getLockoutSecondsRemaining()
+    }
+
     fun disableAppLock(onSuccess: () -> Unit) {
         viewModelScope.launch {
             disableAppLockUseCase()
@@ -267,6 +290,7 @@ class SettingsViewModel(
         private val setAutoLockDurationUseCase: SetAutoLockDurationUseCase,
         private val setHideContentInRecentsUseCase: SetHideContentInRecentsUseCase,
         private val disableAppLockUseCase: DisableAppLockUseCase,
+        private val securePinManager: SecurePinManager,
         private val userPreferencesRepository: UserPreferencesRepository,
         private val rescheduleAllRemindersUseCase: RescheduleAllRemindersUseCase,
         private val getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
@@ -288,6 +312,7 @@ class SettingsViewModel(
                 setAutoLockDurationUseCase,
                 setHideContentInRecentsUseCase,
                 disableAppLockUseCase,
+                securePinManager,
                 userPreferencesRepository,
                 rescheduleAllRemindersUseCase,
                 getGoogleBackupStateUseCase,

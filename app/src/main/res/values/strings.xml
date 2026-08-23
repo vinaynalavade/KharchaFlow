@@ -2,8 +2,10 @@
     <string name="app_name">KharchaFlow</string>
     <string name="app_descriptor">Expense Tracker</string>
     <string name="app_creator">Vinay Nalavade</string>
-    <string name="app_version">1.0.2</string>
+    <string name="app_version">1.0.3</string>
     <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
+    <string name="about_app_description">KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.</string>
+    <string name="about_developer_credit">Developed by Vinay Nalavade</string>
 
     <!-- Navigation -->
     <string name="nav_dashboard">Dashboard</string>
@@ -51,9 +53,8 @@
     <string name="settings_privacy_note">Financial records stored securely on-device.</string>
 
     <!-- Widgets -->
-    <string name="widget_overview_description">View your current balance, today\'s expenses, and quick transaction actions.</string>
+    <string name="widget_overview_description">See today\'s expenses, monthly spending summary, and quick transaction shortcuts.</string>
     <string name="widget_quick_add_description">Quick shortcut buttons to instantly record income or expense.</string>
-    <string name="widget_today_expense_description">See how much you\'ve spent today at a glance.</string>
 
     <!-- Reminders & Notifications -->
     <string name="reminder_daily_title">Track today\'s expenses</string>
@@ -120,4 +121,7 @@
     <string name="change_pin_success">PIN successfully updated</string>
     <string name="app_lock_enabled_success">App Lock enabled successfully</string>
     <string name="app_lock_disabled_success">App Lock disabled</string>
+    <string name="verify_pin_title">Verify your PIN</string>
+    <string name="verify_pin_desc">Enter your App Lock PIN to disable App Lock.</string>
+    <string name="verify_pin_incorrect">Incorrect PIN. Please try again.</string>
 </resources>

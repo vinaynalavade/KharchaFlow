@@ -85,7 +85,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -596,8 +598,8 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.Info,
                     title = "About KharchaFlow",
-                    subtitle = "Version 1.0.2, privacy architecture, open source licenses",
-                    valueBadge = "v1.0.2",
+                    subtitle = "Version 1.0.3, privacy & security, open source",
+                    valueBadge = "v1.0.3",
                     onClick = onNavigateToAbout
                 )
             }
@@ -687,45 +689,18 @@ fun SettingsScreen(
     }
 
     if (showDisableAppLockDialog) {
-        AlertDialog(
-            onDismissRequest = { showDisableAppLockDialog = false },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.LockOpen,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(32.dp)
-                )
+        val disabledMessage = stringResource(R.string.app_lock_disabled_success)
+        val coroutineScope = rememberCoroutineScope()
+        DisableAppLockVerificationDialog(
+            onDismiss = { showDisableAppLockDialog = false },
+            onVerifyAndDisable = { pin, onSuccess, onError ->
+                viewModel.verifyAndDisableAppLock(pin, onSuccess, onError)
             },
-            title = {
-                Text(
-                    text = stringResource(R.string.settings_disable_app_lock),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-            },
-            text = {
-                Text(
-                    text = "Are you sure you want to disable App Lock? Your financial records will no longer require authentication to open.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDisableAppLockDialog = false
-                        viewModel.disableAppLock { }
-                    }
-                ) {
-                    Text(
-                        text = "Disable",
-                        color = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDisableAppLockDialog = false }) {
-                    Text("Cancel")
+            getLockoutSeconds = { viewModel.getLockoutSecondsRemaining() },
+            onDisabledSuccess = {
+                showDisableAppLockDialog = false
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(disabledMessage)
                 }
             }
         )

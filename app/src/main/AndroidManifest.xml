@@ -89,18 +89,6 @@
                 android:resource="@xml/widget_quick_add_info" />
         </receiver>
 
-        <receiver
-            android:name=".presentation.widget.TodayExpenseWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.vinaynalavade.expensetracker.ACTION_TODAY_WIDGET_REFRESH" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_today_expense_info" />
-        </receiver>
-
         <!-- FileProvider for secure on-device PDF statement sharing -->
         <provider
             android:name="androidx.core.content.FileProvider"

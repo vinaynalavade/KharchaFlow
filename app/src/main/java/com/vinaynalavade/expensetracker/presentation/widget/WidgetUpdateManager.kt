@@ -37,7 +37,6 @@ object WidgetUpdateManager {
     private const val TAG = "WidgetUpdateManager"
 
     const val ACTION_WIDGET_REFRESH = "com.vinaynalavade.expensetracker.ACTION_WIDGET_REFRESH"
-    const val ACTION_TODAY_WIDGET_REFRESH = "com.vinaynalavade.expensetracker.ACTION_TODAY_WIDGET_REFRESH"
 
     /**
      * Safely obtains the [AppContainer] from the application context.
@@ -54,13 +53,13 @@ object WidgetUpdateManager {
     }
 
     /**
-     * Triggers a refresh for all active widget instances (Overview, Quick Add, & Today's Expense).
+     * Triggers a refresh for all active widget instances (Overview & Quick Add).
      * Each widget type is updated independently — failure in one does not block others.
      */
     fun refreshAllWidgets(context: Context) {
         val appWidgetManager = AppWidgetManager.getInstance(context)
 
-        // 1. Update Financial Summary Widgets
+        // 1. Update Financial Overview Widgets
         try {
             val overviewIds = appWidgetManager.getAppWidgetIds(
                 ComponentName(context, ExpenseTrackerWidgetProvider::class.java)
@@ -69,7 +68,7 @@ object WidgetUpdateManager {
                 updateFinancialSummaryWidgets(context, appWidgetManager, overviewIds)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to refresh Financial Summary widgets", e)
+            Log.e(TAG, "Failed to refresh Financial Overview widgets", e)
         }
 
         // 2. Update Quick Add Widgets
@@ -83,22 +82,12 @@ object WidgetUpdateManager {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to refresh Quick Add widgets", e)
         }
-
-        // 3. Update Today's Expense Widgets
-        try {
-            val todayExpenseIds = appWidgetManager.getAppWidgetIds(
-                ComponentName(context, TodayExpenseWidgetProvider::class.java)
-            )
-            if (todayExpenseIds.isNotEmpty()) {
-                updateTodayExpenseWidgets(context, appWidgetManager, todayExpenseIds)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to refresh Today's Expense widgets", e)
-        }
     }
 
     /**
-     * Updates all active Financial Summary widget instances with live domain data.
+     * Updates all active Financial Overview widget instances with live domain data.
+     * Displays Today's Expense as the hero primary metric, alongside This Month's spending
+     * and monthly budget status.
      */
     fun updateFinancialSummaryWidgets(
         context: Context,
@@ -113,10 +102,21 @@ object WidgetUpdateManager {
                 val prefs = container.getUserPreferencesUseCase().firstOrNull()
                 val currency = prefs?.currency ?: Currency.DEFAULT
 
-                val balanceStr = summary?.balance?.format(currency) ?: "₹0.00"
-                val incomeStr = "+${summary?.monthlyIncome?.format(currency) ?: "₹0.00"}"
-                val expenseStr = "-${summary?.monthlyExpense?.format(currency) ?: "₹0.00"}"
-                val monthLabelStr = summary?.monthLabel ?: "This Month"
+                val todayExpenseStr = summary?.todayExpense?.format(currency) ?: "₹0.00"
+                val monthlyExpenseStr = summary?.monthlyExpense?.format(currency) ?: "₹0.00"
+                val monthLabelStr = summary?.monthLabel?.ifBlank { "This Month" } ?: "This Month"
+
+                val (budgetLabelStr, budgetStatusStr) = when {
+                    summary?.monthlyBudgetLimit != null && summary.monthlyBudgetLimit.subunits > 0L -> {
+                        if (summary.isOverBudget) {
+                            "BUDGET" to "Over Limit"
+                        } else {
+                            val remainingStr = summary.remainingBudget?.format(currency) ?: "₹0.00"
+                            "BUDGET LEFT" to remainingStr
+                        }
+                    }
+                    else -> "BUDGET" to "No Limit"
+                }
 
                 // 1. Root tap -> Open MainActivity (Dashboard)
                 val mainIntent = Intent(context, MainActivity::class.java).apply {
@@ -168,10 +168,11 @@ object WidgetUpdateManager {
 
                 for (widgetId in appWidgetIds) {
                     val views = RemoteViews(context.packageName, R.layout.widget_expense_tracker).apply {
-                        setTextViewText(R.id.widget_total_balance, balanceStr)
-                        setTextViewText(R.id.widget_monthly_income, incomeStr)
-                        setTextViewText(R.id.widget_monthly_expense, expenseStr)
+                        setTextViewText(R.id.widget_today_expense, todayExpenseStr)
+                        setTextViewText(R.id.widget_monthly_expense, monthlyExpenseStr)
                         setTextViewText(R.id.widget_month_label, monthLabelStr)
+                        setTextViewText(R.id.widget_budget_label, budgetLabelStr)
+                        setTextViewText(R.id.widget_budget_status, budgetStatusStr)
 
                         setOnClickPendingIntent(R.id.widget_root, mainPendingIntent)
                         setOnClickPendingIntent(R.id.widget_btn_refresh, refreshPendingIntent)
@@ -181,7 +182,7 @@ object WidgetUpdateManager {
                     appWidgetManager.updateAppWidget(widgetId, views)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating Financial Summary widgets", e)
+                Log.e(TAG, "Error updating Financial Overview widgets", e)
             }
         }
     }
@@ -241,59 +242,5 @@ object WidgetUpdateManager {
             Log.e(TAG, "Error updating Quick Add widgets", e)
         }
     }
-
-    /**
-     * Updates Today's Expense widget instances with the current day's total spending.
-     */
-    fun updateTodayExpenseWidgets(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
-    ) {
-        val container = getContainerSafely(context) ?: return
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val todayExpense = container.getTodayExpenseUseCase().firstOrNull()
-                val prefs = container.getUserPreferencesUseCase().firstOrNull()
-                val currency = prefs?.currency ?: Currency.DEFAULT
-
-                val amountStr = todayExpense?.format(currency) ?: "₹0.00"
-
-                // 1. Root tap -> Open MainActivity (Dashboard)
-                val mainIntent = Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
-                val mainPendingIntent = PendingIntent.getActivity(
-                    context,
-                    300,
-                    mainIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                // 2. Refresh icon tap -> Broadcast to update today's expense widget
-                val refreshIntent = Intent(context, TodayExpenseWidgetProvider::class.java).apply {
-                    action = ACTION_TODAY_WIDGET_REFRESH
-                }
-                val refreshPendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    301,
-                    refreshIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-
-                for (widgetId in appWidgetIds) {
-                    val views = RemoteViews(context.packageName, R.layout.widget_today_expense).apply {
-                        setTextViewText(R.id.today_widget_amount, amountStr)
-
-                        setOnClickPendingIntent(R.id.today_widget_root, mainPendingIntent)
-                        setOnClickPendingIntent(R.id.today_widget_btn_refresh, refreshPendingIntent)
-                    }
-                    appWidgetManager.updateAppWidget(widgetId, views)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating Today's Expense widgets", e)
-            }
-        }
-    }
 }
+

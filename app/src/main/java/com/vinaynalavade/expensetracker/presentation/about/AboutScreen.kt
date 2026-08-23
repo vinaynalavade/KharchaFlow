@@ -1,7 +1,11 @@
 package com.vinaynalavade.expensetracker.presentation.about
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +22,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,21 +38,38 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vinaynalavade.expensetracker.BuildConfig
 import com.vinaynalavade.expensetracker.R
+import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
+
+private enum class AboutDialogType {
+    PRIVACY_SECURITY_DETAILS,
+    PRIVACY_POLICY,
+    TERMS_OF_SERVICE,
+    OPEN_SOURCE_LICENSES
+}
+
+private const val GITHUB_REPOSITORY_URL = "https://github.com/vinaynalavade/KharchaFlow"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +77,20 @@ fun AboutScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    var activeDialog by remember { mutableStateOf<AboutDialogType?>(null) }
+
+    fun openGitHub() {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_REPOSITORY_URL)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Could not open browser for $GITHUB_REPOSITORY_URL", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,7 +143,6 @@ fun AboutScreen(
                     modifier = Modifier.padding(MaterialTheme.spacing.xl),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Logo presentation with clean frame
                     Surface(
                         modifier = Modifier
                             .size(76.dp)
@@ -120,7 +157,9 @@ fun AboutScreen(
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize().padding(10.dp)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_kharchaflow_logo),
@@ -142,8 +181,9 @@ fun AboutScreen(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
+                    val versionName = BuildConfig.VERSION_NAME.ifBlank { "1.0.3" }
                     Text(
-                        text = "Version 1.0.2 (Build 3)",
+                        text = "Version $versionName",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
@@ -152,7 +192,7 @@ fun AboutScreen(
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
 
                     Text(
-                        text = "A calm, privacy-first personal finance manager designed for effortless cash flow tracking, recurring bill management, and smart budget insights.",
+                        text = "A calm, offline-first personal finance manager designed for effortless cash flow tracking, recurring bill management, and smart budget insights.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -160,7 +200,25 @@ fun AboutScreen(
                 }
             }
 
-            // Privacy & Security Architecture
+            // Section A: About KharchaFlow
+            AboutSectionCard(
+                icon = Icons.Default.Info,
+                title = "About KharchaFlow"
+            ) {
+                Text(
+                    text = "KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
+                Text(
+                    text = "KharchaFlow is an on-device tracking utility and does not offer banking, investment, credit, or financial advisory services.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Section B: Privacy & Security
             AboutSectionCard(
                 icon = Icons.Default.Security,
                 title = "Privacy & Security"
@@ -184,37 +242,38 @@ fun AboutScreen(
                     label = "App Lock",
                     value = "Optional Biometric / PIN protection with FLAG_SECURE"
                 )
+                AboutDivider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { activeDialog = AboutDialogType.PRIVACY_SECURITY_DETAILS }
+                        .padding(vertical = MaterialTheme.spacing.sm),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "View Privacy & Security Details",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
-            // Architecture & Open Source
-            AboutSectionCard(
-                icon = Icons.Default.Code,
-                title = "Architecture & Libraries"
-            ) {
-                AboutInfoRow(
-                    label = "Framework",
-                    value = "Kotlin, Jetpack Compose, Material 3"
-                )
-                AboutDivider()
-                AboutInfoRow(
-                    label = "Architecture",
-                    value = "Clean Architecture, MVVM, Use Cases, Kotlin Flows"
-                )
-                AboutDivider()
-                AboutInfoRow(
-                    label = "Precision",
-                    value = "Subunit Amount precision (paise/cents arithmetic)"
-                )
-            }
-
-            // Credits & Creator
+            // Section C: Credits
             AboutSectionCard(
                 icon = Icons.Default.Person,
-                title = "Credits & Legal"
+                title = "Credits"
             ) {
                 AboutInfoRow(
                     label = "Developer",
-                    value = "Vinay Nalavade"
+                    value = "Developed by Vinay Nalavade"
                 )
                 AboutDivider()
                 AboutInfoRow(
@@ -223,7 +282,178 @@ fun AboutScreen(
                 )
             }
 
+            // Section D: Legal
+            AboutSectionCard(
+                icon = Icons.Default.Gavel,
+                title = "Legal & Licenses"
+            ) {
+                AboutActionRow(
+                    title = "Privacy Policy",
+                    onClick = { activeDialog = AboutDialogType.PRIVACY_POLICY }
+                )
+                AboutDivider()
+                AboutActionRow(
+                    title = "Terms of Service & Disclaimer",
+                    onClick = { activeDialog = AboutDialogType.TERMS_OF_SERVICE }
+                )
+                AboutDivider()
+                AboutActionRow(
+                    title = "Open-Source Licenses",
+                    onClick = { activeDialog = AboutDialogType.OPEN_SOURCE_LICENSES }
+                )
+            }
+
+            // Section E: Connect / GitHub
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f),
+                        shape = CardShape
+                    )
+                    .clickable { openGitHub() },
+                shape = CardShape,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.spacing.lg),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Code,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
+                        Column {
+                            Text(
+                                text = "KharchaFlow on GitHub",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Explore the open-source repository & contribute",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = "Open GitHub",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
+        }
+    }
+
+    // Detail & Legal Dialogs
+    activeDialog?.let { dialogType ->
+        when (dialogType) {
+            AboutDialogType.PRIVACY_SECURITY_DETAILS -> {
+                AboutLegalDialog(
+                    title = "Privacy & Security Architecture",
+                    content = """
+                        KharchaFlow is architected with strict on-device privacy as its core principle:
+
+                        • 100% Local Storage: All financial records, accounts, transactions, categories, budgets, and recurring schedules are stored exclusively on your device in a local SQLite database (managed by Room).
+
+                        • Zero Telemetry: KharchaFlow does not run proprietary backend servers to collect user financial data. The application contains zero advertising networks and zero third-party analytics SDKs.
+
+                        • Optional Cloud Backup: When you choose to link Google Drive, backups are stored in your personal Google Drive private Application Data folder (appDataFolder). Other apps cannot access KharchaFlow backups, and KharchaFlow cannot access your personal Drive documents.
+
+                        • On-Device App Lock: Protects your financial records using biometric authentication or salted SHA-256 PIN security. Enabling App Lock automatically enables window security (FLAG_SECURE) to prevent unauthorized screenshots and recent-apps preview capture.
+
+                        • Full User Control: You maintain complete ownership of your personal financial records. You can export JSON backups, restore records, or clear all data at any time.
+                    """.trimIndent(),
+                    onDismiss = { activeDialog = null }
+                )
+            }
+            AboutDialogType.PRIVACY_POLICY -> {
+                AboutLegalDialog(
+                    title = "Privacy Policy",
+                    content = """
+                        Effective Date: August 2026
+
+                        1. Information Collection and Handling
+                        KharchaFlow is designed as an offline-first personal finance application. All personal financial entries, notes, categories, and account balances remain solely on your local Android device. We do not transmit, collect, monetize, or sell your financial data.
+
+                        2. Device Permissions
+                        • Biometric / Fingerprint: Used strictly on-device to verify your identity when App Lock is enabled.
+                        • Notifications: Used strictly for local scheduled reminders (such as daily expense check-in, budget threshold alerts, and recurring payment reminders) scheduled via Android AlarmManager/WorkManager on-device.
+                        • Google Account (Optional): Used solely for OAuth 2.0 authentication if you opt in to backup your database to your private Google Drive app data storage.
+
+                        3. Third-Party Services
+                        KharchaFlow does not embed third-party advertising SDKs, marketing trackers, or commercial telemetry frameworks.
+
+                        4. User Rights and Data Deletion
+                        You have complete control over your data. You can delete individual transactions, reset categories, or delete all application data directly through the in-app Settings.
+                    """.trimIndent(),
+                    onDismiss = { activeDialog = null }
+                )
+            }
+            AboutDialogType.TERMS_OF_SERVICE -> {
+                AboutLegalDialog(
+                    title = "Terms of Service & Disclaimer",
+                    content = """
+                        1. Personal Expense Tracking Utility
+                        KharchaFlow is an offline-first bookkeeping and expense tracking tool provided solely for personal informational and record-keeping purposes.
+
+                        2. No Financial, Legal, or Tax Advice
+                        KharchaFlow is not a bank, deposit-taking institution, credit provider, investment broker, or licensed financial advisor. The calculations, budget indicators, and summaries generated within the app do not constitute financial, investment, accounting, tax, or legal advice.
+
+                        3. User Responsibility
+                        Users are solely responsible for verifying the accuracy of transaction records, managing backup archives, and securing access to their physical devices and App Lock credentials.
+
+                        4. Limitation of Liability
+                        To the maximum extent permitted by applicable law, KharchaFlow and its developers shall not be liable for any financial decisions, loss of data, calculation discrepancies, or damages resulting from the use of this software.
+                    """.trimIndent(),
+                    onDismiss = { activeDialog = null }
+                )
+            }
+            AboutDialogType.OPEN_SOURCE_LICENSES -> {
+                AboutLegalDialog(
+                    title = "Open-Source Licenses",
+                    content = """
+                        KharchaFlow is free and open-source software licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+                        Copyright (C) 2026 Vinay Nalavade
+
+                        This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+                        This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+                        Open-Source Libraries & Dependencies:
+                        • AndroidX Jetpack & Jetpack Compose (AOSP / Google) — Apache License 2.0
+                        • Kotlin & Kotlin Coroutines (JetBrains) — Apache License 2.0
+                        • AndroidX Room & SQLite (AOSP / Google) — Apache License 2.0
+                        • Material Design 3 Components (Google) — Apache License 2.0
+                    """.trimIndent(),
+                    onDismiss = { activeDialog = null }
+                )
+            }
         }
     }
 }
@@ -297,9 +527,76 @@ private fun AboutInfoRow(
 }
 
 @Composable
+private fun AboutActionRow(
+    title: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Icon(
+            imageVector = Icons.Default.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+@Composable
 private fun AboutDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(vertical = 6.dp),
         color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+    )
+}
+
+@Composable
+private fun AboutLegalDialog(
+    title: String,
+    content: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = content,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = MaterialTheme.typography.bodySmall.lineHeight
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss, shape = ButtonShape) {
+                Text(text = "Close", fontWeight = FontWeight.Bold)
+            }
+        },
+        shape = CardShape,
+        containerColor = MaterialTheme.colorScheme.surface
     )
 }

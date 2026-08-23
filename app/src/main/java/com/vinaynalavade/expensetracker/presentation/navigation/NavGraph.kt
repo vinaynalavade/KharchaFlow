@@ -297,6 +297,7 @@ fun NavGraph(
                     container.setAutoLockDurationUseCase,
                     container.setHideContentInRecentsUseCase,
                     container.disableAppLockUseCase,
+                    container.securePinManager,
                     container.userPreferencesRepository,
                     container.rescheduleAllRemindersUseCase,
                     container.getGoogleBackupStateUseCase,

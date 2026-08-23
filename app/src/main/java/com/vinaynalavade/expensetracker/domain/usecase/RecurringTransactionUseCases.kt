@@ -24,6 +24,9 @@ class SaveRecurringTransactionUseCase(
         if (item.amount.isZero || item.amount.isNegative) {
             return AppResult.Error(AppError.ValidationError("Amount must be greater than zero.", "amount"))
         }
+        if (item.dayOfMonth !in 1..31) {
+            return AppResult.Error(AppError.ValidationError("Day of month must be between 1 and 31.", "dayOfMonth"))
+        }
 
         return if (item.id == 0L) {
             recurringTransactionRepository.insertRecurringTransaction(item)

@@ -20,8 +20,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
 import java.time.YearMonth
@@ -46,27 +48,39 @@ class WidgetFinancialSummaryTest {
 
     @Test
     fun testEmptyStateFinancialSummary() = runBlocking {
-        val userPrefs = UserPreferences(openingBalanceSubunits = 100000L) // ₹1,000 Opening Balance
+        val userPrefs = UserPreferences(openingBalanceSubunits = 100000L)
         val fakeTxRepo = FakeTransactionRepository(emptyList())
         val fakePrefsRepo = FakeUserPreferencesRepository(userPrefs)
 
         val useCase = GetWidgetFinancialSummaryUseCase(fakeTxRepo, fakePrefsRepo)
         val summary = useCase().first()
 
-        assertEquals(100000L, summary.balance.subunits)
+        assertEquals(0L, summary.todayExpense.subunits)
         assertEquals(0L, summary.monthlyIncome.subunits)
         assertEquals(0L, summary.monthlyExpense.subunits)
+        assertNull(summary.monthlyBudgetLimit)
+        assertNull(summary.remainingBudget)
+        assertFalse(summary.isOverBudget)
         assertNull(summary.latestTransaction)
     }
 
     @Test
-    fun testCurrentMonthAndAllTimeCalculations() = runBlocking {
+    fun testTodayAndCurrentMonthExpenseCalculations() = runBlocking {
+        val today = LocalDate.now()
         val currentMonth = YearMonth.now()
-        val currentMonthMidEpoch = DateTimeUtils.getStartOfMonthEpoch(currentMonth) + (10 * 24 * 60 * 60 * 1000L)
-        val previousMonthEpoch = DateTimeUtils.getStartOfMonthEpoch(currentMonth) - (15 * 24 * 60 * 60 * 1000L)
+        val startOfToday = DateTimeUtils.getStartOfDayEpoch(today)
+        val startOfMonth = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
+        val previousMonthEpoch = startOfMonth - (15 * 24 * 60 * 60 * 1000L)
+
+        // Earlier in the current month (5 days before today, or at start of month if today is early)
+        val earlierThisMonthEpoch = if (startOfToday > startOfMonth + 86400000L) {
+            startOfToday - 86400000L
+        } else {
+            startOfMonth + 1000L
+        }
 
         val transactions = listOf(
-            // Previous month income: ₹50,000
+            // 1. Previous month income: ₹50,000 (excluded from this month & today)
             Transaction(
                 id = 1L,
                 amount = Amount(5000000L),
@@ -75,7 +89,7 @@ class WidgetFinancialSummaryTest {
                 timestamp = previousMonthEpoch,
                 paymentMethod = PaymentMethod.BANK_ACCOUNT
             ),
-            // Previous month expense: ₹10,000
+            // 2. Previous month expense: ₹10,000 (excluded from this month & today)
             Transaction(
                 id = 2L,
                 amount = Amount(1000000L),
@@ -84,55 +98,133 @@ class WidgetFinancialSummaryTest {
                 timestamp = previousMonthEpoch + 1000L,
                 paymentMethod = PaymentMethod.UPI
             ),
-            // Current month income: ₹35,000
+            // 3. Current month income: ₹35,000 (included in monthly income, excluded from today's expense)
             Transaction(
                 id = 3L,
                 amount = Amount(3500000L),
                 type = TransactionType.INCOME,
                 category = salaryCategory,
-                timestamp = currentMonthMidEpoch,
+                timestamp = startOfToday + 1000L,
                 paymentMethod = PaymentMethod.BANK_ACCOUNT
             ),
-            // Current month expense: ₹12,500
+            // 4. Earlier this month expense: ₹8,000 (included in monthly expense, excluded from today's expense)
             Transaction(
                 id = 4L,
-                amount = Amount(1250000L),
+                amount = Amount(800000L),
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
-                timestamp = currentMonthMidEpoch + 5000L,
+                timestamp = earlierThisMonthEpoch,
                 paymentMethod = PaymentMethod.UPI
+            ),
+            // 5. Today's expense 1: ₹1,500 (included in both today's expense & monthly expense)
+            Transaction(
+                id = 5L,
+                amount = Amount(150000L),
+                type = TransactionType.EXPENSE,
+                category = foodCategory,
+                timestamp = startOfToday + 5000L,
+                paymentMethod = PaymentMethod.UPI
+            ),
+            // 6. Today's expense 2: ₹2,000 (included in both today's expense & monthly expense)
+            Transaction(
+                id = 6L,
+                amount = Amount(200000L),
+                type = TransactionType.EXPENSE,
+                category = foodCategory,
+                timestamp = startOfToday + 6000L,
+                paymentMethod = PaymentMethod.CASH
             )
         )
 
-        // Starting balance: ₹5,000
-        val userPrefs = UserPreferences(openingBalanceSubunits = 500000L)
+        val userPrefs = UserPreferences(
+            monthlyBudgetLimitSubunits = 2000000L // ₹20,000 Budget
+        )
         val fakeTxRepo = FakeTransactionRepository(transactions)
         val fakePrefsRepo = FakeUserPreferencesRepository(userPrefs)
 
         val useCase = GetWidgetFinancialSummaryUseCase(fakeTxRepo, fakePrefsRepo)
-        val summary = useCase().first()
+        val summary = useCase.forRanges(
+            startOfDayEpoch = startOfToday,
+            endOfDayEpoch = DateTimeUtils.getEndOfDayEpoch(today),
+            startOfMonthEpoch = startOfMonth,
+            endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
+        ).first()
 
-        // 1. Current balance = 5,000 + (50,000 - 10,000) + (35,000 - 12,500) = 5,000 + 40,000 + 22,500 = ₹67,500 (6,750,000 subunits)
-        assertEquals(6750000L, summary.balance.subunits)
+        // 1. Today's expense = 1,500 + 2,000 = ₹3,500 (350,000 subunits)
+        assertEquals(350000L, summary.todayExpense.subunits)
 
-        // 2. Current month income only = ₹35,000 (3,500,000 subunits)
+        // 2. Current month expense = 8,000 + 1,500 + 2,000 = ₹11,500 (1,150,000 subunits)
+        assertEquals(1150000L, summary.monthlyExpense.subunits)
+
+        // 3. Current month income = ₹35,000 (3,500,000 subunits)
         assertEquals(3500000L, summary.monthlyIncome.subunits)
 
-        // 3. Current month expense only = ₹12,500 (1,250,000 subunits)
-        assertEquals(1250000L, summary.monthlyExpense.subunits)
+        // 4. Budget remaining = 20,000 - 11,500 = ₹8,500 (850,000 subunits)
+        assertEquals(2000000L, summary.monthlyBudgetLimit?.subunits)
+        assertEquals(850000L, summary.remainingBudget?.subunits)
+        assertFalse(summary.isOverBudget)
 
-        // 4. Latest transaction = Transaction 4
+        // 5. Latest transaction = Transaction 6
         assertNotNull(summary.latestTransaction)
-        assertEquals(4L, summary.latestTransaction?.id)
-        assertEquals(1250000L, summary.latestTransaction?.amount?.subunits)
+        assertEquals(6L, summary.latestTransaction?.id)
+        assertEquals(200000L, summary.latestTransaction?.amount?.subunits)
         assertEquals(TransactionType.EXPENSE, summary.latestTransaction?.type)
-        assertEquals("Food", summary.latestTransaction?.categoryName)
+    }
+
+    @Test
+    fun testBudgetStatusCalculations() = runBlocking {
+        val today = LocalDate.now()
+        val currentMonth = YearMonth.now()
+        val startOfToday = DateTimeUtils.getStartOfDayEpoch(today)
+        val startOfMonth = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
+
+        val transactions = listOf(
+            Transaction(
+                id = 1L,
+                amount = Amount(1500000L), // ₹15,000 Expense
+                type = TransactionType.EXPENSE,
+                category = foodCategory,
+                timestamp = startOfToday + 1000L,
+                paymentMethod = PaymentMethod.UPI
+            )
+        )
+
+        val fakeTxRepo = FakeTransactionRepository(transactions)
+
+        // Case A: Over Budget (Limit ₹10,000, Expense ₹15,000)
+        val overBudgetPrefs = UserPreferences(monthlyBudgetLimitSubunits = 1000000L)
+        val useCaseA = GetWidgetFinancialSummaryUseCase(fakeTxRepo, FakeUserPreferencesRepository(overBudgetPrefs))
+        val summaryA = useCaseA.forRanges(
+            startOfDayEpoch = startOfToday,
+            endOfDayEpoch = DateTimeUtils.getEndOfDayEpoch(today),
+            startOfMonthEpoch = startOfMonth,
+            endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
+        ).first()
+
+        assertTrue(summaryA.isOverBudget)
+        assertEquals(0L, summaryA.remainingBudget?.subunits)
+
+        // Case B: No Budget Set (Limit 0)
+        val noBudgetPrefs = UserPreferences(monthlyBudgetLimitSubunits = 0L)
+        val useCaseB = GetWidgetFinancialSummaryUseCase(fakeTxRepo, FakeUserPreferencesRepository(noBudgetPrefs))
+        val summaryB = useCaseB.forRanges(
+            startOfDayEpoch = startOfToday,
+            endOfDayEpoch = DateTimeUtils.getEndOfDayEpoch(today),
+            startOfMonthEpoch = startOfMonth,
+            endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
+        ).first()
+
+        assertNull(summaryB.monthlyBudgetLimit)
+        assertNull(summaryB.remainingBudget)
+        assertFalse(summaryB.isOverBudget)
     }
 
     @Test
     fun testPrecisionSafeFinancialCalculationWithLargeValues() = runBlocking {
+        val today = LocalDate.now()
         val currentMonth = YearMonth.now()
-        val now = DateTimeUtils.getStartOfMonthEpoch(currentMonth) + 10000L
+        val startOfToday = DateTimeUtils.getStartOfDayEpoch(today)
+        val startOfMonth = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
 
         val transactions = listOf(
             Transaction(
@@ -140,7 +232,7 @@ class WidgetFinancialSummaryTest {
                 amount = Amount(99999999999L), // ₹999,999,999.99
                 type = TransactionType.INCOME,
                 category = salaryCategory,
-                timestamp = now,
+                timestamp = startOfToday + 1000L,
                 paymentMethod = PaymentMethod.BANK_ACCOUNT
             ),
             Transaction(
@@ -148,7 +240,7 @@ class WidgetFinancialSummaryTest {
                 amount = Amount(123456789L), // ₹1,234,567.89
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
-                timestamp = now + 1000L,
+                timestamp = startOfToday + 2000L,
                 paymentMethod = PaymentMethod.UPI
             )
         )
@@ -158,11 +250,16 @@ class WidgetFinancialSummaryTest {
         val fakePrefsRepo = FakeUserPreferencesRepository(userPrefs)
 
         val useCase = GetWidgetFinancialSummaryUseCase(fakeTxRepo, fakePrefsRepo)
-        val summary = useCase().first()
+        val summary = useCase.forRanges(
+            startOfDayEpoch = startOfToday,
+            endOfDayEpoch = DateTimeUtils.getEndOfDayEpoch(today),
+            startOfMonthEpoch = startOfMonth,
+            endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
+        ).first()
 
-        assertEquals(99999999999L - 123456789L, summary.balance.subunits)
-        assertEquals(99999999999L, summary.monthlyIncome.subunits)
+        assertEquals(123456789L, summary.todayExpense.subunits)
         assertEquals(123456789L, summary.monthlyExpense.subunits)
+        assertEquals(99999999999L, summary.monthlyIncome.subunits)
     }
 
     @Test
@@ -210,3 +307,4 @@ class WidgetFinancialSummaryTest {
         override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
+

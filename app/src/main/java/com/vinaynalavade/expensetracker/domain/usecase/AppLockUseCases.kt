@@ -82,6 +82,34 @@ class DisableAppLockUseCase(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val appLockManager: AppLockManager
 ) {
+    suspend operator fun invoke(pin: String): AppResult<Unit> {
+        val verification = securePinManager.verifyPin(pin)
+        return when (verification) {
+            is PinVerificationResult.Success -> {
+                securePinManager.clearPin()
+                val result = userPreferencesRepository.setAppLockEnabled(false)
+                userPreferencesRepository.setBiometricEnabled(false)
+                appLockManager.unlock()
+                result
+            }
+            is PinVerificationResult.Incorrect -> {
+                val message = if (verification.remainingAttempts > 0) {
+                    "Incorrect PIN. ${verification.remainingAttempts} attempts remaining."
+                } else {
+                    "Incorrect PIN. Please try again."
+                }
+                AppResult.Error(AppError.SecurityError(message))
+            }
+            is PinVerificationResult.LockedOut -> {
+                AppResult.Error(
+                    AppError.SecurityError(
+                        "Too many incorrect attempts. Try again in ${verification.secondsRemaining} seconds."
+                    )
+                )
+            }
+        }
+    }
+
     suspend operator fun invoke(): AppResult<Unit> {
         securePinManager.clearPin()
         val result = userPreferencesRepository.setAppLockEnabled(false)

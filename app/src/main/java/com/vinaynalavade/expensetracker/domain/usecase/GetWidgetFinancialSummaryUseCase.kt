@@ -15,45 +15,52 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * UseCase to retrieve a precision-safe financial snapshot tailored for home screen widgets.
- * Combines opening balance, all-time net change for current balance, and monthly income/expense metrics.
+ * UseCase to retrieve a consolidated, precision-safe financial snapshot tailored for home screen widgets.
+ * Computes today's expenses, current month's expenses, monthly income, and budget status.
  */
 class GetWidgetFinancialSummaryUseCase(
     private val transactionRepository: TransactionRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) {
-    operator fun invoke(): Flow<WidgetFinancialSummary> =
-        combine(
+    operator fun invoke(
+        today: LocalDate = LocalDate.now(),
+        currentMonth: YearMonth = YearMonth.now()
+    ): Flow<WidgetFinancialSummary> {
+        val startOfDayEpoch = DateTimeUtils.getStartOfDayEpoch(today)
+        val endOfDayEpoch = DateTimeUtils.getEndOfDayEpoch(today)
+        val startOfMonthEpoch = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
+        val endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
+
+        return combine(
             transactionRepository.getTransactions(),
             userPreferencesRepository.getUserPreferences()
         ) { transactions, preferences ->
-            val startingBalance = preferences.openingBalance
-            var totalAllTimeIncome = 0L
-            var totalAllTimeExpense = 0L
-
-            val currentMonth = YearMonth.now()
-            val startOfMonthEpoch = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
-            val endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
-
+            var todayExpenseSubunits = 0L
             var monthlyIncomeSubunits = 0L
             var monthlyExpenseSubunits = 0L
 
             for (tx in transactions) {
-                if (tx.type == TransactionType.INCOME) {
-                    totalAllTimeIncome += tx.amount.subunits
-                    if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
-                        monthlyIncomeSubunits += tx.amount.subunits
+                if (tx.type == TransactionType.EXPENSE) {
+                    if (tx.timestamp in startOfDayEpoch..endOfDayEpoch) {
+                        todayExpenseSubunits += tx.amount.subunits
                     }
-                } else {
-                    totalAllTimeExpense += tx.amount.subunits
                     if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
                         monthlyExpenseSubunits += tx.amount.subunits
+                    }
+                } else if (tx.type == TransactionType.INCOME) {
+                    if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
+                        monthlyIncomeSubunits += tx.amount.subunits
                     }
                 }
             }
 
-            val netChange = totalAllTimeIncome - totalAllTimeExpense
-            val currentBalance = startingBalance + Amount(netChange)
+            val budgetLimitSubunits = preferences.monthlyBudgetLimitSubunits
+            val monthlyBudgetLimit = if (budgetLimitSubunits > 0L) Amount(budgetLimitSubunits) else null
+            val remainingBudget = if (budgetLimitSubunits > 0L) {
+                val rem = budgetLimitSubunits - monthlyExpenseSubunits
+                Amount(if (rem > 0L) rem else 0L)
+            } else null
+            val isOverBudget = budgetLimitSubunits > 0L && (monthlyExpenseSubunits > budgetLimitSubunits)
 
             val latestTx = transactions.maxByOrNull { it.timestamp }?.let {
                 WidgetTransactionSummary(
@@ -65,15 +72,83 @@ class GetWidgetFinancialSummaryUseCase(
                 )
             }
 
-            val monthFormatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
-            val monthLabel = LocalDate.now().format(monthFormatter)
+            val monthFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.getDefault())
+            val monthLabel = today.format(monthFormatter)
 
             WidgetFinancialSummary(
-                balance = currentBalance,
-                monthlyIncome = Amount(monthlyIncomeSubunits),
+                todayExpense = Amount(todayExpenseSubunits),
                 monthlyExpense = Amount(monthlyExpenseSubunits),
-                latestTransaction = latestTx,
-                monthLabel = monthLabel
+                monthlyIncome = Amount(monthlyIncomeSubunits),
+                monthlyBudgetLimit = monthlyBudgetLimit,
+                remainingBudget = remainingBudget,
+                isOverBudget = isOverBudget,
+                monthLabel = monthLabel,
+                latestTransaction = latestTx
+            )
+        }
+    }
+
+    /**
+     * Explicit epoch-range variant for tests and custom range queries.
+     */
+    fun forRanges(
+        startOfDayEpoch: Long,
+        endOfDayEpoch: Long,
+        startOfMonthEpoch: Long,
+        endOfMonthEpoch: Long,
+        monthLabel: String = "This Month"
+    ): Flow<WidgetFinancialSummary> =
+        combine(
+            transactionRepository.getTransactions(),
+            userPreferencesRepository.getUserPreferences()
+        ) { transactions, preferences ->
+            var todayExpenseSubunits = 0L
+            var monthlyIncomeSubunits = 0L
+            var monthlyExpenseSubunits = 0L
+
+            for (tx in transactions) {
+                if (tx.type == TransactionType.EXPENSE) {
+                    if (tx.timestamp in startOfDayEpoch..endOfDayEpoch) {
+                        todayExpenseSubunits += tx.amount.subunits
+                    }
+                    if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
+                        monthlyExpenseSubunits += tx.amount.subunits
+                    }
+                } else if (tx.type == TransactionType.INCOME) {
+                    if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
+                        monthlyIncomeSubunits += tx.amount.subunits
+                    }
+                }
+            }
+
+            val budgetLimitSubunits = preferences.monthlyBudgetLimitSubunits
+            val monthlyBudgetLimit = if (budgetLimitSubunits > 0L) Amount(budgetLimitSubunits) else null
+            val remainingBudget = if (budgetLimitSubunits > 0L) {
+                val rem = budgetLimitSubunits - monthlyExpenseSubunits
+                Amount(if (rem > 0L) rem else 0L)
+            } else null
+            val isOverBudget = budgetLimitSubunits > 0L && (monthlyExpenseSubunits > budgetLimitSubunits)
+
+            val latestTx = transactions.maxByOrNull { it.timestamp }?.let {
+                WidgetTransactionSummary(
+                    id = it.id,
+                    amount = it.amount,
+                    type = it.type,
+                    categoryName = it.category.name,
+                    timestamp = it.timestamp
+                )
+            }
+
+            WidgetFinancialSummary(
+                todayExpense = Amount(todayExpenseSubunits),
+                monthlyExpense = Amount(monthlyExpenseSubunits),
+                monthlyIncome = Amount(monthlyIncomeSubunits),
+                monthlyBudgetLimit = monthlyBudgetLimit,
+                remainingBudget = remainingBudget,
+                isOverBudget = isOverBudget,
+                monthLabel = monthLabel,
+                latestTransaction = latestTx
             )
         }
 }
+

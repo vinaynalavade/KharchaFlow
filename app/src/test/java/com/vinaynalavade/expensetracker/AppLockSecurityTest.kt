@@ -116,7 +116,78 @@ class AppLockSecurityTest {
     }
 
     @Test
-    fun testDisableAppLockWorkflow() = runBlocking {
+    fun testDisableAppLockWithValidPinSuccess() = runBlocking {
+        val setAppLockUseCase = SetAppLockEnabledUseCase(fakeUserPrefsRepo, appLockManager)
+        val disableAppLockUseCase = DisableAppLockUseCase(securePinManager, fakeUserPrefsRepo, appLockManager)
+
+        securePinManager.savePin("1234")
+        setAppLockUseCase(true)
+        assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        assertTrue(securePinManager.isPinSet())
+
+        // Disable with valid PIN
+        val result = disableAppLockUseCase("1234")
+        assertTrue(result is AppResult.Success)
+        assertFalse(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        assertFalse(securePinManager.isPinSet())
+    }
+
+    @Test
+    fun testDisableAppLockWithInvalidPinFailsAndPreservesAppLock() = runBlocking {
+        val setAppLockUseCase = SetAppLockEnabledUseCase(fakeUserPrefsRepo, appLockManager)
+        val disableAppLockUseCase = DisableAppLockUseCase(securePinManager, fakeUserPrefsRepo, appLockManager)
+
+        securePinManager.savePin("1234")
+        setAppLockUseCase(true)
+        assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        assertTrue(securePinManager.isPinSet())
+
+        // Attempt disable with incorrect PIN
+        val result = disableAppLockUseCase("9999")
+        assertTrue(result is AppResult.Error)
+        assertEquals("Incorrect PIN. 4 attempts remaining.", (result as AppResult.Error).error.message)
+
+        // App Lock state and PIN vault must remain completely untouched
+        assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        assertTrue(securePinManager.isPinSet())
+
+        // Verify existing PIN "1234" still unlocks
+        val verifyOld = securePinManager.verifyPin("1234")
+        assertTrue(verifyOld is PinVerificationResult.Success)
+    }
+
+    @Test
+    fun testDisableAppLockLockoutAfterMaxFailedAttempts() = runBlocking {
+        val setAppLockUseCase = SetAppLockEnabledUseCase(fakeUserPrefsRepo, appLockManager)
+        val disableAppLockUseCase = DisableAppLockUseCase(securePinManager, fakeUserPrefsRepo, appLockManager)
+
+        securePinManager.savePin("1234")
+        setAppLockUseCase(true)
+
+        // 1 to 4 failed attempts
+        for (i in 1..4) {
+            val result = disableAppLockUseCase("0000")
+            assertTrue(result is AppResult.Error)
+            assertTrue((result as AppResult.Error).error.message.contains("${5 - i} attempts remaining"))
+            assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        }
+
+        // 5th failed attempt triggers lockout
+        val lockoutResult = disableAppLockUseCase("0000")
+        assertTrue(lockoutResult is AppResult.Error)
+        assertTrue((lockoutResult as AppResult.Error).error.message.contains("Too many incorrect attempts"))
+        assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+        assertTrue(securePinManager.getLockoutSecondsRemaining() > 0)
+
+        // Even correct PIN is rejected during active lockout
+        val blockedAttempt = disableAppLockUseCase("1234")
+        assertTrue(blockedAttempt is AppResult.Error)
+        assertTrue((blockedAttempt as AppResult.Error).error.message.contains("Too many incorrect attempts"))
+        assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
+    }
+
+    @Test
+    fun testDirectAdministrativeDisableAppLockWorkflow() = runBlocking {
         val setAppLockUseCase = SetAppLockEnabledUseCase(fakeUserPrefsRepo, appLockManager)
         val disableAppLockUseCase = DisableAppLockUseCase(securePinManager, fakeUserPrefsRepo, appLockManager)
 
@@ -124,7 +195,7 @@ class AppLockSecurityTest {
         setAppLockUseCase(true)
         assertTrue(fakeUserPrefsRepo.currentPrefs.appLockEnabled)
 
-        // Disable App Lock
+        // Direct reset without PIN
         val result = disableAppLockUseCase()
         assertTrue(result is AppResult.Success)
         assertFalse(fakeUserPrefsRepo.currentPrefs.appLockEnabled)

@@ -74,4 +74,21 @@ object DateTimeUtils {
 
     fun getEndOfMonthEpoch(yearMonth: YearMonth = YearMonth.now(), zoneId: ZoneId = ZoneId.systemDefault()): Long =
         yearMonth.atEndOfMonth().plusDays(1).atStartOfDay(zoneId).minusNanos(1).toInstant().toEpochMilli()
+
+    /**
+     * Computes the actual occurrence day for a given target month, correctly
+     * clamping days like 29, 30, or 31 to the last valid day of shorter months (e.g. February).
+     */
+    fun getScheduledDayOfMonth(configuredDay: Int, targetMonth: YearMonth): Int {
+        val maxDays = targetMonth.lengthOfMonth()
+        return configuredDay.coerceIn(1, 31).coerceAtMost(maxDays)
+    }
+
+    /**
+     * Computes the scheduled occurrence [LocalDate] for a configured day of month.
+     */
+    fun getScheduledDate(configuredDay: Int, targetMonth: YearMonth): LocalDate {
+        val day = getScheduledDayOfMonth(configuredDay, targetMonth)
+        return targetMonth.atDay(day)
+    }
 }

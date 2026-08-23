@@ -23,6 +23,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import java.time.LocalDate
+import java.time.YearMonth
 
 class TodayExpenseWidgetTest {
 
@@ -292,17 +293,21 @@ class TodayExpenseWidgetTest {
         assertEquals(100000000000L, result.subunits)
     }
 
-    // ─── Test 7: Existing widget use case regression ───
+    // ─── Test 7: Consolidated widget use case regression ───
 
     @Test
-    fun testExistingWidgetUseCaseRegression() = runBlocking {
+    fun testConsolidatedWidgetUseCaseRegression() = runBlocking {
         val today = LocalDate.now()
+        val currentMonth = YearMonth.now()
         val startOfDay = DateTimeUtils.getStartOfDayEpoch(today)
+        val endOfDay = DateTimeUtils.getEndOfDayEpoch(today)
+        val startOfMonth = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
+        val endOfMonth = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
 
         val transactions = listOf(
             Transaction(
                 id = 1L,
-                amount = Amount(100000L),
+                amount = Amount(100000L), // ₹1,000 Income
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = startOfDay + 1000L,
@@ -310,7 +315,7 @@ class TodayExpenseWidgetTest {
             ),
             Transaction(
                 id = 2L,
-                amount = Amount(25000L),
+                amount = Amount(25000L), // ₹250 Expense
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfDay + 2000L,
@@ -322,36 +327,33 @@ class TodayExpenseWidgetTest {
         val fakeTxRepo = FakeTxRepository(transactions)
         val fakePrefsRepo = FakePrefsRepository(userPrefs)
 
-        // Existing use case should still work correctly
+        // Consolidated use case provides today's expense, monthly expense, and monthly income
         val widgetSummaryUseCase = GetWidgetFinancialSummaryUseCase(fakeTxRepo, fakePrefsRepo)
-        val summary = widgetSummaryUseCase().first()
+        val summary = widgetSummaryUseCase.forRanges(
+            startOfDayEpoch = startOfDay,
+            endOfDayEpoch = endOfDay,
+            startOfMonthEpoch = startOfMonth,
+            endOfMonthEpoch = endOfMonth
+        ).first()
 
-        // Balance = 500000 + (100000 - 25000) = 575000
-        assertEquals(575000L, summary.balance.subunits)
+        assertEquals(25000L, summary.todayExpense.subunits)
+        assertEquals(25000L, summary.monthlyExpense.subunits)
+        assertEquals(100000L, summary.monthlyIncome.subunits)
 
-        // New use case should also work correctly alongside
+        // Standalone use case also computes same today's expense correctly
         val todayExpenseUseCase = GetTodayExpenseUseCase(fakeTxRepo)
-        val endOfDay = DateTimeUtils.getEndOfDayEpoch(today)
         val todayExpense = todayExpenseUseCase.forDateRange(startOfDay, endOfDay).first()
 
         assertEquals(25000L, todayExpense.subunits)
     }
 
-    // ─── Test 8: Action constant collision check ───
+    // ─── Test 8: Action constant verification ───
 
     @Test
-    fun testActionConstantsAreDistinct() {
-        assertNotEquals(
-            WidgetUpdateManager.ACTION_WIDGET_REFRESH,
-            WidgetUpdateManager.ACTION_TODAY_WIDGET_REFRESH
-        )
+    fun testActionConstantsAreValid() {
         assertEquals(
             "com.vinaynalavade.expensetracker.ACTION_WIDGET_REFRESH",
             WidgetUpdateManager.ACTION_WIDGET_REFRESH
-        )
-        assertEquals(
-            "com.vinaynalavade.expensetracker.ACTION_TODAY_WIDGET_REFRESH",
-            WidgetUpdateManager.ACTION_TODAY_WIDGET_REFRESH
         )
     }
 
@@ -425,13 +427,8 @@ class TodayExpenseWidgetTest {
         // Quick Add widget: 200, 201, 202
         val quickAddCodes = setOf(200, 201, 202)
 
-        // Today Expense widget: 300, 301
-        val todayExpenseCodes = setOf(300, 301)
-
         // Verify mutually disjoint sets
         assertEquals(emptySet<Int>(), overviewCodes.intersect(quickAddCodes))
-        assertEquals(emptySet<Int>(), overviewCodes.intersect(todayExpenseCodes))
-        assertEquals(emptySet<Int>(), quickAddCodes.intersect(todayExpenseCodes))
     }
 
     // ─── Fakes ───
