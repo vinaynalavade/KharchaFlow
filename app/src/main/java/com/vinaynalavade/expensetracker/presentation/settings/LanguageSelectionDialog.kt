@@ -56,7 +56,9 @@ enum class AppLanguage(
             } else {
                 LocaleListCompat.forLanguageTags(languageCode)
             }
-            AppCompatDelegate.setApplicationLocales(appLocale)
+            if (AppCompatDelegate.getApplicationLocales() != appLocale) {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
         }
     }
 }

@@ -45,7 +45,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
-import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.presentation.components.AppBottomBar
 import com.vinaynalavade.expensetracker.presentation.components.BottomNavItems
 import com.vinaynalavade.expensetracker.presentation.components.QuickAddBottomSheet
@@ -53,7 +52,6 @@ import com.vinaynalavade.expensetracker.presentation.navigation.NavGraph
 import com.vinaynalavade.expensetracker.presentation.navigation.Screen
 import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
 import com.vinaynalavade.expensetracker.presentation.security.UnlockScreen
-import com.vinaynalavade.expensetracker.presentation.settings.AppLanguage
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.ExpenseTrackerTheme
 import com.vinaynalavade.expensetracker.presentation.widget.WidgetUpdateManager
@@ -86,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_ExpenseTracker)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -95,176 +94,167 @@ class MainActivity : AppCompatActivity() {
         val initialStartRoute = intent?.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
 
         setContent {
-            val userPreferencesState by container.getUserPreferencesUseCase()
+            val userPreferences by container.getUserPreferencesUseCase()
                 .collectAsStateWithLifecycle(initialValue = null)
             val isSessionUnlocked by container.appLockManager.isSessionUnlocked
                 .collectAsStateWithLifecycle()
 
-            val userPreferences = userPreferencesState
-            if (userPreferences == null) {
-                // Calm background while DataStore loads initial state (under 1 frame)
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {}
-                return@setContent
-            }
-
-            // Sync locale on startup from persisted preferences if configured
-            LaunchedEffect(userPreferences.appLanguage) {
-                if (userPreferences.appLanguage.isNotBlank() && userPreferences.appLanguage != "SYSTEM") {
-                    AppLanguage.applyLocale(userPreferences.appLanguage)
-                }
-            }
-
-            // Runtime notification permission handling for Android 13+ (API 33+)
-            val context = LocalContext.current
-            val coroutineScope = rememberCoroutineScope()
-            val notificationPermissionLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission()
-            ) { isGranted ->
-                coroutineScope.launch {
-                    if (isGranted) {
-                        container.userPreferencesRepository.setNotificationsMasterEnabled(true)
-                        container.userPreferencesRepository.setDailyReminder(true, 20, 0)
-                        container.dailyReminderScheduler.schedule(20, 0)
-                    } else {
-                        container.userPreferencesRepository.setNotificationsMasterEnabled(false)
-                        container.userPreferencesRepository.setDailyReminder(false, 20, 0)
-                        container.dailyReminderScheduler.cancel()
+            val currentPrefs = userPreferences
+            if (currentPrefs != null) {
+                // Runtime notification permission handling for Android 13+ (API 33+)
+                val context = LocalContext.current
+                val coroutineScope = rememberCoroutineScope()
+                val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission()
+                ) { isGranted ->
+                    coroutineScope.launch {
+                        if (isGranted) {
+                            container.userPreferencesRepository.setNotificationsMasterEnabled(true)
+                            container.userPreferencesRepository.setDailyReminder(true, 20, 0)
+                            container.dailyReminderScheduler.schedule(20, 0)
+                        } else {
+                            container.userPreferencesRepository.setNotificationsMasterEnabled(false)
+                            container.userPreferencesRepository.setDailyReminder(false, 20, 0)
+                            container.dailyReminderScheduler.cancel()
+                        }
                     }
                 }
-            }
 
-            var hasPromptedNotificationPermission by rememberSaveable { mutableStateOf(false) }
-            LaunchedEffect(userPreferences.isFirstLaunch) {
-                if (userPreferences.isFirstLaunch && !hasPromptedNotificationPermission) {
-                    hasPromptedNotificationPermission = true
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                var hasPromptedNotificationPermission by rememberSaveable { mutableStateOf(false) }
+                LaunchedEffect(currentPrefs.isFirstLaunch) {
+                    if (currentPrefs.isFirstLaunch && !hasPromptedNotificationPermission) {
+                        hasPromptedNotificationPermission = true
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                container.userPreferencesRepository.setNotificationsMasterEnabled(true)
+                                container.userPreferencesRepository.setDailyReminder(true, 20, 0)
+                                container.dailyReminderScheduler.schedule(20, 0)
+                            }
                         } else {
                             container.userPreferencesRepository.setNotificationsMasterEnabled(true)
                             container.userPreferencesRepository.setDailyReminder(true, 20, 0)
                             container.dailyReminderScheduler.schedule(20, 0)
                         }
+                    }
+                }
+
+                val isLocked = currentPrefs.appLockEnabled && !isSessionUnlocked
+
+                // Apply Window Privacy Flag (FLAG_SECURE)
+                LaunchedEffect(currentPrefs.appLockEnabled, currentPrefs.hideContentInRecents) {
+                    if (currentPrefs.appLockEnabled && currentPrefs.hideContentInRecents) {
+                        window.setFlags(
+                            WindowManager.LayoutParams.FLAG_SECURE,
+                            WindowManager.LayoutParams.FLAG_SECURE
+                        )
                     } else {
-                        container.userPreferencesRepository.setNotificationsMasterEnabled(true)
-                        container.userPreferencesRepository.setDailyReminder(true, 20, 0)
-                        container.dailyReminderScheduler.schedule(20, 0)
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                     }
                 }
-            }
 
-            val isLocked = userPreferences.appLockEnabled && !isSessionUnlocked
-
-            // Apply Window Privacy Flag (FLAG_SECURE)
-            LaunchedEffect(userPreferences.appLockEnabled, userPreferences.hideContentInRecents) {
-                if (userPreferences.appLockEnabled && userPreferences.hideContentInRecents) {
-                    window.setFlags(
-                        WindowManager.LayoutParams.FLAG_SECURE,
-                        WindowManager.LayoutParams.FLAG_SECURE
-                    )
-                } else {
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-                }
-            }
-
-            // Lifecycle Observer for Auto-Lock
-            val lifecycleOwner = LocalLifecycleOwner.current
-            DisposableEffect(lifecycleOwner, userPreferences.appLockEnabled, userPreferences.autoLockDurationSeconds) {
-                val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_START) {
-                        container.appLockManager.onAppForegrounded(
-                            appLockEnabled = userPreferences.appLockEnabled,
-                            autoLockDurationSeconds = userPreferences.autoLockDurationSeconds
-                        )
-                    }
-                }
-                lifecycleOwner.lifecycle.addObserver(observer)
-                onDispose {
-                    lifecycleOwner.lifecycle.removeObserver(observer)
-                }
-            }
-
-            ExpenseTrackerTheme(
-                themeMode = userPreferences.themeMode,
-                dynamicColor = userPreferences.useDynamicColors,
-                currency = userPreferences.currency
-            ) {
-                if (isLocked) {
-                    BackHandler {
-                        moveTaskToBack(true)
-                    }
-
-                    val unlockViewModel: AppLockViewModel = viewModel(
-                        factory = AppLockViewModel.Factory(
-                            container.getUserPreferencesUseCase,
-                            container.appLockManager,
-                            container.securePinManager,
-                            container.verifyPinUseCase,
-                            container.savePinUseCase,
-                            container.changePinUseCase,
-                            container.setAppLockEnabledUseCase,
-                            container.setBiometricEnabledUseCase,
-                            container.disableAppLockUseCase
-                        )
-                    )
-
-                    UnlockScreen(
-                        viewModel = unlockViewModel,
-                        onUnlockSuccess = {
-                            container.appLockManager.unlock()
+                // Lifecycle Observer for Auto-Lock
+                val lifecycleOwner = LocalLifecycleOwner.current
+                DisposableEffect(lifecycleOwner, currentPrefs.appLockEnabled, currentPrefs.autoLockDurationSeconds) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_START) {
+                            container.appLockManager.onAppForegrounded(
+                                appLockEnabled = currentPrefs.appLockEnabled,
+                                autoLockDurationSeconds = currentPrefs.autoLockDurationSeconds
+                            )
                         }
-                    )
-                } else {
-                    val navController = rememberNavController()
-                    var handledInitialRoute by rememberSaveable { mutableStateOf(false) }
+                    }
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
+                }
 
-                    LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
-                        val route = pendingNavRoute.value ?: if (!handledInitialRoute) initialStartRoute else null
-                        if (route != null) {
-                            handledInitialRoute = true
-                            pendingNavRoute.value = null
-                            when (route) {
-                                NotificationHelper.ROUTE_ADD_EXPENSE -> {
-                                    navController.navigate(Screen.AddExpense.route)
-                                }
-                                NotificationHelper.ROUTE_ADD_INCOME -> {
-                                    navController.navigate(Screen.AddIncome.route)
-                                }
-                                NotificationHelper.ROUTE_TRANSACTIONS, "transactions" -> {
-                                    navController.navigate(Screen.Transactions.createRoute()) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                ExpenseTrackerTheme(
+                    themeMode = currentPrefs.themeMode,
+                    dynamicColor = currentPrefs.useDynamicColors,
+                    currency = currentPrefs.currency
+                ) {
+                    if (isLocked) {
+                        BackHandler {
+                            moveTaskToBack(true)
+                        }
+
+                        val unlockViewModel: AppLockViewModel = viewModel(
+                            factory = AppLockViewModel.Factory(
+                                container.getUserPreferencesUseCase,
+                                container.appLockManager,
+                                container.securePinManager,
+                                container.verifyPinUseCase,
+                                container.savePinUseCase,
+                                container.changePinUseCase,
+                                container.setAppLockEnabledUseCase,
+                                container.setBiometricEnabledUseCase,
+                                container.disableAppLockUseCase
+                            )
+                        )
+
+                        UnlockScreen(
+                            viewModel = unlockViewModel,
+                            onUnlockSuccess = {
+                                container.appLockManager.unlock()
+                            }
+                        )
+                    } else {
+                        val navController = rememberNavController()
+                        var handledInitialRoute by rememberSaveable { mutableStateOf(false) }
+
+                        LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
+                            val route = pendingNavRoute.value ?: if (!handledInitialRoute) initialStartRoute else null
+                            if (route != null) {
+                                handledInitialRoute = true
+                                pendingNavRoute.value = null
+                                when (route) {
+                                    NotificationHelper.ROUTE_ADD_EXPENSE -> {
+                                        navController.navigate(Screen.AddExpense.route)
                                     }
-                                }
-                                NotificationHelper.ROUTE_RECURRING -> {
-                                    navController.navigate(Screen.RecurringTransactions.route)
-                                }
-                                NotificationHelper.ROUTE_DASHBOARD -> {
-                                    navController.navigate(Screen.Dashboard.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
+                                    NotificationHelper.ROUTE_ADD_INCOME -> {
+                                        navController.navigate(Screen.AddIncome.route)
+                                    }
+                                    NotificationHelper.ROUTE_TRANSACTIONS, "transactions" -> {
+                                        navController.navigate(Screen.Transactions.createRoute()) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                    }
+                                    NotificationHelper.ROUTE_RECURRING -> {
+                                        navController.navigate(Screen.RecurringTransactions.route)
+                                    }
+                                    NotificationHelper.ROUTE_DASHBOARD -> {
+                                        navController.navigate(Screen.Dashboard.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    MainAppScaffold(
-                        navController = navController,
-                        app = app,
-                        isFirstLaunch = userPreferences.isFirstLaunch,
-                        isAppTourCompleted = userPreferences.isAppTourCompleted
-                    )
+                        MainAppScaffold(
+                            navController = navController,
+                            app = app,
+                            isFirstLaunch = currentPrefs.isFirstLaunch,
+                            isAppTourCompleted = currentPrefs.isAppTourCompleted
+                        )
+                    }
                 }
+            } else {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {}
             }
         }
     }
