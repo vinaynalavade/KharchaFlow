@@ -25,7 +25,15 @@ data class UserPreferences(
     val monthlyBudgetLimitSubunits: Long = 0L,
     val recurringRemindersEnabled: Boolean = false,
     val recurringReminderAdvanceDays: Int = 1,
-    val savingsGoalNotificationsEnabled: Boolean = false
+    val savingsGoalNotificationsEnabled: Boolean = false,
+    val appLanguage: String = "SYSTEM",
+    val userName: String? = null,
+    val profileImageUri: String? = null,
+    val automaticBackupEnabled: Boolean = false,
+    val lastBackupStatus: String? = null,
+    val lastBackupError: String? = null,
+    val lastDismissedRestoreBackupTimestamp: Long? = null,
+    val isAppTourCompleted: Boolean = false
 ) {
     val openingBalance: Amount
         get() = Amount(openingBalanceSubunits)

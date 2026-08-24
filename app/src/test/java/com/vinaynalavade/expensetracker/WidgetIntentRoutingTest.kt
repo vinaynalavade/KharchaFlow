@@ -129,5 +129,13 @@ class WidgetIntentRoutingTest {
         override suspend fun setRecurringRemindersEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
         override suspend fun setRecurringReminderAdvanceDays(days: Int) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
         override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setAppLanguage(languageCode: String) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setProfileName(name: String?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setProfileImageUri(uri: String?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setAutomaticBackupEnabled(enabled: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setLastBackupStatus(status: String?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setLastBackupError(error: String?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setAppTourCompleted(completed: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
     }
 }

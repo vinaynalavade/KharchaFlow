@@ -5,7 +5,7 @@ package com.vinaynalavade.expensetracker.core.backup
  */
 data class BackupData(
     val backupVersion: Int = CURRENT_VERSION,
-    val appVersion: String = "1.0.1",
+    val appVersion: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val categories: List<BackupCategory>,
     val transactions: List<BackupTransaction>,

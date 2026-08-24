@@ -181,4 +181,76 @@ class UserPreferencesRepositoryImpl(
             AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set savings goal notifications.", e))
         }
     }
+
+    override suspend fun setAppLanguage(languageCode: String): AppResult<Unit> {
+        return try {
+            dataStore.setAppLanguage(languageCode)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set app language.", e))
+        }
+    }
+
+    override suspend fun setProfileName(name: String?): AppResult<Unit> {
+        return try {
+            dataStore.setProfileName(name)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set profile name.", e))
+        }
+    }
+
+    override suspend fun setProfileImageUri(uri: String?): AppResult<Unit> {
+        return try {
+            dataStore.setProfileImageUri(uri)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set profile image URI.", e))
+        }
+    }
+
+    override suspend fun setAutomaticBackupEnabled(enabled: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setAutomaticBackupEnabled(enabled)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set automatic backup enabled.", e))
+        }
+    }
+
+    override suspend fun setLastBackupStatus(status: String?): AppResult<Unit> {
+        return try {
+            dataStore.setLastBackupStatus(status)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set last backup status.", e))
+        }
+    }
+
+    override suspend fun setLastBackupError(error: String?): AppResult<Unit> {
+        return try {
+            dataStore.setLastBackupError(error)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set last backup error.", e))
+        }
+    }
+
+    override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit> {
+        return try {
+            dataStore.setLastDismissedRestoreBackupTimestamp(timestamp)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set last dismissed restore timestamp.", e))
+        }
+    }
+
+    override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
+        return try {
+            dataStore.setAppTourCompleted(completed)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set app tour completed.", e))
+        }
+    }
 }

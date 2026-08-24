@@ -2,7 +2,7 @@
     <string name="app_name">KharchaFlow</string>
     <string name="app_descriptor">Expense Tracker</string>
     <string name="app_creator">Vinay Nalavade</string>
-    <string name="app_version">1.0.3</string>
+    <string name="app_version">1.0.4</string>
     <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
     <string name="about_app_description">KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.</string>
     <string name="about_developer_credit">Developed by Vinay Nalavade</string>
@@ -20,6 +20,21 @@
     <string name="nav_statistics">Statistics</string>
     <string name="action_add_transaction">Add Transaction</string>
 
+    <!-- Common Actions & Buttons -->
+    <string name="btn_done">Done</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_edit">Edit</string>
+    <string name="btn_confirm">Confirm</string>
+    <string name="btn_close">Close</string>
+    <string name="btn_apply">Apply</string>
+    <string name="btn_reset">Reset</string>
+    <string name="btn_retry">Retry</string>
+    <string name="btn_continue">Continue</string>
+    <string name="btn_connect">Connect</string>
+    <string name="btn_disconnect">Disconnect</string>
+
     <!-- Accessibility / Actions -->
     <string name="cd_back">Navigate back</string>
     <string name="cd_add_transaction">Add transaction</string>
@@ -29,7 +44,7 @@
     <string name="cd_search">Search transactions</string>
     <string name="cd_clear">Clear</string>
 
-    <!-- Financial -->
+    <!-- Financial & Dashboard -->
     <string name="total_balance">Total Balance</string>
     <string name="total_income">Income</string>
     <string name="total_expense">Expense</string>
@@ -39,6 +54,18 @@
     <string name="no_transactions_desc">Start tracking your spending by adding your first transaction.</string>
     <string name="no_categories_title">No Categories Found</string>
     <string name="no_categories_desc">Categories will appear here once configured.</string>
+    <string name="dashboard_greeting_morning">Good Morning</string>
+    <string name="dashboard_greeting_afternoon">Good Afternoon</string>
+    <string name="dashboard_greeting_evening">Good Evening</string>
+    <string name="dashboard_monthly_overview">Monthly Overview</string>
+    <string name="dashboard_category_spending">Top Spending Categories</string>
+
+    <!-- Transactions Screen -->
+    <string name="transaction_filter_all">All</string>
+    <string name="transaction_filter_expense">Expense</string>
+    <string name="transaction_filter_income">Income</string>
+    <string name="transaction_search_hint">Search notes, categories...</string>
+    <string name="transaction_empty_filter">No transactions matching your filter.</string>
 
     <!-- Settings -->
     <string name="settings_appearance">Appearance</string>
@@ -47,13 +74,17 @@
     <string name="settings_theme_light">Light Mode</string>
     <string name="settings_theme_dark">Dark Mode</string>
     <string name="settings_currency">Default Currency</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_desc">English, हिंदी, मराठी</string>
+    <string name="settings_language_dialog_title">Select Language</string>
     <string name="settings_about">About</string>
     <string name="settings_developer_title">Developer</string>
     <string name="settings_developer_value">Vinay Nalavade</string>
     <string name="settings_privacy_note">Financial records stored securely on-device.</string>
 
     <!-- Widgets -->
-    <string name="widget_overview_description">See today\'s expenses, monthly spending summary, and quick transaction shortcuts.</string>
+    <string name="widget_overview_description">See total balance, monthly spending summary, and quick transaction shortcuts.</string>
+    <string name="widget_today_expense_description">Glanceable daily expense spending total.</string>
     <string name="widget_quick_add_description">Quick shortcut buttons to instantly record income or expense.</string>
 
     <!-- Reminders & Notifications -->
@@ -124,4 +155,75 @@
     <string name="verify_pin_title">Verify your PIN</string>
     <string name="verify_pin_desc">Enter your App Lock PIN to disable App Lock.</string>
     <string name="verify_pin_incorrect">Incorrect PIN. Please try again.</string>
+
+    <!-- Profile & User Identity -->
+    <string name="settings_section_profile">PROFILE</string>
+    <string name="profile_default_local_name">Personal Finance Profile</string>
+    <string name="profile_local_account_desc">Stored securely on this device</string>
+    <string name="profile_connected_google">Connected with Google</string>
+    <string name="profile_status_google_connected">Google Account</string>
+    <string name="profile_status_local_account">Local Account</string>
+    <string name="profile_edit_name_title">Edit Profile Name</string>
+    <string name="profile_edit_name_desc">Customize your profile display name for personalized finance insights.</string>
+    <string name="profile_display_name_label">Display Name</string>
+    <string name="profile_photo_options_title">Profile Photo</string>
+    <string name="profile_choose_photo">Choose from Gallery</string>
+    <string name="profile_choose_photo_desc">Select an avatar or picture from device storage</string>
+    <string name="profile_remove_photo">Remove Photo</string>
+    <string name="profile_remove_photo_desc">Restore the default KharchaFlow avatar</string>
+    <string name="profile_btn_connect_google">Connect</string>
+    <string name="profile_btn_disconnect">Disconnect</string>
+
+    <!-- Automatic Backup & Restore Intelligence -->
+    <string name="settings_auto_backup_title">Automatic Backup</string>
+    <string name="settings_auto_backup_desc">Automatically back up your financial data to Google Drive</string>
+    <string name="settings_auto_backup_scheduling_note">Backups run automatically in the background when connected to Wi-Fi or mobile network.</string>
+    <string name="backup_status_no_backup">No backup has been created yet.</string>
+    <string name="backup_status_last_success">Last backup: %1$s</string>
+    <string name="backup_status_failed">Last backup failed. Try again when your connection is available.</string>
+    <string name="backup_status_auto_enabled">Automatic backup is enabled.</string>
+    <string name="backup_btn_now">Backup Now</string>
+    <string name="restore_btn_now">Restore Backup</string>
+    <string name="restore_prompt_title">Restore your backup?</string>
+    <string name="restore_prompt_desc">We found a previous KharchaFlow backup associated with this Google account.</string>
+    <string name="restore_prompt_btn_restore">Restore Backup</string>
+    <string name="restore_prompt_btn_not_now">Not Now</string>
+    <string name="restore_prompt_btn_dont_ask">Don\'t ask again</string>
+    <string name="restore_replace_title">Replace current data?</string>
+    <string name="restore_replace_desc">Restoring this backup will replace your current financial data with the backup data. This action cannot be undone.</string>
+    <string name="restore_replace_btn_confirm">Replace &amp; Restore</string>
+
+    <!-- First-Time Premium App Tour -->
+    <string name="app_tour_btn_skip">Skip</string>
+    <string name="app_tour_btn_next">Next</string>
+    <string name="app_tour_btn_previous">Back</string>
+    <string name="app_tour_btn_finish">Start Managing Your Money</string>
+    <string name="app_tour_step_indicator">Step %1$d of %2$d</string>
+
+    <string name="app_tour_step1_title">Welcome to KharchaFlow</string>
+    <string name="app_tour_step1_desc">Track your income, expenses, recurring payments, and financial activity in one place.</string>
+    <string name="app_tour_step1_feature1">Fast, private &amp; offline-first</string>
+    <string name="app_tour_step1_feature2">Zero ads or third-party tracking</string>
+
+    <string name="app_tour_step2_title">Your Financial Overview</string>
+    <string name="app_tour_step2_desc">Monitor your live account balances, today\'s spending, and total net cash flow at a single glance.</string>
+    <string name="app_tour_step2_chip_balance">Total Balance</string>
+    <string name="app_tour_step2_chip_income">Monthly Income</string>
+    <string name="app_tour_step2_chip_expense">Monthly Expense</string>
+
+    <string name="app_tour_step3_title">Track Every Transaction</string>
+    <string name="app_tour_step3_desc">Log expenses and income instantly with customizable categories, notes, and payment methods like UPI, Cash, or Bank.</string>
+    <string name="app_tour_step3_badge_upi">UPI &amp; QR</string>
+    <string name="app_tour_step3_badge_cash">Cash</string>
+    <string name="app_tour_step3_badge_bank">Bank Transfer</string>
+
+    <string name="app_tour_step4_title">Understand Your Spending</string>
+    <string name="app_tour_step4_desc">Explore monthly breakdown analytics, category insights, and budget thresholds to stay in total control.</string>
+    <string name="app_tour_step4_insight_budget">Budget Thresholds</string>
+    <string name="app_tour_step4_insight_analytics">Interactive Visualizations</string>
+
+    <string name="app_tour_step5_title">Your Settings, Your Control</string>
+    <string name="app_tour_step5_desc">Personalize your profile, enable biometric &amp; PIN App Lock, set smart daily reminders, and back up safely to Google Drive.</string>
+    <string name="app_tour_step5_feature_lock">Biometric &amp; PIN Lock</string>
+    <string name="app_tour_step5_feature_backup">Google Drive Cloud Backup</string>
 </resources>

@@ -15,8 +15,8 @@ android {
         applicationId = "com.vinaynalavade.expensetracker"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -133,6 +133,7 @@ android {
 dependencies {
     // Core Android & Lifecycle
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
@@ -157,6 +158,9 @@ dependencies {
 
     // DataStore Preferences
     implementation(libs.androidx.datastore.preferences)
+
+    // WorkManager Background Scheduling
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Kotlin Coroutines
     implementation(libs.kotlinx.coroutines.core)

@@ -386,5 +386,53 @@ class FinancialNotificationsTest {
             _flow.value = currentPrefs
             return AppResult.Success(Unit)
         }
+
+        override suspend fun setAppLanguage(languageCode: String): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(appLanguage = languageCode)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setProfileName(name: String?): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(userName = name)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setProfileImageUri(uri: String?): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(profileImageUri = uri)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setAutomaticBackupEnabled(enabled: Boolean): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(automaticBackupEnabled = enabled)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setLastBackupStatus(status: String?): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(lastBackupStatus = status)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setLastBackupError(error: String?): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(lastBackupError = error)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(lastDismissedRestoreBackupTimestamp = timestamp)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
     }
 }

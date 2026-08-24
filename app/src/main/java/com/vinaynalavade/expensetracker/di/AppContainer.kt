@@ -85,6 +85,11 @@ interface AppContainer {
     val prepareGoogleDriveRestoreUseCase: com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase
     val disconnectGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.DisconnectGoogleAccountUseCase
     val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase
+    val autoBackupScheduler: com.vinaynalavade.expensetracker.core.worker.AutoBackupScheduler
+    val setAutomaticBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAutomaticBackupUseCase
+    val checkRestoreEligibilityUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckRestoreEligibilityUseCase
+    val dismissRestorePromptUseCase: com.vinaynalavade.expensetracker.domain.usecase.DismissRestorePromptUseCase
+    val setAppTourCompletedUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAppTourCompletedUseCase
 
     val securePinManager: com.vinaynalavade.expensetracker.core.security.SecurePinManager
     val appLockManager: com.vinaynalavade.expensetracker.core.security.AppLockManager
@@ -245,7 +250,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val restoreBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase by lazy {
-        com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase(backupRepository, rescheduleAllRemindersUseCase)
+        com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase(backupRepository, userPreferencesRepository, rescheduleAllRemindersUseCase)
     }
 
     override val exportTransactionsUseCase: com.vinaynalavade.expensetracker.domain.usecase.ExportTransactionsUseCase by lazy {
@@ -302,6 +307,30 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val saveConnectedGoogleAccountUseCase: com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase by lazy {
         com.vinaynalavade.expensetracker.domain.usecase.SaveConnectedGoogleAccountUseCase(googleDriveBackupRepository)
+    }
+
+    override val autoBackupScheduler: com.vinaynalavade.expensetracker.core.worker.AutoBackupScheduler by lazy {
+        com.vinaynalavade.expensetracker.core.worker.WorkManagerAutoBackupScheduler(context)
+    }
+
+    override val setAutomaticBackupUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAutomaticBackupUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetAutomaticBackupUseCase(userPreferencesRepository, autoBackupScheduler)
+    }
+
+    override val checkRestoreEligibilityUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckRestoreEligibilityUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.CheckRestoreEligibilityUseCase(
+            googleDriveBackupRepository,
+            userPreferencesRepository,
+            transactionRepository
+        )
+    }
+
+    override val dismissRestorePromptUseCase: com.vinaynalavade.expensetracker.domain.usecase.DismissRestorePromptUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.DismissRestorePromptUseCase(userPreferencesRepository)
+    }
+
+    override val setAppTourCompletedUseCase: com.vinaynalavade.expensetracker.domain.usecase.SetAppTourCompletedUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.SetAppTourCompletedUseCase(userPreferencesRepository)
     }
 
     override val securePinManager: com.vinaynalavade.expensetracker.core.security.SecurePinManager by lazy {

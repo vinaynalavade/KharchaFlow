@@ -34,11 +34,13 @@ class ValidateBackupUseCase(
 
 class RestoreBackupUseCase(
     private val backupRepository: BackupRepository,
+    private val userPreferencesRepository: UserPreferencesRepository? = null,
     private val rescheduleAllRemindersUseCase: RescheduleAllRemindersUseCase? = null
 ) {
     suspend operator fun invoke(backupData: BackupData): AppResult<Unit> {
         val result = backupRepository.restoreFullBackup(backupData)
         if (result is AppResult.Success) {
+            userPreferencesRepository?.setLastDismissedRestoreBackupTimestamp(backupData.createdAt)
             rescheduleAllRemindersUseCase?.invoke()
         }
         return result

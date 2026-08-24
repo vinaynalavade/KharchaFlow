@@ -181,7 +181,7 @@ fun AboutScreen(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
-                    val versionName = BuildConfig.VERSION_NAME.ifBlank { "1.0.3" }
+                    val versionName = BuildConfig.VERSION_NAME.ifBlank { "1.0.4" }
                     Text(
                         text = "Version $versionName",
                         style = MaterialTheme.typography.labelMedium,

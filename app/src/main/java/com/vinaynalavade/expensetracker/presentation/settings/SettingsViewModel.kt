@@ -36,6 +36,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import com.vinaynalavade.expensetracker.core.backup.BackupValidationResult
+import com.vinaynalavade.expensetracker.core.backup.JsonBackupParser
+import com.vinaynalavade.expensetracker.domain.model.RestoreEligibility
+import com.vinaynalavade.expensetracker.domain.usecase.CheckRestoreEligibilityUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.DismissRestorePromptUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.PerformGoogleDriveBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.PrepareGoogleDriveRestoreUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.RestoreBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.SetAutomaticBackupUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.ValidateBackupUseCase
+
 sealed interface AccountActionState {
     data object Idle : AccountActionState
     data class Loading(val message: String) : AccountActionState
@@ -61,7 +72,14 @@ class SettingsViewModel(
     getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
     private val disconnectGoogleAccountUseCase: DisconnectGoogleAccountUseCase,
     private val googleAccountManager: GoogleAccountManager,
-    private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase
+    private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase,
+    private val setAutomaticBackupUseCase: SetAutomaticBackupUseCase,
+    private val checkRestoreEligibilityUseCase: CheckRestoreEligibilityUseCase,
+    private val dismissRestorePromptUseCase: DismissRestorePromptUseCase,
+    private val performGoogleDriveBackupUseCase: PerformGoogleDriveBackupUseCase,
+    private val prepareGoogleDriveRestoreUseCase: PrepareGoogleDriveRestoreUseCase,
+    private val restoreBackupUseCase: RestoreBackupUseCase,
+    private val validateBackupUseCase: ValidateBackupUseCase
 ) : ViewModel() {
 
     val userPreferences: StateFlow<UserPreferences> = getUserPreferencesUseCase()
@@ -80,6 +98,18 @@ class SettingsViewModel(
 
     private val _accountActionState = MutableStateFlow<AccountActionState>(AccountActionState.Idle)
     val accountActionState: StateFlow<AccountActionState> = _accountActionState.asStateFlow()
+
+    private val _restorePromptEligibility = MutableStateFlow<RestoreEligibility.Eligible?>(null)
+    val restorePromptEligibility: StateFlow<RestoreEligibility.Eligible?> = _restorePromptEligibility.asStateFlow()
+
+    private val _showReplaceConfirmation = MutableStateFlow(false)
+    val showReplaceConfirmation: StateFlow<Boolean> = _showReplaceConfirmation.asStateFlow()
+
+    private val _isManualBackupRunning = MutableStateFlow(false)
+    val isManualBackupRunning: StateFlow<Boolean> = _isManualBackupRunning.asStateFlow()
+
+    private val _isManualRestoreRunning = MutableStateFlow(false)
+    val isManualRestoreRunning: StateFlow<Boolean> = _isManualRestoreRunning.asStateFlow()
 
     private var pendingGoogleAccount: GoogleAccountInfo? = null
 
@@ -109,6 +139,8 @@ class SettingsViewModel(
                 pendingGoogleAccount = null
                 saveConnectedGoogleAccountUseCase(authResult.account)
                 _accountActionState.value = AccountActionState.Message("Google Account connected successfully!")
+                // Check if a cloud backup is available for this account
+                checkForRestoreEligibility()
             }
             is GoogleAuthVerificationResult.ConsentRequired -> {
                 pendingGoogleAccount = authResult.account
@@ -135,6 +167,122 @@ class SettingsViewModel(
         } else {
             pendingGoogleAccount = null
             _accountActionState.value = AccountActionState.Message("Google Drive permission was not granted.", isError = true)
+        }
+    }
+
+    fun checkForRestoreEligibility() {
+        viewModelScope.launch {
+            val eligibility = checkRestoreEligibilityUseCase()
+            if (eligibility is RestoreEligibility.Eligible) {
+                _restorePromptEligibility.value = eligibility
+            }
+        }
+    }
+
+    fun onAutomaticBackupToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            val googleState = googleBackupState.value
+            if (enabled && googleState !is GoogleBackupState.Connected) {
+                _accountActionState.value = AccountActionState.Message(
+                    "Please connect your Google account to enable automatic backup.",
+                    isError = true
+                )
+                return@launch
+            }
+            setAutomaticBackupUseCase(enabled)
+        }
+    }
+
+    fun onBackupNowClick() {
+        if (_isManualBackupRunning.value) return
+        viewModelScope.launch {
+            val googleState = googleBackupState.value
+            if (googleState !is GoogleBackupState.Connected) {
+                _accountActionState.value = AccountActionState.Message(
+                    "Please connect a Google account before backing up.",
+                    isError = true
+                )
+                return@launch
+            }
+
+            _isManualBackupRunning.value = true
+            _accountActionState.value = AccountActionState.Loading("Backing up data to Google Drive...")
+            when (val result = performGoogleDriveBackupUseCase()) {
+                is AppResult.Success -> {
+                    _isManualBackupRunning.value = false
+                    _accountActionState.value = AccountActionState.Message("Backup completed successfully to Google Drive!")
+                }
+                is AppResult.Error -> {
+                    _isManualBackupRunning.value = false
+                    _accountActionState.value = AccountActionState.Message(result.error.message, isError = true)
+                }
+            }
+        }
+    }
+
+    fun onRestorePromptAccepted() {
+        val prompt = _restorePromptEligibility.value ?: return
+        if (prompt.hasExistingLocalData) {
+            _showReplaceConfirmation.value = true
+        } else {
+            executeCloudRestore()
+        }
+    }
+
+    fun onConfirmReplaceAndRestore() {
+        _showReplaceConfirmation.value = false
+        executeCloudRestore()
+    }
+
+    fun onCancelReplaceConfirmation() {
+        _showReplaceConfirmation.value = false
+    }
+
+    private fun executeCloudRestore() {
+        val prompt = _restorePromptEligibility.value
+        _restorePromptEligibility.value = null
+        viewModelScope.launch {
+            _isManualRestoreRunning.value = true
+            _accountActionState.value = AccountActionState.Loading("Downloading backup from Google Drive...")
+            when (val result = prepareGoogleDriveRestoreUseCase()) {
+                is AppResult.Success -> {
+                    val backupData = result.data
+                    val validation = validateBackupUseCase(JsonBackupParser.toJson(backupData))
+                    if (validation is BackupValidationResult.Valid) {
+                        _accountActionState.value = AccountActionState.Loading("Restoring financial records...")
+                        when (val restoreResult = restoreBackupUseCase(validation.backupData)) {
+                            is AppResult.Success -> {
+                                _isManualRestoreRunning.value = false
+                                if (prompt != null) {
+                                    dismissRestorePromptUseCase(prompt.metadata.modifiedTime)
+                                }
+                                _accountActionState.value = AccountActionState.Message("Cloud backup restored successfully!")
+                            }
+                            is AppResult.Error -> {
+                                _isManualRestoreRunning.value = false
+                                _accountActionState.value = AccountActionState.Message(restoreResult.error.message, isError = true)
+                            }
+                        }
+                    } else if (validation is BackupValidationResult.Invalid) {
+                        _isManualRestoreRunning.value = false
+                        _accountActionState.value = AccountActionState.Message(validation.errorMessage, isError = true)
+                    }
+                }
+                is AppResult.Error -> {
+                    _isManualRestoreRunning.value = false
+                    _accountActionState.value = AccountActionState.Message(result.error.message, isError = true)
+                }
+            }
+        }
+    }
+
+    fun onDismissRestorePrompt(dontAskAgain: Boolean) {
+        val prompt = _restorePromptEligibility.value
+        _restorePromptEligibility.value = null
+        if (prompt != null) {
+            viewModelScope.launch {
+                dismissRestorePromptUseCase(prompt.metadata.modifiedTime)
+            }
         }
     }
 
@@ -232,6 +380,30 @@ class SettingsViewModel(
         }
     }
 
+    fun onLanguageSelected(languageCode: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.setAppLanguage(languageCode)
+        }
+    }
+
+    fun onProfileNameChanged(name: String?) {
+        viewModelScope.launch {
+            userPreferencesRepository.setProfileName(name)
+        }
+    }
+
+    fun onProfileImageSelected(uriString: String?) {
+        viewModelScope.launch {
+            userPreferencesRepository.setProfileImageUri(uriString)
+        }
+    }
+
+    fun onRemoveProfileImage() {
+        viewModelScope.launch {
+            userPreferencesRepository.setProfileImageUri(null)
+        }
+    }
+
     fun onBiometricToggled(enabled: Boolean) {
         viewModelScope.launch {
             setBiometricEnabledUseCase(enabled)
@@ -296,7 +468,14 @@ class SettingsViewModel(
         private val getGoogleBackupStateUseCase: GetGoogleBackupStateUseCase,
         private val disconnectGoogleAccountUseCase: DisconnectGoogleAccountUseCase,
         private val googleAccountManager: GoogleAccountManager,
-        private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase
+        private val saveConnectedGoogleAccountUseCase: SaveConnectedGoogleAccountUseCase,
+        private val setAutomaticBackupUseCase: SetAutomaticBackupUseCase,
+        private val checkRestoreEligibilityUseCase: CheckRestoreEligibilityUseCase,
+        private val dismissRestorePromptUseCase: DismissRestorePromptUseCase,
+        private val performGoogleDriveBackupUseCase: PerformGoogleDriveBackupUseCase,
+        private val prepareGoogleDriveRestoreUseCase: PrepareGoogleDriveRestoreUseCase,
+        private val restoreBackupUseCase: RestoreBackupUseCase,
+        private val validateBackupUseCase: ValidateBackupUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -318,7 +497,14 @@ class SettingsViewModel(
                 getGoogleBackupStateUseCase,
                 disconnectGoogleAccountUseCase,
                 googleAccountManager,
-                saveConnectedGoogleAccountUseCase
+                saveConnectedGoogleAccountUseCase,
+                setAutomaticBackupUseCase,
+                checkRestoreEligibilityUseCase,
+                dismissRestorePromptUseCase,
+                performGoogleDriveBackupUseCase,
+                prepareGoogleDriveRestoreUseCase,
+                restoreBackupUseCase,
+                validateBackupUseCase
             ) as T
         }
     }

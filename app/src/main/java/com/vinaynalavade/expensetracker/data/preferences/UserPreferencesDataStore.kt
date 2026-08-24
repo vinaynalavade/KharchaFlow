@@ -50,6 +50,14 @@ class UserPreferencesDataStore(private val context: Context) {
         val RECURRING_REMINDERS_ENABLED = booleanPreferencesKey("pref_recurring_reminders_enabled")
         val RECURRING_REMINDER_ADVANCE_DAYS = intPreferencesKey("pref_recurring_reminder_advance_days")
         val SAVINGS_GOAL_NOTIFICATIONS_ENABLED = booleanPreferencesKey("pref_savings_goal_notifications_enabled")
+        val APP_LANGUAGE = stringPreferencesKey("pref_app_language")
+        val PROFILE_NAME = stringPreferencesKey("pref_profile_name")
+        val PROFILE_IMAGE_URI = stringPreferencesKey("pref_profile_image_uri")
+        val AUTOMATIC_BACKUP_ENABLED = booleanPreferencesKey("pref_automatic_backup_enabled")
+        val LAST_BACKUP_STATUS = stringPreferencesKey("pref_last_backup_status")
+        val LAST_BACKUP_ERROR = stringPreferencesKey("pref_last_backup_error")
+        val LAST_DISMISSED_RESTORE_TIMESTAMP = longPreferencesKey("pref_last_dismissed_restore_timestamp")
+        val IS_APP_TOUR_COMPLETED = booleanPreferencesKey("pref_is_app_tour_completed")
     }
 
     val googleConnectedEmailFlow: Flow<String?> = context.dataStore.data
@@ -114,6 +122,14 @@ class UserPreferencesDataStore(private val context: Context) {
             val recurringRemindersEnabled = preferences[PreferencesKeys.RECURRING_REMINDERS_ENABLED] ?: false
             val recurringReminderAdvanceDays = preferences[PreferencesKeys.RECURRING_REMINDER_ADVANCE_DAYS] ?: 1
             val savingsGoalNotificationsEnabled = preferences[PreferencesKeys.SAVINGS_GOAL_NOTIFICATIONS_ENABLED] ?: false
+            val appLanguage = preferences[PreferencesKeys.APP_LANGUAGE] ?: "SYSTEM"
+            val profileName = preferences[PreferencesKeys.PROFILE_NAME]
+            val profileImageUri = preferences[PreferencesKeys.PROFILE_IMAGE_URI]
+            val automaticBackupEnabled = preferences[PreferencesKeys.AUTOMATIC_BACKUP_ENABLED] ?: false
+            val lastBackupStatus = preferences[PreferencesKeys.LAST_BACKUP_STATUS]
+            val lastBackupError = preferences[PreferencesKeys.LAST_BACKUP_ERROR]
+            val lastDismissedRestoreTimestamp = preferences[PreferencesKeys.LAST_DISMISSED_RESTORE_TIMESTAMP]
+            val isAppTourCompleted = preferences[PreferencesKeys.IS_APP_TOUR_COMPLETED] ?: false
 
             UserPreferences(
                 themeMode = themeMode,
@@ -134,7 +150,15 @@ class UserPreferencesDataStore(private val context: Context) {
                 monthlyBudgetLimitSubunits = monthlyBudgetLimitSubunits,
                 recurringRemindersEnabled = recurringRemindersEnabled,
                 recurringReminderAdvanceDays = recurringReminderAdvanceDays,
-                savingsGoalNotificationsEnabled = savingsGoalNotificationsEnabled
+                savingsGoalNotificationsEnabled = savingsGoalNotificationsEnabled,
+                appLanguage = appLanguage,
+                userName = profileName,
+                profileImageUri = profileImageUri,
+                automaticBackupEnabled = automaticBackupEnabled,
+                lastBackupStatus = lastBackupStatus,
+                lastBackupError = lastBackupError,
+                lastDismissedRestoreBackupTimestamp = lastDismissedRestoreTimestamp,
+                isAppTourCompleted = isAppTourCompleted
             )
         }
 
@@ -276,6 +300,74 @@ class UserPreferencesDataStore(private val context: Context) {
     suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.SAVINGS_GOAL_NOTIFICATIONS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setAppLanguage(languageCode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.APP_LANGUAGE] = languageCode
+        }
+    }
+
+    suspend fun setProfileName(name: String?) {
+        context.dataStore.edit { preferences ->
+            if (name != null && name.isNotBlank()) {
+                preferences[PreferencesKeys.PROFILE_NAME] = name.trim()
+            } else {
+                preferences.remove(PreferencesKeys.PROFILE_NAME)
+            }
+        }
+    }
+
+    suspend fun setProfileImageUri(uri: String?) {
+        context.dataStore.edit { preferences ->
+            if (uri != null && uri.isNotBlank()) {
+                preferences[PreferencesKeys.PROFILE_IMAGE_URI] = uri
+            } else {
+                preferences.remove(PreferencesKeys.PROFILE_IMAGE_URI)
+            }
+        }
+    }
+
+    suspend fun setAutomaticBackupEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.AUTOMATIC_BACKUP_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setLastBackupStatus(status: String?) {
+        context.dataStore.edit { preferences ->
+            if (status != null) {
+                preferences[PreferencesKeys.LAST_BACKUP_STATUS] = status
+            } else {
+                preferences.remove(PreferencesKeys.LAST_BACKUP_STATUS)
+            }
+        }
+    }
+
+    suspend fun setLastBackupError(error: String?) {
+        context.dataStore.edit { preferences ->
+            if (error != null) {
+                preferences[PreferencesKeys.LAST_BACKUP_ERROR] = error
+            } else {
+                preferences.remove(PreferencesKeys.LAST_BACKUP_ERROR)
+            }
+        }
+    }
+
+    suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) {
+        context.dataStore.edit { preferences ->
+            if (timestamp != null) {
+                preferences[PreferencesKeys.LAST_DISMISSED_RESTORE_TIMESTAMP] = timestamp
+            } else {
+                preferences.remove(PreferencesKeys.LAST_DISMISSED_RESTORE_TIMESTAMP)
+            }
+        }
+    }
+
+    suspend fun setAppTourCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.IS_APP_TOUR_COMPLETED] = completed
         }
     }
 }

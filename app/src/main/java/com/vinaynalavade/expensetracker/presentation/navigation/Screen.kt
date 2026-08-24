@@ -28,6 +28,7 @@ sealed class Screen(
     data object Settings : Screen("settings", R.string.nav_settings, Icons.Default.Settings)
 
     data object Welcome : Screen("welcome")
+    data object AppTour : Screen("app_tour")
     data object About : Screen("about")
 
     data object AddExpense : Screen("add_expense")

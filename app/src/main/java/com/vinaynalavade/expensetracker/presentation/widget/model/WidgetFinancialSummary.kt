@@ -12,12 +12,13 @@ data class WidgetTransactionSummary(
 )
 
 /**
- * Precision-safe financial summary data model tailored for the consolidated home-screen widget.
- * Holds the primary hero metric (today's spending) alongside monthly context and budget tracking.
+ * Precision-safe financial summary data model tailored for home-screen widgets.
+ * Holds Total Balance, Today's Expense, Monthly Income, Monthly Expense, and budget status.
  */
 data class WidgetFinancialSummary(
-    val todayExpense: Amount,
-    val monthlyExpense: Amount,
+    val balance: Amount = Amount.ZERO,
+    val todayExpense: Amount = Amount.ZERO,
+    val monthlyExpense: Amount = Amount.ZERO,
     val monthlyIncome: Amount = Amount.ZERO,
     val monthlyBudgetLimit: Amount? = null,
     val remainingBudget: Amount? = null,
@@ -25,4 +26,3 @@ data class WidgetFinancialSummary(
     val monthLabel: String = "",
     val latestTransaction: WidgetTransactionSummary? = null
 )
-

@@ -130,5 +130,13 @@ class DashboardCategoryAnalysisTest {
         override suspend fun setRecurringRemindersEnabled(enabled: Boolean) = AppResult.Success(Unit)
         override suspend fun setRecurringReminderAdvanceDays(days: Int) = AppResult.Success(Unit)
         override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setAppLanguage(languageCode: String) = AppResult.Success(Unit)
+        override suspend fun setProfileName(name: String?) = AppResult.Success(Unit)
+        override suspend fun setProfileImageUri(uri: String?) = AppResult.Success(Unit)
+        override suspend fun setAutomaticBackupEnabled(enabled: Boolean) = AppResult.Success(Unit)
+        override suspend fun setLastBackupStatus(status: String?) = AppResult.Success(Unit)
+        override suspend fun setLastBackupError(error: String?) = AppResult.Success(Unit)
+        override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) = AppResult.Success(Unit)
+        override suspend fun setAppTourCompleted(completed: Boolean) = AppResult.Success(Unit)
     }
 }

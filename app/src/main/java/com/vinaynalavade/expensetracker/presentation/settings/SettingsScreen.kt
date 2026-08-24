@@ -2,10 +2,13 @@ package com.vinaynalavade.expensetracker.presentation.settings
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -41,6 +44,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.CloudSync
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Fingerprint
@@ -59,6 +64,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -100,14 +106,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vinaynalavade.expensetracker.BuildConfig
 import com.vinaynalavade.expensetracker.R
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.security.BiometricAuthHelper
+import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
+import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
 import com.vinaynalavade.expensetracker.domain.model.RecurringReminderAdvance
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
+import com.vinaynalavade.expensetracker.domain.model.UserPreferences
+import com.vinaynalavade.expensetracker.presentation.backup.components.ReplaceDataConfirmationDialog
+import com.vinaynalavade.expensetracker.presentation.backup.components.RestorePromptDialog
 import com.vinaynalavade.expensetracker.presentation.components.AppTopBar
+import com.vinaynalavade.expensetracker.presentation.settings.components.EditProfileDialog
+import com.vinaynalavade.expensetracker.presentation.settings.components.ProfileCard
+import com.vinaynalavade.expensetracker.presentation.settings.components.ProfilePhotoOptionsDialog
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
@@ -117,6 +132,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
@@ -134,6 +150,9 @@ fun SettingsScreen(
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val googleBackupState by viewModel.googleBackupState.collectAsStateWithLifecycle()
     val accountActionState by viewModel.accountActionState.collectAsStateWithLifecycle()
+    val restorePromptEligibility by viewModel.restorePromptEligibility.collectAsStateWithLifecycle()
+    val showReplaceConfirmation by viewModel.showReplaceConfirmation.collectAsStateWithLifecycle()
+    val isManualBackupRunning by viewModel.isManualBackupRunning.collectAsStateWithLifecycle()
 
     val isBiometricAvailable = remember(context) { BiometricAuthHelper.isBiometricAvailable(context) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -147,6 +166,23 @@ fun SettingsScreen(
     var showUnlockMethodDialog by remember { mutableStateOf(false) }
     var showDisableAppLockDialog by remember { mutableStateOf(false) }
     var showDisconnectGoogleDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showEditProfileDialog by remember { mutableStateOf(false) }
+    var showProfilePhotoOptionsDialog by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                context.contentResolver.takePersistableUriPermission(uri, flag)
+            } catch (e: Exception) {
+                // Non-persistable permission or unsupported content provider
+            }
+            viewModel.onProfileImageSelected(uri.toString())
+        }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -204,66 +240,16 @@ fun SettingsScreen(
                 .padding(horizontal = MaterialTheme.spacing.lg, vertical = MaterialTheme.spacing.md),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg)
         ) {
-            // 1. Account Section
-            SettingsSection(title = "ACCOUNT") {
-                val isConnected = googleBackupState is GoogleBackupState.Connected
-                val connectedAccount = (googleBackupState as? GoogleBackupState.Connected)?.account
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = MaterialTheme.spacing.xs),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = if (isConnected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = if (isConnected) Icons.Default.CloudDone else Icons.Default.CloudOff,
-                                contentDescription = null,
-                                tint = if (isConnected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = if (isConnected) (connectedAccount?.displayName ?: "Google Account") else "Local Account",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = if (isConnected) (connectedAccount?.email ?: "Connected to Google Drive") else "Stored locally on this device",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    if (isConnected) {
-                        OutlinedButton(
-                            onClick = { showDisconnectGoogleDialog = true },
-                            shape = PillShape,
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Text("Disconnect", style = MaterialTheme.typography.labelSmall)
-                        }
-                    } else {
-                        Button(
-                            onClick = { googleSignInLauncher.launch(viewModel.getGoogleSignInIntent()) },
-                            shape = PillShape,
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                        ) {
-                            Text("Connect", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
+            // 1. Profile Section
+            SettingsSection(title = stringResource(R.string.settings_section_profile)) {
+                ProfileCard(
+                    userPreferences = userPreferences,
+                    googleBackupState = googleBackupState,
+                    onAvatarClick = { showProfilePhotoOptionsDialog = true },
+                    onEditNameClick = { showEditProfileDialog = true },
+                    onConnectGoogleClick = { googleSignInLauncher.launch(viewModel.getGoogleSignInIntent()) },
+                    onDisconnectGoogleClick = { showDisconnectGoogleDialog = true }
+                )
             }
 
             // 2. Personalization Section
@@ -320,6 +306,17 @@ fun SettingsScreen(
                     subtitle = "Opening balance for net worth calculation",
                     valueBadge = userPreferences.openingBalance.format(userPreferences.currency),
                     onClick = { showOpeningBalanceDialog = true }
+                )
+
+                SettingsDivider()
+
+                val currentLanguage = AppLanguage.fromCode(userPreferences.appLanguage)
+                SettingsNavigationTile(
+                    icon = Icons.Default.Translate,
+                    title = stringResource(R.string.settings_language),
+                    subtitle = stringResource(R.string.settings_language_desc),
+                    valueBadge = currentLanguage.nativeName,
+                    onClick = { showLanguageDialog = true }
                 )
             }
 
@@ -567,6 +564,55 @@ fun SettingsScreen(
 
             // 6. Data & Backup Section
             SettingsSection(title = "DATA & BACKUP") {
+                // Automatic Backup Toggle
+                SettingsSwitchTile(
+                    icon = Icons.Default.CloudSync,
+                    title = stringResource(R.string.settings_auto_backup_title),
+                    subtitle = stringResource(R.string.settings_auto_backup_desc),
+                    checked = userPreferences.automaticBackupEnabled,
+                    onCheckedChange = { enabled ->
+                        if (enabled && googleBackupState !is GoogleBackupState.Connected) {
+                            googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
+                        } else {
+                            viewModel.onAutomaticBackupToggled(enabled)
+                        }
+                    }
+                )
+
+                // Backup Status & Manual Action
+                val lastTimestamp = (googleBackupState as? GoogleBackupState.Connected)?.lastBackupTimestamp
+                    ?: userPreferences.lastDismissedRestoreBackupTimestamp
+                val statusText = when {
+                    userPreferences.lastBackupStatus == "FAILED" -> {
+                        stringResource(R.string.backup_status_failed)
+                    }
+                    lastTimestamp != null && lastTimestamp > 0L -> {
+                        val instant = java.time.Instant.ofEpochMilli(lastTimestamp)
+                        val formatted = java.time.format.DateTimeFormatter.ofLocalizedDateTime(
+                            java.time.format.FormatStyle.MEDIUM,
+                            java.time.format.FormatStyle.SHORT
+                        ).format(instant.atZone(java.time.ZoneId.systemDefault()))
+                        stringResource(R.string.backup_status_last_success, formatted)
+                    }
+                    else -> stringResource(R.string.backup_status_no_backup)
+                }
+
+                SettingsNavigationTile(
+                    icon = Icons.Default.CloudUpload,
+                    title = stringResource(R.string.backup_btn_now),
+                    subtitle = statusText,
+                    valueBadge = if (isManualBackupRunning) "Backing up..." else null,
+                    onClick = {
+                        if (googleBackupState !is GoogleBackupState.Connected) {
+                            googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
+                        } else {
+                            viewModel.onBackupNowClick()
+                        }
+                    }
+                )
+
+                SettingsDivider()
+
                 SettingsNavigationTile(
                     icon = Icons.Default.Sync,
                     title = "Backup & Restore",
@@ -598,8 +644,8 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.Info,
                     title = "About KharchaFlow",
-                    subtitle = "Version 1.0.3, privacy & security, open source",
-                    valueBadge = "v1.0.3",
+                    subtitle = "Version ${BuildConfig.VERSION_NAME}, privacy & security, open source",
+                    valueBadge = "v${BuildConfig.VERSION_NAME}",
                     onClick = onNavigateToAbout
                 )
             }
@@ -609,6 +655,32 @@ fun SettingsScreen(
     }
 
     // --- Dialogs ---
+
+    if (showEditProfileDialog) {
+        val currentName = userPreferences.userName ?: (googleBackupState as? GoogleBackupState.Connected)?.account?.displayName
+        EditProfileDialog(
+            currentName = currentName,
+            onSave = { newName ->
+                viewModel.onProfileNameChanged(newName)
+            },
+            onDismiss = { showEditProfileDialog = false }
+        )
+    }
+
+    if (showProfilePhotoOptionsDialog) {
+        ProfilePhotoOptionsDialog(
+            hasCustomPhoto = !userPreferences.profileImageUri.isNullOrBlank(),
+            onChoosePhoto = {
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRemovePhoto = {
+                viewModel.onRemoveProfileImage()
+            },
+            onDismiss = { showProfilePhotoOptionsDialog = false }
+        )
+    }
 
     if (showCurrencyDialog) {
         CurrencySelectionDialog(
@@ -631,6 +703,17 @@ fun SettingsScreen(
                 viewModel.onOpeningBalanceChanged(newSubunits)
                 WidgetUpdateManager.refreshAllWidgets(context)
             }
+        )
+    }
+
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguageCode = userPreferences.appLanguage,
+            onLanguageSelected = { languageCode ->
+                viewModel.onLanguageSelected(languageCode)
+                showLanguageDialog = false
+            },
+            onDismiss = { showLanguageDialog = false }
         )
     }
 
@@ -748,6 +831,23 @@ fun SettingsScreen(
                     Text("Cancel")
                 }
             }
+        )
+    }
+
+    restorePromptEligibility?.let { eligible ->
+        RestorePromptDialog(
+            backupDate = eligible.formattedDate,
+            backupSizeBytes = eligible.metadata.sizeBytes,
+            onRestoreClick = { viewModel.onRestorePromptAccepted() },
+            onNotNowClick = { viewModel.onDismissRestorePrompt(dontAskAgain = false) },
+            onDontAskAgainClick = { viewModel.onDismissRestorePrompt(dontAskAgain = true) }
+        )
+    }
+
+    if (showReplaceConfirmation) {
+        ReplaceDataConfirmationDialog(
+            onConfirmReplace = { viewModel.onConfirmReplaceAndRestore() },
+            onDismiss = { viewModel.onCancelReplaceConfirmation() }
         )
     }
 }

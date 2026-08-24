@@ -74,6 +74,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vinaynalavade.expensetracker.BuildConfig
 import com.vinaynalavade.expensetracker.core.backup.BackupValidationResult
 import com.vinaynalavade.expensetracker.core.backup.ImportValidationResult
 import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
@@ -721,11 +722,14 @@ fun BackupScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    val backupAppVer = preview.appVersion.ifBlank { "Unknown" }
                     Text("• Transactions: ${preview.transactionCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Categories: ${preview.categoryCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Recurring / EMIs: ${preview.recurringCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Created: $dateStr", style = MaterialTheme.typography.bodySmall)
-                    Text("• Schema: Version ${preview.backupData.backupVersion} (App v${preview.appVersion})", style = MaterialTheme.typography.bodySmall)
+                    Text("• Backup App Version: v$backupAppVer", style = MaterialTheme.typography.bodySmall)
+                    Text("• Installed App Version: v${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodySmall)
+                    Text("• Schema Format: Version ${preview.backupData.backupVersion}", style = MaterialTheme.typography.bodySmall)
 
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
 
@@ -793,11 +797,14 @@ fun BackupScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    val backupAppVer = preview.appVersion.ifBlank { "Unknown" }
                     Text("• Transactions: ${preview.transactionCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Categories: ${preview.categoryCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Recurring / EMIs: ${preview.recurringCount}", style = MaterialTheme.typography.bodySmall)
                     Text("• Created: $dateStr", style = MaterialTheme.typography.bodySmall)
-                    Text("• Backup Version: ${preview.backupData.backupVersion} (App v${preview.appVersion})", style = MaterialTheme.typography.bodySmall)
+                    Text("• Backup App Version: v$backupAppVer", style = MaterialTheme.typography.bodySmall)
+                    Text("• Installed App Version: v${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodySmall)
+                    Text("• Schema Format: Version ${preview.backupData.backupVersion}", style = MaterialTheme.typography.bodySmall)
 
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
 

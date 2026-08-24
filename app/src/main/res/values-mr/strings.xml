@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">खर्चाफ्लो</string>
+    <string name="app_descriptor">खर्च ट्रॅकर</string>
+    <string name="app_creator">विनय नलवडे</string>
+    <string name="app_version">1.0.4</string>
+    <string name="app_tagline">स्मार्ट वैयक्तिक वित्त आणि खर्च ट्रॅकिंग</string>
+    <string name="about_app_description">खर्चाफ्लो हे एक वैयक्तिक वित्त ॲप्लिकेशन आहे जे वापरकर्त्यांना खर्च ट्रॅक करण्यास, उत्पन्न व्यवस्थापित करण्यास, आवर्ती देयके आयोजित करण्यास आणि त्यांच्या आर्थिक व्यवहारांवर चांगले नियंत्रण ठेवण्यास मदत करते.</string>
+    <string name="about_developer_credit">विनय नलवडे यांनी विकसित केले</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">डॅशबोर्ड</string>
+    <string name="nav_transactions">व्यवहार</string>
+    <string name="nav_analytics">विश्लेषण</string>
+    <string name="nav_categories">श्रेण्या</string>
+    <string name="nav_settings">सेटिंग्ज</string>
+    <string name="nav_calendar">कॅलेंडर</string>
+    <string name="nav_add_expense">खर्च जोडा</string>
+    <string name="nav_add_income">उत्पन्न जोडा</string>
+    <string name="nav_budgets">बजेट</string>
+    <string name="nav_statistics">आकडेवारी</string>
+    <string name="action_add_transaction">व्यवहार जोडा</string>
+
+    <!-- Common Actions & Buttons -->
+    <string name="btn_done">पूर्ण</string>
+    <string name="btn_cancel">रद्द करा</string>
+    <string name="btn_save">जतन करा</string>
+    <string name="btn_delete">हटवा</string>
+    <string name="btn_edit">संपादित करा</string>
+    <string name="btn_confirm">पुष्टी करा</string>
+    <string name="btn_close">बंद करा</string>
+    <string name="btn_apply">लागू करा</string>
+    <string name="btn_reset">रीसेट करा</string>
+    <string name="btn_retry">पुन्हा प्रयत्न करा</string>
+    <string name="btn_continue">पुढे चालू ठेवा</string>
+    <string name="btn_connect">जोडा</string>
+    <string name="btn_disconnect">डिस्कनेक्ट करा</string>
+
+    <!-- Accessibility / Actions -->
+    <string name="cd_back">मागे जा</string>
+    <string name="cd_add_transaction">व्यवहार जोडा</string>
+    <string name="cd_category_icon">श्रेणी आयकॉन</string>
+    <string name="cd_filter">व्यवहार फिल्टर करा</string>
+    <string name="cd_settings">सेटिंग्ज उघडा</string>
+    <string name="cd_search">व्यवहार शोधा</string>
+    <string name="cd_clear">साफ करा</string>
+
+    <!-- Financial & Dashboard -->
+    <string name="total_balance">एकूण शिल्लक</string>
+    <string name="total_income">उत्पन्न</string>
+    <string name="total_expense">खर्च</string>
+    <string name="recent_transactions">अलीकडील व्यवहार</string>
+    <string name="view_all">सर्व पहा</string>
+    <string name="no_transactions_title">अजून कोणतेही व्यवहार नाहीत</string>
+    <string name="no_transactions_desc">तुमचा पहिला व्यवहार जोडून खर्च ट्रॅक करण्यास सुरुवात करा.</string>
+    <string name="no_categories_title">कोणतीही श्रेणी आढळली नाही</string>
+    <string name="no_categories_desc">श्रेण्या कॉन्फिगर केल्यानंतर येथे दिसतील.</string>
+    <string name="dashboard_greeting_morning">शुभ प्रभात</string>
+    <string name="dashboard_greeting_afternoon">शुभ दुपार</string>
+    <string name="dashboard_greeting_evening">शुभ संध्याकाळ</string>
+    <string name="dashboard_monthly_overview">मासिक आढावा</string>
+    <string name="dashboard_category_spending">सर्वाधिक खर्चाच्या श्रेण्या</string>
+
+    <!-- Transactions Screen -->
+    <string name="transaction_filter_all">सर्व</string>
+    <string name="transaction_filter_expense">खर्च</string>
+    <string name="transaction_filter_income">उत्पन्न</string>
+    <string name="transaction_search_hint">टिपा, श्रेण्या शोधा...</string>
+    <string name="transaction_empty_filter">फिल्टरशी जुळणारा कोणताही व्यवहार आढळला नाही.</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">दिसणे</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_system">सिस्टमनुसार</string>
+    <string name="settings_theme_light">लाइट मोड</string>
+    <string name="settings_theme_dark">डार्क मोड</string>
+    <string name="settings_currency">डीफॉल्ट चलन</string>
+    <string name="settings_language">भाषा</string>
+    <string name="settings_language_desc">English, हिंदी, मराठी</string>
+    <string name="settings_language_dialog_title">भाषा निवडा</string>
+    <string name="settings_about">ॲपबद्दल</string>
+    <string name="settings_developer_title">डेव्हलपर</string>
+    <string name="settings_developer_value">विनय नलवडे</string>
+    <string name="settings_privacy_note">आर्थिक नोंदी डिव्हाइसवर सुरक्षितपणे साठवल्या आहेत.</string>
+
+    <!-- Widgets -->
+    <string name="widget_overview_description">एकूण शिल्लक, मासिक खर्च सारांश आणि द्रुत शॉर्टकट पहा.</string>
+    <string name="widget_today_expense_description">दैनिक खर्चाचे द्रुत दृश्य.</string>
+    <string name="widget_quick_add_description">उत्पन्न किंवा खर्च त्वरित नोंदवण्यासाठी शॉर्टकट बटणे.</string>
+
+    <!-- Reminders & Notifications -->
+    <string name="reminder_daily_title">आजचे खर्च ट्रॅक करा</string>
+    <string name="reminder_daily_content">तुम्ही आज कोणताही व्यवहार जोडलेला नाही. खर्चाफ्लो अपडेट करण्यासाठी थोडा वेळ द्या.</string>
+    <string name="settings_notifications_master_title">सूचनांना अनुमती द्या</string>
+    <string name="settings_notifications_master_desc">स्मार्ट स्मरणपत्रे, बजेट सूचना आणि आगामी बिले</string>
+    <string name="settings_daily_reminder_title">दैनिक खर्च स्मरणपत्र</string>
+    <string name="settings_daily_reminder_desc">आज कोणतीही नोंद नसतानाच स्मरणपत्र पाठवते</string>
+    <string name="settings_reminder_time_title">स्मरणपत्र वेळ</string>
+    <string name="settings_select_time">स्मरणपत्र वेळ निवडा</string>
+    <string name="settings_budget_alerts_title">मासिक बजेट सूचना</string>
+    <string name="settings_budget_alerts_desc" formatted="false">50%, 75%, 90%, 100% आणि बजेट ओलांडल्यास सूचना</string>
+    <string name="settings_budget_limit_title">मासिक बजेट मर्यादा</string>
+    <string name="settings_recurring_reminders_title">बिल आणि देयक स्मरणपत्रे</string>
+    <string name="settings_recurring_reminders_desc">आवर्ती व्यवहार आणि ईएमआय देय होण्यापूर्वी सूचना</string>
+    <string name="settings_recurring_advance_title">स्मरणपत्र वेळ</string>
+    <string name="settings_savings_goals_title">बचत उद्दिष्ट टप्पे</string>
+    <string name="settings_savings_goals_desc">उद्दिष्ट प्रगती टप्पे गाठल्यावर सूचना मिळवा</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_add_expense_short">खर्च जोडा</string>
+    <string name="shortcut_add_expense_long">नवीन खर्च नोंदवा</string>
+    <string name="shortcut_add_income_short">उत्पन्न जोडा</string>
+    <string name="shortcut_add_income_long">नवीन उत्पन्न नोंदवा</string>
+    <string name="shortcut_view_transactions_short">व्यवहार</string>
+    <string name="shortcut_view_transactions_long">व्यवहार इतिहास पहा</string>
+
+    <!-- App Lock & Privacy -->
+    <string name="settings_security_privacy_title">ॲप लॉक आणि गोपनीयता</string>
+    <string name="settings_app_lock_title">ॲप लॉक</string>
+    <string name="settings_app_lock_desc">पिन किंवा बायोमेट्रिक्सने तुमची आर्थिक माहिती सुरक्षित ठेवा</string>
+    <string name="settings_unlock_method_title">अनलॉक पद्धत</string>
+    <string name="settings_unlock_method_pin">फक्त पिन</string>
+    <string name="settings_unlock_method_biometric">पिन + बायोमेट्रिक्स</string>
+    <string name="settings_auto_lock_title">आपोआप लॉक करा</string>
+    <string name="settings_auto_lock_immediately">त्वरित</string>
+    <string name="settings_auto_lock_30s">30 सेकंदांनंतर</string>
+    <string name="settings_auto_lock_1m">1 मिनिटानंतर</string>
+    <string name="settings_auto_lock_5m">5 मिनिटांनंतर</string>
+    <string name="settings_change_pin">पिन बदला</string>
+    <string name="settings_disable_app_lock">ॲप लॉक बंद करा</string>
+    <string name="settings_hide_recents_title">अलीकडील ॲप्समध्ये माहिती लपवा</string>
+    <string name="settings_hide_recents_desc">ॲप बदलताना आर्थिक नोंदी लपवा</string>
+
+    <!-- Unlock & PIN Management -->
+    <string name="unlock_title">खर्चाफ्लो अनलॉक करा</string>
+    <string name="unlock_subtitle">तुमचा आर्थिक डेटा सुरक्षित आहे</string>
+    <string name="unlock_use_biometrics">बायोमेट्रिक्स वापरा</string>
+    <string name="unlock_incorrect_pin">चुकीचा पिन. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="unlock_lockout_message">अनेक चुकीचे प्रयत्न. %1$d सेकंदांनंतर पुन्हा प्रयत्न करा.</string>
+    <string name="setup_pin_title">सुरक्षा पिन सेट करा</string>
+    <string name="setup_pin_subtitle">नोंदी सुरक्षित ठेवण्यासाठी 4-अंकी पिन प्रविष्ट करा</string>
+    <string name="setup_pin_confirm_title">सुरक्षा पिनची पुष्टी करा</string>
+    <string name="setup_pin_confirm_subtitle">पुष्टी करण्यासाठी तुमचा 4-अंकी पिन पुन्हा प्रविष्ट करा</string>
+    <string name="setup_pin_mismatch">पिन जुळत नाहीत. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="setup_biometric_title">बायोमेट्रिक अनलॉक सक्षम करायचे?</string>
+    <string name="setup_biometric_subtitle">फिंगरप्रिंट किंवा चेहरा ओळखून त्वरित आणि सुरक्षितपणे अनलॉक करा.</string>
+    <string name="change_pin_current_title">सध्याचा पिन प्रविष्ट करा</string>
+    <string name="change_pin_current_subtitle">नवीन पिन सेट करण्यापूर्वी तुमची ओळख सत्यापित करा</string>
+    <string name="change_pin_new_title">नवीन पिन प्रविष्ट करा</string>
+    <string name="change_pin_new_subtitle">तुमचा नवीन 4-अंकी सुरक्षा पिन प्रविष्ट करा</string>
+    <string name="change_pin_confirm_title">नवीन पिनची पुष्टी करा</string>
+    <string name="change_pin_confirm_subtitle">पुष्टी करण्यासाठी तुमचा नवीन पिन पुन्हा प्रविष्ट करा</string>
+    <string name="change_pin_success">पिन यशस्वीरित्या अपडेट केला</string>
+    <string name="app_lock_enabled_success">ॲप लॉक यशस्वीरित्या सुरू केले</string>
+    <string name="app_lock_disabled_success">ॲप लॉक बंद केले</string>
+    <string name="verify_pin_title">तुमचा पिन सत्यापित करा</string>
+    <string name="verify_pin_desc">ॲप लॉक बंद करण्यासाठी तुमचा पिन प्रविष्ट करा.</string>
+    <string name="verify_pin_incorrect">चुकीचा पिन. कृपया पुन्हा प्रयत्न करा.</string>
+
+    <!-- Profile & User Identity -->
+    <string name="settings_section_profile">प्रोफाइल</string>
+    <string name="profile_default_local_name">वैयक्तिक वित्त प्रोफाइल</string>
+    <string name="profile_local_account_desc">या डिव्हाइसवर सुरक्षितपणे साठवले आहे</string>
+    <string name="profile_connected_google">गुगलशी जोडलेले</string>
+    <string name="profile_status_google_connected">गुगल खाते</string>
+    <string name="profile_status_local_account">स्थानिक खाते</string>
+    <string name="profile_edit_name_title">प्रोफाइल नाव संपादित करा</string>
+    <string name="profile_edit_name_desc">वैयक्तिकृत आर्थिक माहितीसाठी तुमचे नाव सानुकूलित करा.</string>
+    <string name="profile_display_name_label">दाखवण्याचे नाव</string>
+    <string name="profile_photo_options_title">प्रोफाइल फोटो</string>
+    <string name="profile_choose_photo">गॅलरीमधून निवडा</string>
+    <string name="profile_choose_photo_desc">डिव्हाइस स्टोरेजमधून अवतार किंवा फोटो निवडा</string>
+    <string name="profile_remove_photo">फोटो काढा</string>
+    <string name="profile_remove_photo_desc">डिफॉल्ट खर्चाफ्लो अवतार परत आणा</string>
+    <string name="profile_btn_connect_google">जोडा</string>
+    <string name="profile_btn_disconnect">डिस्कनेक्ट करा</string>
+
+    <!-- Automatic Backup & Restore Intelligence -->
+    <string name="settings_auto_backup_title">स्वयंचलित बॅकअप</string>
+    <string name="settings_auto_backup_desc">तुमच्या आर्थिक डेटाचा Google Drive वर स्वयंचलित बॅकअप घ्या</string>
+    <string name="settings_auto_backup_scheduling_note">वाय-फाय किंवा मोबाईल नेटवर्कशी जोडलेले असताना बॅकअप पार्श्वभूमीत स्वयंचलितपणे चालतात.</string>
+    <string name="backup_status_no_backup">अद्याप कोणताही बॅकअप तयार केलेला नाही.</string>
+    <string name="backup_status_last_success">शेवटचा बॅकअप: %1$s</string>
+    <string name="backup_status_failed">शेवटचा बॅकअप अयशस्वी झाला. नेटवर्क उपलब्ध झाल्यावर पुन्हा प्रयत्न करा.</string>
+    <string name="backup_status_auto_enabled">स्वयंचलित बॅकअप सुरू आहे.</string>
+    <string name="backup_btn_now">आता बॅकअप घ्या</string>
+    <string name="restore_btn_now">बॅकअप पुनर्संचयित करा</string>
+    <string name="restore_prompt_title">तुमचा बॅकअप पुनर्संचयित करायचा?</string>
+    <string name="restore_prompt_desc">आम्हाला या Google खात्याशी संबंधित मागील खर्चाफ्लो बॅकअप सापडला आहे.</string>
+    <string name="restore_prompt_btn_restore">बॅकअप पुनर्संचयित करा</string>
+    <string name="restore_prompt_btn_not_now">आत्ता नको</string>
+    <string name="restore_prompt_btn_dont_ask">या बॅकअपसाठी पुन्हा विचारू नका</string>
+    <string name="restore_replace_title">सध्याचा डेटा बदलायचा?</string>
+    <string name="restore_replace_desc">हा बॅकअप पुनर्संचयित केल्याने तुमचा सध्याचा आर्थिक डेटा बॅकअप डेटाने बदलला जाईल. ही क्रिया पूर्ववत केली जाऊ शकत नाही.</string>
+    <string name="restore_replace_btn_confirm">बदला आणि पुनर्संचयित करा</string>
+
+    <!-- First-Time Premium App Tour -->
+    <string name="app_tour_btn_skip">वगळा</string>
+    <string name="app_tour_btn_next">पुढे जा</string>
+    <string name="app_tour_btn_previous">मागे</string>
+    <string name="app_tour_btn_finish">पैसे व्यवस्थापित करण्यास सुरुवात करा</string>
+    <string name="app_tour_step_indicator">टप्पा %1$d पैकी %2$d</string>
+
+    <string name="app_tour_step1_title">खर्चाफ्लोमध्ये आपले स्वागत आहे</string>
+    <string name="app_tour_step1_desc">तुमचे उत्पन्न, खर्च, नियमित देयके आणि आर्थिक व्यवहार एकाच ठिकाणी ट्रॅक करा.</string>
+    <string name="app_tour_step1_feature1">जलद, खाजगी आणि ऑफलाइन-प्रथम</string>
+    <string name="app_tour_step1_feature2">कोणत्याही जाहिराती किंवा ट्रॅकिंग नाही</string>
+
+    <string name="app_tour_step2_title">तुमचे आर्थिक विहंगावलोकन</string>
+    <string name="app_tour_step2_desc">तुमची खाती, आजचा खर्च आणि निव्वळ रोकड प्रवाह एका दृष्टीक्षेपात तपासा.</string>
+    <string name="app_tour_step2_chip_balance">एकूण शिल्लक</string>
+    <string name="app_tour_step2_chip_income">मासिक उत्पन्न</string>
+    <string name="app_tour_step2_chip_expense">मासिक खर्च</string>
+
+    <string name="app_tour_step3_title">प्रत्येक व्यवहार ट्रॅक करा</string>
+    <string name="app_tour_step3_desc">सानुकूल वर्ग, टिपा आणि यूपीआय, रोख किंवा बँक यांसारख्या पद्धतींसह त्वरित व्यवहार नोंदवा.</string>
+    <string name="app_tour_step3_badge_upi">यूपीआय आणि क्यूआर</string>
+    <string name="app_tour_step3_badge_cash">रोख</string>
+    <string name="app_tour_step3_badge_bank">बँक ट्रान्सफर</string>
+
+    <string name="app_tour_step4_title">तुमचा खर्च समजून घ्या</string>
+    <string name="app_tour_step4_desc">पूर्ण नियंत्रणात राहण्यासाठी मासिक विश्लेषण, वर्गीकरण माहिती आणि बजेट मर्यादा तपासा.</string>
+    <string name="app_tour_step4_insight_budget">बजेट मर्यादा</string>
+    <string name="app_tour_step4_insight_analytics">परस्परसंवादी आलेख</string>
+
+    <string name="app_tour_step5_title">तुमचे सेटिंग्ज, तुमचे नियंत्रण</string>
+    <string name="app_tour_step5_desc">तुमची प्रोफाइल सानुकूलित करा, बायोमेट्रिक व पिन लॉक सक्षम करा, स्मार्ट स्मरणपत्रे सेट करा आणि Google Drive वर सुरक्षित बॅकअप घ्या.</string>
+    <string name="app_tour_step5_feature_lock">बायोमेट्रिक आणि पिन लॉक</string>
+    <string name="app_tour_step5_feature_backup">Google Drive क्लाउड बॅकअप</string>
+</resources>

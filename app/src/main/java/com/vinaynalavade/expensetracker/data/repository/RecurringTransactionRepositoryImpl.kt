@@ -2,6 +2,7 @@ package com.vinaynalavade.expensetracker.data.repository
 
 import com.vinaynalavade.expensetracker.core.result.AppError
 import com.vinaynalavade.expensetracker.core.result.AppResult
+import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
 import com.vinaynalavade.expensetracker.data.local.dao.RecurringTransactionDao
 import com.vinaynalavade.expensetracker.data.local.dao.TransactionDao
 import com.vinaynalavade.expensetracker.data.local.entity.RecurringTransactionEntity
@@ -11,10 +12,12 @@ import com.vinaynalavade.expensetracker.domain.model.RecurringTransaction
 import com.vinaynalavade.expensetracker.domain.repository.RecurringTransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 class RecurringTransactionRepositoryImpl(
     private val recurringTransactionDao: RecurringTransactionDao,
@@ -104,8 +107,18 @@ class RecurringTransactionRepositoryImpl(
         }
     }
 
-    private fun checkIfDue(recurring: RecurringTransactionEntity, today: LocalDate): Boolean {
+    internal fun checkIfDue(recurring: RecurringTransactionEntity, today: LocalDate): Boolean {
         val freq = RecurrenceFrequency.fromStringOrNull(recurring.frequency) ?: return false
+
+        // Check end date boundary
+        if (recurring.endDate != null) {
+            val endDate = Instant.ofEpochMilli(recurring.endDate).atZone(ZoneId.systemDefault()).toLocalDate()
+            if (today.isAfter(endDate)) return false
+        }
+
+        val startEpoch = if (recurring.startDate > 0L) recurring.startDate else recurring.createdAt
+        val startDate = Instant.ofEpochMilli(startEpoch).atZone(ZoneId.systemDefault()).toLocalDate()
+        if (today.isBefore(startDate)) return false
 
         val lastGenerated = recurring.lastGeneratedDate?.let {
             Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
@@ -113,22 +126,72 @@ class RecurringTransactionRepositoryImpl(
 
         return when (freq) {
             RecurrenceFrequency.DAILY -> {
-                lastGenerated == null || lastGenerated.isBefore(today)
+                if (lastGenerated == null) {
+                    !today.isBefore(startDate)
+                } else {
+                    today.isAfter(lastGenerated)
+                }
             }
             RecurrenceFrequency.WEEKLY -> {
-                (lastGenerated == null || lastGenerated.isBefore(today)) && today.dayOfWeek.value == recurring.dayOfWeek
+                val targetDayOfWeek = recurring.dayOfWeek.coerceIn(1, 7)
+                val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                val generatedThisWeek = lastGenerated != null && !lastGenerated.isBefore(startOfWeek)
+
+                if (generatedThisWeek) {
+                    false
+                } else if (lastGenerated == null) {
+                    var firstOccurrence = startDate
+                    while (firstOccurrence.dayOfWeek.value != targetDayOfWeek) {
+                        firstOccurrence = firstOccurrence.plusDays(1)
+                    }
+                    !today.isBefore(firstOccurrence) && today.dayOfWeek.value >= targetDayOfWeek
+                } else {
+                    today.dayOfWeek.value >= targetDayOfWeek
+                }
             }
             RecurrenceFrequency.MONTHLY -> {
                 val currentMonth = YearMonth.from(today)
-                val lastGeneratedMonth = lastGenerated?.let { YearMonth.from(it) }
-                val isNewPeriod = lastGeneratedMonth == null || lastGeneratedMonth.isBefore(currentMonth)
-                val scheduledDay = minOf(recurring.dayOfMonth.coerceIn(1, 31), today.lengthOfMonth())
-                isNewPeriod && today.dayOfMonth >= scheduledDay
+                val scheduledDayThisMonth = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, currentMonth)
+
+                if (lastGenerated != null) {
+                    val lastGeneratedMonth = YearMonth.from(lastGenerated)
+                    currentMonth.isAfter(lastGeneratedMonth) && today.dayOfMonth >= scheduledDayThisMonth
+                } else {
+                    val startMonth = YearMonth.from(startDate)
+                    val scheduledDayInStartMonth = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, startMonth)
+                    val firstScheduledDate = if (startDate.dayOfMonth > scheduledDayInStartMonth) {
+                        val nextMonth = startMonth.plusMonths(1)
+                        val scheduledDayInNextMonth = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, nextMonth)
+                        nextMonth.atDay(scheduledDayInNextMonth)
+                    } else {
+                        startMonth.atDay(scheduledDayInStartMonth)
+                    }
+
+                    !today.isBefore(firstScheduledDate)
+                }
             }
             RecurrenceFrequency.YEARLY -> {
-                val isNewPeriod = lastGenerated == null || lastGenerated.year < today.year
-                val scheduledDay = minOf(recurring.dayOfMonth.coerceIn(1, 31), today.lengthOfMonth())
-                isNewPeriod && today.dayOfMonth >= scheduledDay
+                val targetMonth = YearMonth.of(today.year, startDate.month)
+                val scheduledDayThisYear = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, targetMonth)
+                val scheduledDateThisYear = targetMonth.atDay(scheduledDayThisYear)
+
+                if (lastGenerated != null) {
+                    today.year > lastGenerated.year && !today.isBefore(scheduledDateThisYear)
+                } else {
+                    val startYearMonth = YearMonth.of(startDate.year, startDate.month)
+                    val scheduledDayInStartYear = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, startYearMonth)
+                    val scheduledDateInStartYear = startYearMonth.atDay(scheduledDayInStartYear)
+
+                    val firstScheduledDate = if (startDate.isAfter(scheduledDateInStartYear)) {
+                        val nextYearMonth = startYearMonth.plusYears(1)
+                        val nextScheduledDay = DateTimeUtils.getScheduledDayOfMonth(recurring.dayOfMonth, nextYearMonth)
+                        nextYearMonth.atDay(nextScheduledDay)
+                    } else {
+                        scheduledDateInStartYear
+                    }
+
+                    !today.isBefore(firstScheduledDate)
+                }
             }
         }
     }

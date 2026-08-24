@@ -53,7 +53,8 @@ fun AppBottomBar(
     ) {
         BottomNavItems.forEach { screen ->
             val isSelected = currentRoute == screen.route ||
-                (screen == Screen.Transactions && currentRoute?.startsWith("transactions") == true)
+                (screen == Screen.Transactions && currentRoute?.startsWith("transactions") == true) ||
+                (screen == Screen.Analytics && currentRoute == Screen.MonthlySummary.route)
 
             NavigationBarItem(
                 selected = isSelected,

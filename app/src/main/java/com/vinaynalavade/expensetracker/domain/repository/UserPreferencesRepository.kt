@@ -49,4 +49,20 @@ interface UserPreferencesRepository {
     suspend fun setRecurringReminderAdvanceDays(days: Int): AppResult<Unit>
 
     suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean): AppResult<Unit>
+ 
+    suspend fun setAppLanguage(languageCode: String): AppResult<Unit>
+ 
+    suspend fun setProfileName(name: String?): AppResult<Unit>
+
+    suspend fun setProfileImageUri(uri: String?): AppResult<Unit>
+
+    suspend fun setAutomaticBackupEnabled(enabled: Boolean): AppResult<Unit>
+
+    suspend fun setLastBackupStatus(status: String?): AppResult<Unit>
+
+    suspend fun setLastBackupError(error: String?): AppResult<Unit>
+
+    suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit>
+
+    suspend fun setAppTourCompleted(completed: Boolean = true): AppResult<Unit>
 }

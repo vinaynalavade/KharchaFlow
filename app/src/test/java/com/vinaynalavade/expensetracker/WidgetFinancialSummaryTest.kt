@@ -55,6 +55,7 @@ class WidgetFinancialSummaryTest {
         val useCase = GetWidgetFinancialSummaryUseCase(fakeTxRepo, fakePrefsRepo)
         val summary = useCase().first()
 
+        assertEquals(100000L, summary.balance.subunits)
         assertEquals(0L, summary.todayExpense.subunits)
         assertEquals(0L, summary.monthlyIncome.subunits)
         assertEquals(0L, summary.monthlyExpense.subunits)
@@ -149,6 +150,9 @@ class WidgetFinancialSummaryTest {
             startOfMonthEpoch = startOfMonth,
             endOfMonthEpoch = DateTimeUtils.getEndOfMonthEpoch(currentMonth)
         ).first()
+
+        // 0. Total balance = 85,000 income - 21,500 expense = 63,500 (6,350,000 subunits)
+        assertEquals(6350000L, summary.balance.subunits)
 
         // 1. Today's expense = 1,500 + 2,000 = ₹3,500 (350,000 subunits)
         assertEquals(350000L, summary.todayExpense.subunits)
@@ -305,6 +309,14 @@ class WidgetFinancialSummaryTest {
         override suspend fun setRecurringRemindersEnabled(enabled: Boolean): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setRecurringReminderAdvanceDays(days: Int): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setSavingsGoalNotificationsEnabled(enabled: Boolean): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setAppLanguage(languageCode: String): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setProfileName(name: String?): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setProfileImageUri(uri: String?): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setAutomaticBackupEnabled(enabled: Boolean): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setLastBackupStatus(status: String?): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setLastBackupError(error: String?): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
 

@@ -116,7 +116,7 @@ class BackupRepositoryImpl(
             val now = System.currentTimeMillis()
             val backupData = BackupData(
                 backupVersion = BackupData.CURRENT_VERSION,
-                appVersion = "1.0.1",
+                appVersion = com.vinaynalavade.expensetracker.BuildConfig.VERSION_NAME,
                 createdAt = now,
                 categories = backupCategories,
                 transactions = backupTransactions,

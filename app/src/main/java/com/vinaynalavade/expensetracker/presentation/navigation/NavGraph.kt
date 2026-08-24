@@ -47,6 +47,8 @@ import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
 import com.vinaynalavade.expensetracker.presentation.security.ChangePinScreen
 import com.vinaynalavade.expensetracker.presentation.onboarding.WelcomeScreen
 import com.vinaynalavade.expensetracker.presentation.onboarding.WelcomeViewModel
+import com.vinaynalavade.expensetracker.presentation.tour.AppTourScreen
+import com.vinaynalavade.expensetracker.presentation.tour.AppTourViewModel
 import com.vinaynalavade.expensetracker.presentation.about.AboutScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +67,7 @@ fun NavGraph(
     navController: NavHostController,
     container: AppContainer,
     isFirstLaunch: Boolean = false,
+    isAppTourCompleted: Boolean = true,
     onOpenQuickAdd: () -> Unit,
     onShowSnackbar: (String) -> Unit,
     onShowUndoSnackbar: (String, () -> Unit) -> Unit,
@@ -80,9 +83,24 @@ fun NavGraph(
         }
     }
 
+    androidx.compose.runtime.LaunchedEffect(isFirstLaunch, isAppTourCompleted) {
+        if (isFirstLaunch) {
+            navController.navigate(Screen.Welcome.route) {
+                launchSingleTop = true
+            }
+        } else if (!isAppTourCompleted) {
+            val current = navController.currentDestination?.route
+            if (current != Screen.Welcome.route && current != Screen.AppTour.route) {
+                navController.navigate(Screen.AppTour.route) {
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = if (isFirstLaunch) Screen.Welcome.route else Screen.Dashboard.route,
+        startDestination = Screen.Dashboard.route,
         enterTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
                 fadeIn(animationSpec = tween(Motion.DurationFast))
@@ -303,7 +321,14 @@ fun NavGraph(
                     container.getGoogleBackupStateUseCase,
                     container.disconnectGoogleAccountUseCase,
                     container.googleAccountManager,
-                    container.saveConnectedGoogleAccountUseCase
+                    container.saveConnectedGoogleAccountUseCase,
+                    container.setAutomaticBackupUseCase,
+                    container.checkRestoreEligibilityUseCase,
+                    container.dismissRestorePromptUseCase,
+                    container.performGoogleDriveBackupUseCase,
+                    container.prepareGoogleDriveRestoreUseCase,
+                    container.restoreBackupUseCase,
+                    container.validateBackupUseCase
                 )
             )
             SettingsScreen(
@@ -485,11 +510,26 @@ fun NavGraph(
             WelcomeScreen(
                 viewModel = viewModel,
                 onOnboardingComplete = {
-                    navController.navigate(Screen.Dashboard.route) {
-                        popUpTo(Screen.Welcome.route) {
-                            inclusive = true
+                    navController.popBackStack(Screen.Welcome.route, inclusive = true)
+                    if (!isAppTourCompleted) {
+                        navController.navigate(Screen.AppTour.route) {
+                            launchSingleTop = true
                         }
                     }
+                }
+            )
+        }
+
+        composable(Screen.AppTour.route) {
+            val viewModel: AppTourViewModel = viewModel(
+                factory = AppTourViewModel.Factory(
+                    container.setAppTourCompletedUseCase
+                )
+            )
+            AppTourScreen(
+                viewModel = viewModel,
+                onTourComplete = {
+                    navController.popBackStack(Screen.AppTour.route, inclusive = true)
                 }
             )
         }

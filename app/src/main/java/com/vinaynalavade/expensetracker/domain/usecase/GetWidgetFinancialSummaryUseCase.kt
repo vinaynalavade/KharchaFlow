@@ -16,7 +16,8 @@ import java.util.Locale
 
 /**
  * UseCase to retrieve a consolidated, precision-safe financial snapshot tailored for home screen widgets.
- * Computes today's expenses, current month's expenses, monthly income, and budget status.
+ * Computes Total Balance (lifetime net change + opening balance), today's expenses, current month's expenses,
+ * monthly income, and budget status.
  */
 class GetWidgetFinancialSummaryUseCase(
     private val transactionRepository: TransactionRepository,
@@ -35,12 +36,15 @@ class GetWidgetFinancialSummaryUseCase(
             transactionRepository.getTransactions(),
             userPreferencesRepository.getUserPreferences()
         ) { transactions, preferences ->
+            var lifetimeIncomeSubunits = 0L
+            var lifetimeExpenseSubunits = 0L
             var todayExpenseSubunits = 0L
             var monthlyIncomeSubunits = 0L
             var monthlyExpenseSubunits = 0L
 
             for (tx in transactions) {
                 if (tx.type == TransactionType.EXPENSE) {
+                    lifetimeExpenseSubunits += tx.amount.subunits
                     if (tx.timestamp in startOfDayEpoch..endOfDayEpoch) {
                         todayExpenseSubunits += tx.amount.subunits
                     }
@@ -48,11 +52,15 @@ class GetWidgetFinancialSummaryUseCase(
                         monthlyExpenseSubunits += tx.amount.subunits
                     }
                 } else if (tx.type == TransactionType.INCOME) {
+                    lifetimeIncomeSubunits += tx.amount.subunits
                     if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
                         monthlyIncomeSubunits += tx.amount.subunits
                     }
                 }
             }
+
+            val openingBalanceSubunits = preferences.openingBalanceSubunits
+            val totalBalanceSubunits = openingBalanceSubunits + lifetimeIncomeSubunits - lifetimeExpenseSubunits
 
             val budgetLimitSubunits = preferences.monthlyBudgetLimitSubunits
             val monthlyBudgetLimit = if (budgetLimitSubunits > 0L) Amount(budgetLimitSubunits) else null
@@ -76,6 +84,7 @@ class GetWidgetFinancialSummaryUseCase(
             val monthLabel = today.format(monthFormatter)
 
             WidgetFinancialSummary(
+                balance = Amount(totalBalanceSubunits),
                 todayExpense = Amount(todayExpenseSubunits),
                 monthlyExpense = Amount(monthlyExpenseSubunits),
                 monthlyIncome = Amount(monthlyIncomeSubunits),
@@ -102,12 +111,15 @@ class GetWidgetFinancialSummaryUseCase(
             transactionRepository.getTransactions(),
             userPreferencesRepository.getUserPreferences()
         ) { transactions, preferences ->
+            var lifetimeIncomeSubunits = 0L
+            var lifetimeExpenseSubunits = 0L
             var todayExpenseSubunits = 0L
             var monthlyIncomeSubunits = 0L
             var monthlyExpenseSubunits = 0L
 
             for (tx in transactions) {
                 if (tx.type == TransactionType.EXPENSE) {
+                    lifetimeExpenseSubunits += tx.amount.subunits
                     if (tx.timestamp in startOfDayEpoch..endOfDayEpoch) {
                         todayExpenseSubunits += tx.amount.subunits
                     }
@@ -115,11 +127,15 @@ class GetWidgetFinancialSummaryUseCase(
                         monthlyExpenseSubunits += tx.amount.subunits
                     }
                 } else if (tx.type == TransactionType.INCOME) {
+                    lifetimeIncomeSubunits += tx.amount.subunits
                     if (tx.timestamp in startOfMonthEpoch..endOfMonthEpoch) {
                         monthlyIncomeSubunits += tx.amount.subunits
                     }
                 }
             }
+
+            val openingBalanceSubunits = preferences.openingBalanceSubunits
+            val totalBalanceSubunits = openingBalanceSubunits + lifetimeIncomeSubunits - lifetimeExpenseSubunits
 
             val budgetLimitSubunits = preferences.monthlyBudgetLimitSubunits
             val monthlyBudgetLimit = if (budgetLimitSubunits > 0L) Amount(budgetLimitSubunits) else null
@@ -140,6 +156,7 @@ class GetWidgetFinancialSummaryUseCase(
             }
 
             WidgetFinancialSummary(
+                balance = Amount(totalBalanceSubunits),
                 todayExpense = Amount(todayExpenseSubunits),
                 monthlyExpense = Amount(monthlyExpenseSubunits),
                 monthlyIncome = Amount(monthlyIncomeSubunits),
@@ -151,4 +168,3 @@ class GetWidgetFinancialSummaryUseCase(
             )
         }
 }
-

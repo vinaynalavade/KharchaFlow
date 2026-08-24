@@ -15,6 +15,8 @@ import com.vinaynalavade.expensetracker.domain.repository.GoogleDriveBackupRepos
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class GoogleDriveBackupRepositoryImpl(
     private val googleAccountManager: GoogleAccountManager,
@@ -22,6 +24,8 @@ class GoogleDriveBackupRepositoryImpl(
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val backupRepository: BackupRepository
 ) : GoogleDriveBackupRepository {
+
+    private val backupOperationMutex = Mutex()
 
     override fun getConnectedAccount(): Flow<GoogleAccountInfo?> {
         return combine(
@@ -62,6 +66,9 @@ class GoogleDriveBackupRepositoryImpl(
         return try {
             googleAccountManager.signOut()
             userPreferencesDataStore.clearGoogleAccount()
+            userPreferencesDataStore.setAutomaticBackupEnabled(false)
+            userPreferencesDataStore.setLastBackupStatus(null)
+            userPreferencesDataStore.setLastBackupError(null)
             AppResult.Success(Unit)
         } catch (e: Exception) {
             AppResult.Error(AppError.UnknownError("Failed to disconnect Google account: ${e.message}", e))
@@ -82,65 +89,85 @@ class GoogleDriveBackupRepositoryImpl(
     }
 
     override suspend fun uploadBackup(backupData: BackupData): AppResult<GoogleBackupMetadata> {
-        val account = getConnectedAccount().firstOrNull()
-            ?: return AppResult.Error(AppError.UnknownError("Please connect a Google account before backing up."))
-
-        val jsonString = JsonBackupParser.toJson(backupData)
-        val validation = backupRepository.validateBackupJson(jsonString)
-        if (validation is BackupValidationResult.Invalid) {
-            return AppResult.Error(AppError.ValidationError("Generated backup data is invalid: ${validation.errorMessage}"))
-        }
-
-        val tokenResult = googleAccountManager.getOAuthAccessToken(account.email)
-        if (tokenResult is AppResult.Error) {
-            return AppResult.Error(tokenResult.error)
-        }
-        val token = (tokenResult as AppResult.Success).data
-
-        val existingFileResult = googleDriveRestService.findBackupFile(token)
-        val uploadResult = if (existingFileResult is AppResult.Success && existingFileResult.data != null) {
-            googleDriveRestService.updateBackupFile(token, existingFileResult.data.fileId, jsonString)
-        } else {
-            googleDriveRestService.createBackupFile(token, jsonString)
-        }
-
-        return when (uploadResult) {
-            is AppResult.Success -> {
-                userPreferencesDataStore.setGoogleLastBackupTimestamp(uploadResult.data.modifiedTime)
-                AppResult.Success(uploadResult.data)
+        return backupOperationMutex.withLock {
+            val account = getConnectedAccount().firstOrNull()
+            if (account == null) {
+                val error = "Please connect a Google account before backing up."
+                userPreferencesDataStore.setLastBackupStatus("FAILED")
+                userPreferencesDataStore.setLastBackupError(error)
+                return@withLock AppResult.Error(AppError.UnknownError(error))
             }
-            is AppResult.Error -> AppResult.Error(uploadResult.error)
+
+            val jsonString = JsonBackupParser.toJson(backupData)
+            val validation = backupRepository.validateBackupJson(jsonString)
+            if (validation is BackupValidationResult.Invalid) {
+                val errorMsg = "Generated backup data is invalid: ${validation.errorMessage}"
+                userPreferencesDataStore.setLastBackupStatus("FAILED")
+                userPreferencesDataStore.setLastBackupError(errorMsg)
+                return@withLock AppResult.Error(AppError.ValidationError(errorMsg))
+            }
+
+            val tokenResult = googleAccountManager.getOAuthAccessToken(account.email)
+            if (tokenResult is AppResult.Error) {
+                userPreferencesDataStore.setLastBackupStatus("FAILED")
+                userPreferencesDataStore.setLastBackupError(tokenResult.error.message)
+                return@withLock AppResult.Error(tokenResult.error)
+            }
+            val token = (tokenResult as AppResult.Success).data
+
+            val existingFileResult = googleDriveRestService.findBackupFile(token)
+            val uploadResult = if (existingFileResult is AppResult.Success && existingFileResult.data != null) {
+                googleDriveRestService.updateBackupFile(token, existingFileResult.data.fileId, jsonString)
+            } else {
+                googleDriveRestService.createBackupFile(token, jsonString)
+            }
+
+            when (uploadResult) {
+                is AppResult.Success -> {
+                    userPreferencesDataStore.setGoogleLastBackupTimestamp(uploadResult.data.modifiedTime)
+                    userPreferencesDataStore.setLastBackupStatus("SUCCESS")
+                    userPreferencesDataStore.setLastBackupError(null)
+                    AppResult.Success(uploadResult.data)
+                }
+                is AppResult.Error -> {
+                    userPreferencesDataStore.setLastBackupStatus("FAILED")
+                    userPreferencesDataStore.setLastBackupError(uploadResult.error.message)
+                    AppResult.Error(uploadResult.error)
+                }
+            }
         }
     }
 
     override suspend fun downloadBackup(): AppResult<BackupData> {
-        val account = getConnectedAccount().firstOrNull()
-            ?: return AppResult.Error(AppError.UnknownError("Please connect a Google account before restoring."))
+        return backupOperationMutex.withLock {
+            val account = getConnectedAccount().firstOrNull()
+                ?: return@withLock AppResult.Error(AppError.UnknownError("Please connect a Google account before restoring."))
 
-        val tokenResult = googleAccountManager.getOAuthAccessToken(account.email)
-        if (tokenResult is AppResult.Error) {
-            return AppResult.Error(tokenResult.error)
-        }
-        val token = (tokenResult as AppResult.Success).data
+            val tokenResult = googleAccountManager.getOAuthAccessToken(account.email)
+            if (tokenResult is AppResult.Error) {
+                return@withLock AppResult.Error(tokenResult.error)
+            }
+            val token = (tokenResult as AppResult.Success).data
 
-        val findResult = googleDriveRestService.findBackupFile(token)
-        if (findResult is AppResult.Error) {
-            return AppResult.Error(findResult.error)
-        }
-        val fileMetadata = (findResult as AppResult.Success).data
-            ?: return AppResult.Error(AppError.NotFound("No KharchaFlow backup was found in this Google account."))
+            val findResult = googleDriveRestService.findBackupFile(token)
+            if (findResult is AppResult.Error) {
+                return@withLock AppResult.Error(findResult.error)
+            }
+            val fileMetadata = (findResult as AppResult.Success).data
+                ?: return@withLock AppResult.Error(AppError.NotFound("No KharchaFlow backup was found in this Google account."))
 
-        val downloadResult = googleDriveRestService.downloadBackupFile(token, fileMetadata.fileId)
-        if (downloadResult is AppResult.Error) {
-            return AppResult.Error(downloadResult.error)
-        }
-        val jsonContent = (downloadResult as AppResult.Success).data
+            val downloadResult = googleDriveRestService.downloadBackupFile(token, fileMetadata.fileId)
+            if (downloadResult is AppResult.Error) {
+                return@withLock AppResult.Error(downloadResult.error)
+            }
+            val jsonContent = (downloadResult as AppResult.Success).data
 
-        val validation = backupRepository.validateBackupJson(jsonContent)
-        return when (validation) {
-            is BackupValidationResult.Valid -> AppResult.Success(validation.backupData)
-            is BackupValidationResult.Invalid -> {
-                AppResult.Error(AppError.ValidationError("Your cloud backup could not be restored because it appears to be invalid: ${validation.errorMessage}"))
+            val validation = backupRepository.validateBackupJson(jsonContent)
+            when (validation) {
+                is BackupValidationResult.Valid -> AppResult.Success(validation.backupData)
+                is BackupValidationResult.Invalid -> {
+                    AppResult.Error(AppError.ValidationError("Your cloud backup could not be restored because it appears to be invalid: ${validation.errorMessage}"))
+                }
             }
         }
     }

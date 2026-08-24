@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">खर्चाफ्लो</string>
+    <string name="app_descriptor">खर्च ट्रैकर</string>
+    <string name="app_creator">विनय नलवडे</string>
+    <string name="app_version">1.0.4</string>
+    <string name="app_tagline">स्मार्ट व्यक्तिगत वित्त और खर्च ट्रैकिंग</string>
+    <string name="about_app_description">खर्चाफ्लो एक व्यक्तिगत वित्त एप्लिकेशन है जो उपयोगकर्ताओं को खर्च ट्रैक करने, आय प्रबंधित करने, आवर्ती भुगतानों को व्यवस्थित करने और अपनी वित्तीय गतिविधियों पर बेहतर नियंत्रण रखने में मदद करता है।</string>
+    <string name="about_developer_credit">विनय नलवडे द्वारा विकसित</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">डैशबोर्ड</string>
+    <string name="nav_transactions">लेन-देन</string>
+    <string name="nav_analytics">एनालिटिक्स</string>
+    <string name="nav_categories">श्रेणियां</string>
+    <string name="nav_settings">सेटिंग्स</string>
+    <string name="nav_calendar">कैलेंडर</string>
+    <string name="nav_add_expense">खर्च जोड़ें</string>
+    <string name="nav_add_income">आय जोड़ें</string>
+    <string name="nav_budgets">बजट</string>
+    <string name="nav_statistics">आंकड़े</string>
+    <string name="action_add_transaction">लेन-देन जोड़ें</string>
+
+    <!-- Common Actions & Buttons -->
+    <string name="btn_done">हो गया</string>
+    <string name="btn_cancel">रद्द करें</string>
+    <string name="btn_save">सहेजें</string>
+    <string name="btn_delete">हटाएं</string>
+    <string name="btn_edit">संपादित करें</string>
+    <string name="btn_confirm">पुष्टि करें</string>
+    <string name="btn_close">बंद करें</string>
+    <string name="btn_apply">लागू करें</string>
+    <string name="btn_reset">रीसेट करें</string>
+    <string name="btn_retry">पुनः प्रयास करें</string>
+    <string name="btn_continue">जारी रखें</string>
+    <string name="btn_connect">कनेक्ट करें</string>
+    <string name="btn_disconnect">डिस्कनेक्ट करें</string>
+
+    <!-- Accessibility / Actions -->
+    <string name="cd_back">पीछे जाएं</string>
+    <string name="cd_add_transaction">लेन-देन जोड़ें</string>
+    <string name="cd_category_icon">श्रेणी आइकन</string>
+    <string name="cd_filter">लेन-देन फ़िल्टर करें</string>
+    <string name="cd_settings">सेटिंग्स खोलें</string>
+    <string name="cd_search">लेन-देन खोजें</string>
+    <string name="cd_clear">साफ़ करें</string>
+
+    <!-- Financial & Dashboard -->
+    <string name="total_balance">कुल शेष राशि</string>
+    <string name="total_income">आय</string>
+    <string name="total_expense">खर्च</string>
+    <string name="recent_transactions">हाल के लेन-देन</string>
+    <string name="view_all">सभी देखें</string>
+    <string name="no_transactions_title">कोई लेन-देन नहीं</string>
+    <string name="no_transactions_desc">अपना पहला लेन-देन जोड़कर खर्च ट्रैक करना शुरू करें।</string>
+    <string name="no_categories_title">कोई श्रेणी नहीं मिली</string>
+    <string name="no_categories_desc">श्रेणियां कॉन्फ़िगर करने के बाद यहां दिखाई देंगी।</string>
+    <string name="dashboard_greeting_morning">शुभ प्रभात</string>
+    <string name="dashboard_greeting_afternoon">शुभ दोपहर</string>
+    <string name="dashboard_greeting_evening">शुभ संध्या</string>
+    <string name="dashboard_monthly_overview">मासिक अवलोकन</string>
+    <string name="dashboard_category_spending">शीर्ष खर्च श्रेणियां</string>
+
+    <!-- Transactions Screen -->
+    <string name="transaction_filter_all">सभी</string>
+    <string name="transaction_filter_expense">खर्च</string>
+    <string name="transaction_filter_income">आय</string>
+    <string name="transaction_search_hint">नोट्स, श्रेणियां खोजें...</string>
+    <string name="transaction_empty_filter">फ़िल्टर से मेल खाता कोई लेन-देन नहीं मिला।</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">दिखावट</string>
+    <string name="settings_theme">थीम</string>
+    <string name="settings_theme_system">सिस्टम के अनुसार</string>
+    <string name="settings_theme_light">लाइट मोड</string>
+    <string name="settings_theme_dark">डार्क मोड</string>
+    <string name="settings_currency">डिफ़ॉल्ट मुद्रा</string>
+    <string name="settings_language">भाषा</string>
+    <string name="settings_language_desc">English, हिंदी, मराठी</string>
+    <string name="settings_language_dialog_title">भाषा चुनें</string>
+    <string name="settings_about">के बारे में</string>
+    <string name="settings_developer_title">डेवलपर</string>
+    <string name="settings_developer_value">विनय नलवडे</string>
+    <string name="settings_privacy_note">वित्तीय डेटा डिवाइस पर सुरक्षित रूप से संग्रहीत है।</string>
+
+    <!-- Widgets -->
+    <string name="widget_overview_description">कुल शेष राशि, मासिक खर्च सारांश और त्वरित शॉर्टकट देखें।</string>
+    <string name="widget_today_expense_description">दैनिक खर्च का त्वरित दृश्य।</string>
+    <string name="widget_quick_add_description">आय या खर्च तुरंत दर्ज करने के लिए शॉर्टकट बटन।</string>
+
+    <!-- Reminders & Notifications -->
+    <string name="reminder_daily_title">आज के खर्च ट्रैक करें</string>
+    <string name="reminder_daily_content">आपने आज कोई लेन-देन नहीं जोड़ा है। खर्चाफ्लो अपडेट करने के लिए कुछ समय निकालें।</string>
+    <string name="settings_notifications_master_title">सूचनाएं सक्षम करें</string>
+    <string name="settings_notifications_master_desc">स्मार्ट रिमाइंडर, बजट अलर्ट और आगामी बिल</string>
+    <string name="settings_daily_reminder_title">दैनिक खर्च रिमाइंडर</string>
+    <string name="settings_daily_reminder_desc">यदि आज कोई लेन-देन दर्ज नहीं किया गया है तो ही सूचित करता है</string>
+    <string name="settings_reminder_time_title">रिमाइंडर समय</string>
+    <string name="settings_select_time">रिमाइंडर समय चुनें</string>
+    <string name="settings_budget_alerts_title">मासिक बजट अलर्ट</string>
+    <string name="settings_budget_alerts_desc" formatted="false">50%, 75%, 90%, 100% और अधिक खर्च पर अलर्ट</string>
+    <string name="settings_budget_limit_title">मासिक बजट सीमा</string>
+    <string name="settings_recurring_reminders_title">बिल और भुगतान रिमाइंडर</string>
+    <string name="settings_recurring_reminders_desc">आवर्ती लेन-देन और ईएमआई देय होने से पहले अलर्ट</string>
+    <string name="settings_recurring_advance_title">रिमाइंडर समय-सीमा</string>
+    <string name="settings_savings_goals_title">बचत लक्ष्य मील के पत्थर</string>
+    <string name="settings_savings_goals_desc">लक्ष्य प्रगति मील के पत्थर प्राप्त करने पर सूचना प्राप्त करें</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_add_expense_short">खर्च जोड़ें</string>
+    <string name="shortcut_add_expense_long">नया खर्च दर्ज करें</string>
+    <string name="shortcut_add_income_short">आय जोड़ें</string>
+    <string name="shortcut_add_income_long">नई आय दर्ज करें</string>
+    <string name="shortcut_view_transactions_short">लेन-देन</string>
+    <string name="shortcut_view_transactions_long">लेन-देन इतिहास देखें</string>
+
+    <!-- App Lock & Privacy -->
+    <string name="settings_security_privacy_title">ऐप लॉक और गोपनीयता</string>
+    <string name="settings_app_lock_title">ऐप लॉक</string>
+    <string name="settings_app_lock_desc">पिन या बायोमेट्रिक्स के साथ अपनी वित्तीय जानकारी सुरक्षित रखें</string>
+    <string name="settings_unlock_method_title">अनलॉक विधि</string>
+    <string name="settings_unlock_method_pin">केवल पिन</string>
+    <string name="settings_unlock_method_biometric">पिन + बायोमेट्रिक्स</string>
+    <string name="settings_auto_lock_title">स्वचालित रूप से लॉक करें</string>
+    <string name="settings_auto_lock_immediately">तुरंत</string>
+    <string name="settings_auto_lock_30s">30 सेकंड बाद</string>
+    <string name="settings_auto_lock_1m">1 मिनट बाद</string>
+    <string name="settings_auto_lock_5m">5 मिनट बाद</string>
+    <string name="settings_change_pin">पिन बदलें</string>
+    <string name="settings_disable_app_lock">ऐप लॉक अक्षम करें</string>
+    <string name="settings_hide_recents_title">हाल के ऐप्स में सामग्री छुपाएं</string>
+    <string name="settings_hide_recents_desc">ऐप स्विच करते समय वित्तीय रिकॉर्ड छुपाएं</string>
+
+    <!-- Unlock & PIN Management -->
+    <string name="unlock_title">खर्चाफ्लो अनलॉक करें</string>
+    <string name="unlock_subtitle">आपका वित्तीय डेटा सुरक्षित है</string>
+    <string name="unlock_use_biometrics">बायोमेट्रिक्स का उपयोग करें</string>
+    <string name="unlock_incorrect_pin">गलत पिन। कृपया पुनः प्रयास करें।</string>
+    <string name="unlock_lockout_message">बहुत सारे गलत प्रयास। %1$d सेकंड बाद पुनः प्रयास करें।</string>
+    <string name="setup_pin_title">सुरक्षा पिन सेट करें</string>
+    <string name="setup_pin_subtitle">अपने रिकॉर्ड सुरक्षित रखने के लिए 4-अंकीय पिन दर्ज करें</string>
+    <string name="setup_pin_confirm_title">सुरक्षा पिन की पुष्टि करें</string>
+    <string name="setup_pin_confirm_subtitle">पुष्टि करने के लिए अपना 4-अंकीय पिन पुनः दर्ज करें</string>
+    <string name="setup_pin_mismatch">पिन मेल नहीं खाते। कृपया पुनः प्रयास करें।</string>
+    <string name="setup_biometric_title">बायोमेट्रिक अनलॉक सक्षम करें?</string>
+    <string name="setup_biometric_subtitle">फ़िंगरप्रिंट या चेहरे की पहचान का उपयोग करके तुरंत और सुरक्षित रूप से अनलॉक करें।</string>
+    <string name="change_pin_current_title">वर्तमान पिन दर्ज करें</string>
+    <string name="change_pin_current_subtitle">नया पिन सेट करने से पहले अपनी पहचान सत्यापित करें</string>
+    <string name="change_pin_new_title">नया पिन दर्ज करें</string>
+    <string name="change_pin_new_subtitle">अपना नया 4-अंकीय सुरक्षा पिन दर्ज करें</string>
+    <string name="change_pin_confirm_title">नए पिन की पुष्टि करें</string>
+    <string name="change_pin_confirm_subtitle">पुष्टि करने के लिए अपना नया पिन पुनः दर्ज करें</string>
+    <string name="change_pin_success">पिन सफलतापूर्वक अपडेट किया गया</string>
+    <string name="app_lock_enabled_success">ऐप लॉक सफलतापूर्वक सक्षम किया गया</string>
+    <string name="app_lock_disabled_success">ऐप लॉक अक्षम किया गया</string>
+    <string name="verify_pin_title">अपना पिन सत्यापित करें</string>
+    <string name="verify_pin_desc">ऐप लॉक अक्षम करने के लिए अपना पिन दर्ज करें।</string>
+    <string name="verify_pin_incorrect">गलत पिन। कृपया पुनः प्रयास करें।</string>
+
+    <!-- Profile & User Identity -->
+    <string name="settings_section_profile">प्रोफ़ाइल</string>
+    <string name="profile_default_local_name">व्यक्तिगत वित्त प्रोफ़ाइल</string>
+    <string name="profile_local_account_desc">इस डिवाइस पर सुरक्षित रूप से संग्रहीत</string>
+    <string name="profile_connected_google">गूगल से जुड़ा हुआ</string>
+    <string name="profile_status_google_connected">गूगल खाता</string>
+    <string name="profile_status_local_account">स्थानीय खाता</string>
+    <string name="profile_edit_name_title">प्रोफ़ाइल नाम संपादित करें</string>
+    <string name="profile_edit_name_desc">व्यक्तिगत वित्तीय इनसाइट्स के लिए अपना नाम अनुकूलित करें।</string>
+    <string name="profile_display_name_label">दिखाया जाने वाला नाम</string>
+    <string name="profile_photo_options_title">प्रोफ़ाइल फ़ोटो</string>
+    <string name="profile_choose_photo">गैलरी से चुनें</string>
+    <string name="profile_choose_photo_desc">डिवाइस स्टोरेज से अवतार या तस्वीर चुनें</string>
+    <string name="profile_remove_photo">फ़ोटो हटाएं</string>
+    <string name="profile_remove_photo_desc">डिफ़ॉल्ट खर्चाफ्लो अवतार पुनर्स्थापित करें</string>
+    <string name="profile_btn_connect_google">कनेक्ट करें</string>
+    <string name="profile_btn_disconnect">डिस्कनेक्ट करें</string>
+
+    <!-- Automatic Backup & Restore Intelligence -->
+    <string name="settings_auto_backup_title">स्वचालित बैकअप</string>
+    <string name="settings_auto_backup_desc">अपने वित्तीय डेटा का Google Drive पर स्वचालित बैकअप लें</string>
+    <string name="settings_auto_backup_scheduling_note">वाई-फ़ाई या मोबाइल नेटवर्क से कनेक्ट होने पर बैकअप पृष्ठभूमि में स्वचालित रूप से चलते हैं।</string>
+    <string name="backup_status_no_backup">अभी तक कोई बैकअप नहीं बनाया गया है।</string>
+    <string name="backup_status_last_success">अंतिम बैकअप: %1$s</string>
+    <string name="backup_status_failed">अंतिम बैकअप विफल रहा। नेटवर्क उपलब्ध होने पर पुनः प्रयास करें।</string>
+    <string name="backup_status_auto_enabled">स्वचालित बैकअप सक्षम है।</string>
+    <string name="backup_btn_now">अभी बैकअप लें</string>
+    <string name="restore_btn_now">बैकअप पुनर्स्थापित करें</string>
+    <string name="restore_prompt_title">अपना बैकअप पुनर्स्थापित करें?</string>
+    <string name="restore_prompt_desc">हमें इस Google खाते से जुड़ा पिछला खर्चाफ्लो बैकअप मिला है।</string>
+    <string name="restore_prompt_btn_restore">बैकअप पुनर्स्थापित करें</string>
+    <string name="restore_prompt_btn_not_now">अभी नहीं</string>
+    <string name="restore_prompt_btn_dont_ask">इस बैकअप के लिए दोबारा न पूछें</string>
+    <string name="restore_replace_title">वर्तमान डेटा बदलें?</string>
+    <string name="restore_replace_desc">इस बैकअप को पुनर्स्थापित करने से आपका वर्तमान वित्तीय डेटा बैकअप डेटा से बदल दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।</string>
+    <string name="restore_replace_btn_confirm">बदलें और पुनर्स्थापित करें</string>
+
+    <!-- First-Time Premium App Tour -->
+    <string name="app_tour_btn_skip">छोड़ें</string>
+    <string name="app_tour_btn_next">आगे बढ़ें</string>
+    <string name="app_tour_btn_previous">पीछे</string>
+    <string name="app_tour_btn_finish">पैसे प्रबंधित करना शुरू करें</string>
+    <string name="app_tour_step_indicator">चरण %1$d/%2$d</string>
+
+    <string name="app_tour_step1_title">खर्चाफ्लो में आपका स्वागत है</string>
+    <string name="app_tour_step1_desc">अपनी आय, खर्च, आवर्ती भुगतान और वित्तीय गतिविधि को एक ही स्थान पर ट्रैक करें।</string>
+    <string name="app_tour_step1_feature1">तेज़, निजी और ऑफ़लाइन-प्रथम</string>
+    <string name="app_tour_step1_feature2">शून्य विज्ञापन या तृतीय-पक्ष ट्रैकिंग</string>
+
+    <string name="app_tour_step2_title">आपका वित्तीय अवलोकन</string>
+    <string name="app_tour_step2_desc">अपने लाइव अकाउंट बैलेंस, आज के खर्च और कुल नेट कैश फ्लो को एक नज़र में देखें।</string>
+    <string name="app_tour_step2_chip_balance">कुल शेष</string>
+    <string name="app_tour_step2_chip_income">मासिक आय</string>
+    <string name="app_tour_step2_chip_expense">मासिक खर्च</string>
+
+    <string name="app_tour_step3_title">हर लेन-देन ट्रैक करें</string>
+    <string name="app_tour_step3_desc">कस्टमाइज़ेबल श्रेणियों, नोट्स और यूपीआई, कैश या बैंक जैसे भुगतान तरीकों के साथ तुरंत लेन-देन दर्ज करें।</string>
+    <string name="app_tour_step3_badge_upi">यूपीआई और क्यूआर</string>
+    <string name="app_tour_step3_badge_cash">कैश</string>
+    <string name="app_tour_step3_badge_bank">बैंक ट्रांसफर</string>
+
+    <string name="app_tour_step4_title">अपने खर्च को समझें</string>
+    <string name="app_tour_step4_desc">पूरी तरह नियंत्रण में रहने के लिए मासिक विश्लेषण, श्रेणी इनसाइट्स और बजट सीमाओं का अन्वेषण करें।</string>
+    <string name="app_tour_step4_insight_budget">बजट सीमाएं</string>
+    <string name="app_tour_step4_insight_analytics">इंटरैक्टिव विज़ुअलाइज़ेशन</string>
+
+    <string name="app_tour_step5_title">आपकी सेटिंग्स, आपका नियंत्रण</string>
+    <string name="app_tour_step5_desc">अपनी प्रोफ़ाइल अनुकूलित करें, ऐप लॉक सक्षम करें, स्मार्ट दैनिक अनुस्मारक सेट करें और Google Drive पर सुरक्षित बैकअप लें।</string>
+    <string name="app_tour_step5_feature_lock">बायोमेट्रिक और पिन लॉक</string>
+    <string name="app_tour_step5_feature_backup">Google Drive क्लाउड बैकअप</string>
+</resources>

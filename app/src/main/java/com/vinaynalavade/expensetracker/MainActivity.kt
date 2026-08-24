@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -154,40 +155,41 @@ class MainActivity : FragmentActivity() {
                     )
                 } else {
                     val navController = rememberNavController()
+                    var handledInitialRoute by rememberSaveable { mutableStateOf(false) }
 
                     LaunchedEffect(initialStartRoute, pendingNavRoute.value) {
-                        val route = pendingNavRoute.value ?: initialStartRoute
-                        when (route) {
-                            NotificationHelper.ROUTE_ADD_EXPENSE -> {
-                                navController.navigate(Screen.AddExpense.route)
-                                pendingNavRoute.value = null
-                            }
-                            NotificationHelper.ROUTE_ADD_INCOME -> {
-                                navController.navigate(Screen.AddIncome.route)
-                                pendingNavRoute.value = null
-                            }
-                            NotificationHelper.ROUTE_TRANSACTIONS, "transactions" -> {
-                                navController.navigate(Screen.Transactions.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+                        val route = pendingNavRoute.value ?: if (!handledInitialRoute) initialStartRoute else null
+                        if (route != null) {
+                            handledInitialRoute = true
+                            pendingNavRoute.value = null
+                            when (route) {
+                                NotificationHelper.ROUTE_ADD_EXPENSE -> {
+                                    navController.navigate(Screen.AddExpense.route)
                                 }
-                                pendingNavRoute.value = null
-                            }
-                            NotificationHelper.ROUTE_RECURRING -> {
-                                navController.navigate(Screen.RecurringTransactions.route)
-                                pendingNavRoute.value = null
-                            }
-                            NotificationHelper.ROUTE_DASHBOARD -> {
-                                navController.navigate(Screen.Dashboard.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
+                                NotificationHelper.ROUTE_ADD_INCOME -> {
+                                    navController.navigate(Screen.AddIncome.route)
                                 }
-                                pendingNavRoute.value = null
+                                NotificationHelper.ROUTE_TRANSACTIONS, "transactions" -> {
+                                    navController.navigate(Screen.Transactions.createRoute()) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                                NotificationHelper.ROUTE_RECURRING -> {
+                                    navController.navigate(Screen.RecurringTransactions.route)
+                                }
+                                NotificationHelper.ROUTE_DASHBOARD -> {
+                                    navController.navigate(Screen.Dashboard.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
                             }
                         }
                     }
@@ -195,7 +197,8 @@ class MainActivity : FragmentActivity() {
                     MainAppScaffold(
                         navController = navController,
                         app = app,
-                        isFirstLaunch = userPreferences.isFirstLaunch
+                        isFirstLaunch = userPreferences.isFirstLaunch,
+                        isAppTourCompleted = userPreferences.isAppTourCompleted
                     )
                 }
             }
@@ -209,13 +212,16 @@ fun MainAppScaffold(
     navController: NavHostController,
     app: ExpenseTrackerApp,
     isFirstLaunch: Boolean,
+    isAppTourCompleted: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val shouldShowBottomBar = BottomNavItems.any { it.route == currentRoute }
+    val shouldShowBottomBar = BottomNavItems.any { it.route == currentRoute } ||
+        currentRoute?.startsWith("transactions") == true ||
+        currentRoute == Screen.MonthlySummary.route
 
     // Quick Add Bottom Sheet State
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -259,6 +265,7 @@ fun MainAppScaffold(
             navController = navController,
             container = app.container,
             isFirstLaunch = isFirstLaunch,
+            isAppTourCompleted = isAppTourCompleted,
             onOpenQuickAdd = {
                 showQuickAddSheet = true
             },
