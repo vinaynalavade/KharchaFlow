@@ -12,21 +12,26 @@ class LocalizationTest {
 
     @Test
     fun testAppLanguageEnumMappings() {
+        assertEquals("SYSTEM", AppLanguage.SYSTEM.code)
         assertEquals("en", AppLanguage.ENGLISH.code)
         assertEquals("hi", AppLanguage.HINDI.code)
         assertEquals("mr", AppLanguage.MARATHI.code)
 
+        assertEquals("System Default", AppLanguage.SYSTEM.displayName)
         assertEquals("English", AppLanguage.ENGLISH.displayName)
         assertEquals("Hindi", AppLanguage.HINDI.displayName)
         assertEquals("Marathi", AppLanguage.MARATHI.displayName)
 
+        assertEquals("Default", AppLanguage.SYSTEM.nativeName)
         assertEquals("English", AppLanguage.ENGLISH.nativeName)
         assertEquals("हिंदी", AppLanguage.HINDI.nativeName)
         assertEquals("मराठी", AppLanguage.MARATHI.nativeName)
     }
 
     @Test
-    fun testFromCodeFallbackToEnglish() {
+    fun testFromCodeFallbackToSystem() {
+        assertEquals(AppLanguage.SYSTEM, AppLanguage.fromCode("SYSTEM"))
+        assertEquals(AppLanguage.SYSTEM, AppLanguage.fromCode("system"))
         assertEquals(AppLanguage.ENGLISH, AppLanguage.fromCode("en"))
         assertEquals(AppLanguage.ENGLISH, AppLanguage.fromCode("EN"))
         assertEquals(AppLanguage.HINDI, AppLanguage.fromCode("hi"))
@@ -34,10 +39,9 @@ class LocalizationTest {
         assertEquals(AppLanguage.MARATHI, AppLanguage.fromCode("mr"))
         assertEquals(AppLanguage.MARATHI, AppLanguage.fromCode("MR"))
 
-        // Unknown / System / blank fall back to English
-        assertEquals(AppLanguage.ENGLISH, AppLanguage.fromCode("SYSTEM"))
-        assertEquals(AppLanguage.ENGLISH, AppLanguage.fromCode("fr"))
-        assertEquals(AppLanguage.ENGLISH, AppLanguage.fromCode(""))
+        // Unknown / blank fall back to SYSTEM
+        assertEquals(AppLanguage.SYSTEM, AppLanguage.fromCode("fr"))
+        assertEquals(AppLanguage.SYSTEM, AppLanguage.fromCode(""))
     }
 
     @Test
@@ -70,6 +74,12 @@ class LocalizationTest {
             "total_income",
             "total_expense",
             "settings_language",
+            "settings_language_system",
+            "crop_photo_title",
+            "crop_photo_desc",
+            "crop_photo_rotate",
+            "crop_photo_reset",
+            "btn_crop_save",
             "settings_section_profile",
             "profile_default_local_name",
             "profile_local_account_desc",

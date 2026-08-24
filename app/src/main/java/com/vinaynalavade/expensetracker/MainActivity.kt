@@ -1,10 +1,16 @@
 package com.vinaynalavade.expensetracker
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,6 +21,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,7 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.fragment.app.FragmentActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -46,12 +53,13 @@ import com.vinaynalavade.expensetracker.presentation.navigation.NavGraph
 import com.vinaynalavade.expensetracker.presentation.navigation.Screen
 import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
 import com.vinaynalavade.expensetracker.presentation.security.UnlockScreen
+import com.vinaynalavade.expensetracker.presentation.settings.AppLanguage
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.ExpenseTrackerTheme
 import com.vinaynalavade.expensetracker.presentation.widget.WidgetUpdateManager
 import kotlinx.coroutines.launch
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val pendingNavRoute = mutableStateOf<String?>(null)
 
@@ -87,10 +95,66 @@ class MainActivity : FragmentActivity() {
         val initialStartRoute = intent?.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
 
         setContent {
-            val userPreferences by container.getUserPreferencesUseCase()
-                .collectAsStateWithLifecycle(initialValue = UserPreferences())
+            val userPreferencesState by container.getUserPreferencesUseCase()
+                .collectAsStateWithLifecycle(initialValue = null)
             val isSessionUnlocked by container.appLockManager.isSessionUnlocked
                 .collectAsStateWithLifecycle()
+
+            val userPreferences = userPreferencesState
+            if (userPreferences == null) {
+                // Calm background while DataStore loads initial state (under 1 frame)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {}
+                return@setContent
+            }
+
+            // Sync locale on startup from persisted preferences if configured
+            LaunchedEffect(userPreferences.appLanguage) {
+                if (userPreferences.appLanguage.isNotBlank() && userPreferences.appLanguage != "SYSTEM") {
+                    AppLanguage.applyLocale(userPreferences.appLanguage)
+                }
+            }
+
+            // Runtime notification permission handling for Android 13+ (API 33+)
+            val context = LocalContext.current
+            val coroutineScope = rememberCoroutineScope()
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                coroutineScope.launch {
+                    if (isGranted) {
+                        container.userPreferencesRepository.setNotificationsMasterEnabled(true)
+                        container.userPreferencesRepository.setDailyReminder(true, 20, 0)
+                        container.dailyReminderScheduler.schedule(20, 0)
+                    } else {
+                        container.userPreferencesRepository.setNotificationsMasterEnabled(false)
+                        container.userPreferencesRepository.setDailyReminder(false, 20, 0)
+                        container.dailyReminderScheduler.cancel()
+                    }
+                }
+            }
+
+            var hasPromptedNotificationPermission by rememberSaveable { mutableStateOf(false) }
+            LaunchedEffect(userPreferences.isFirstLaunch) {
+                if (userPreferences.isFirstLaunch && !hasPromptedNotificationPermission) {
+                    hasPromptedNotificationPermission = true
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            container.userPreferencesRepository.setNotificationsMasterEnabled(true)
+                            container.userPreferencesRepository.setDailyReminder(true, 20, 0)
+                            container.dailyReminderScheduler.schedule(20, 0)
+                        }
+                    } else {
+                        container.userPreferencesRepository.setNotificationsMasterEnabled(true)
+                        container.userPreferencesRepository.setDailyReminder(true, 20, 0)
+                        container.dailyReminderScheduler.schedule(20, 0)
+                    }
+                }
+            }
 
             val isLocked = userPreferences.appLockEnabled && !isSessionUnlocked
 

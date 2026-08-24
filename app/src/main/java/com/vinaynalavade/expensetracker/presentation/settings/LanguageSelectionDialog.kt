@@ -40,17 +40,18 @@ enum class AppLanguage(
     val displayName: String,
     val nativeName: String
 ) {
+    SYSTEM("SYSTEM", "System Default", "Default"),
     ENGLISH("en", "English", "English"),
     HINDI("hi", "Hindi", "हिंदी"),
     MARATHI("mr", "Marathi", "मराठी");
 
     companion object {
         fun fromCode(code: String): AppLanguage {
-            return entries.find { it.code.equals(code, ignoreCase = true) } ?: ENGLISH
+            return entries.find { it.code.equals(code, ignoreCase = true) } ?: SYSTEM
         }
 
         fun applyLocale(languageCode: String) {
-            val appLocale = if (languageCode == "SYSTEM" || languageCode.isBlank()) {
+            val appLocale = if (languageCode.equals("SYSTEM", ignoreCase = true) || languageCode.isBlank()) {
                 LocaleListCompat.getEmptyLocaleList()
             } else {
                 LocaleListCompat.forLanguageTags(languageCode)

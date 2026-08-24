@@ -227,4 +227,12 @@
     <string name="app_tour_step5_desc">तुमची प्रोफाइल सानुकूलित करा, बायोमेट्रिक व पिन लॉक सक्षम करा, स्मार्ट स्मरणपत्रे सेट करा आणि Google Drive वर सुरक्षित बॅकअप घ्या.</string>
     <string name="app_tour_step5_feature_lock">बायोमेट्रिक आणि पिन लॉक</string>
     <string name="app_tour_step5_feature_backup">Google Drive क्लाउड बॅकअप</string>
+
+    <!-- Language & Crop UI -->
+    <string name="settings_language_system">सिस्टम डीफॉल्ट</string>
+    <string name="crop_photo_title">प्रोफाइल फोटो क्रॉप करा</string>
+    <string name="crop_photo_desc">आपला फोटो हलवा आणि झूम करा</string>
+    <string name="crop_photo_rotate">फिरवा</string>
+    <string name="crop_photo_reset">रीसेट करा</string>
+    <string name="btn_crop_save">फोटो सेव्ह करा</string>
 </resources>

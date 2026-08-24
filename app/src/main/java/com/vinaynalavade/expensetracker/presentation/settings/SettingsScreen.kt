@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -121,6 +122,7 @@ import com.vinaynalavade.expensetracker.presentation.backup.components.ReplaceDa
 import com.vinaynalavade.expensetracker.presentation.backup.components.RestorePromptDialog
 import com.vinaynalavade.expensetracker.presentation.components.AppTopBar
 import com.vinaynalavade.expensetracker.presentation.settings.components.EditProfileDialog
+import com.vinaynalavade.expensetracker.presentation.settings.components.ImageCropDialog
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfileCard
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfilePhotoOptionsDialog
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
@@ -169,18 +171,13 @@ fun SettingsScreen(
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showEditProfileDialog by remember { mutableStateOf(false) }
     var showProfilePhotoOptionsDialog by remember { mutableStateOf(false) }
+    var pendingCropImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            try {
-                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                context.contentResolver.takePersistableUriPermission(uri, flag)
-            } catch (e: Exception) {
-                // Non-persistable permission or unsupported content provider
-            }
-            viewModel.onProfileImageSelected(uri.toString())
+            pendingCropImageUri = uri
         }
     }
 
@@ -848,6 +845,20 @@ fun SettingsScreen(
         ReplaceDataConfirmationDialog(
             onConfirmReplace = { viewModel.onConfirmReplaceAndRestore() },
             onDismiss = { viewModel.onCancelReplaceConfirmation() }
+        )
+    }
+
+    val cropUri = pendingCropImageUri
+    if (cropUri != null) {
+        ImageCropDialog(
+            imageUri = cropUri,
+            onCropConfirmed = { croppedUriString ->
+                viewModel.onProfileImageSelected(croppedUriString)
+                pendingCropImageUri = null
+            },
+            onDismiss = {
+                pendingCropImageUri = null
+            }
         )
     }
 }

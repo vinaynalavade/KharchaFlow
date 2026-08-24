@@ -226,4 +226,12 @@
     <string name="app_tour_step5_desc">Personalize your profile, enable biometric &amp; PIN App Lock, set smart daily reminders, and back up safely to Google Drive.</string>
     <string name="app_tour_step5_feature_lock">Biometric &amp; PIN Lock</string>
     <string name="app_tour_step5_feature_backup">Google Drive Cloud Backup</string>
+
+    <!-- Language & Crop UI -->
+    <string name="settings_language_system">System Default</string>
+    <string name="crop_photo_title">Crop Profile Photo</string>
+    <string name="crop_photo_desc">Move and scale to position your avatar</string>
+    <string name="crop_photo_rotate">Rotate</string>
+    <string name="crop_photo_reset">Reset</string>
+    <string name="btn_crop_save">Save Photo</string>
 </resources>

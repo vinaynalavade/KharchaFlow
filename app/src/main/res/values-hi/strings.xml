@@ -227,4 +227,12 @@
     <string name="app_tour_step5_desc">अपनी प्रोफ़ाइल अनुकूलित करें, ऐप लॉक सक्षम करें, स्मार्ट दैनिक अनुस्मारक सेट करें और Google Drive पर सुरक्षित बैकअप लें।</string>
     <string name="app_tour_step5_feature_lock">बायोमेट्रिक और पिन लॉक</string>
     <string name="app_tour_step5_feature_backup">Google Drive क्लाउड बैकअप</string>
+
+    <!-- Language & Crop UI -->
+    <string name="settings_language_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="crop_photo_title">प्रोफ़ाइल फ़ोटो क्रॉप करें</string>
+    <string name="crop_photo_desc">अपनी फ़ोटो को स्थानांतरित और ज़ूम करें</string>
+    <string name="crop_photo_rotate">घुमाएँ</string>
+    <string name="crop_photo_reset">रीसेट करें</string>
+    <string name="btn_crop_save">फ़ोटो सहेजें</string>
 </resources>
