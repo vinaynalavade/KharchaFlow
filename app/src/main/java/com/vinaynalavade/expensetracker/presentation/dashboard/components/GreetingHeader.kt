@@ -87,18 +87,12 @@ fun GreetingHeader(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
+                Image(
+                    painter = painterResource(id = R.drawable.ic_kharchaflow_logo),
+                    contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.surface
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_kharchaflow_logo),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                    contentScale = ContentScale.Fit
+                )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.app_name),
