@@ -129,6 +129,7 @@ import com.vinaynalavade.expensetracker.presentation.settings.components.EditPro
 import com.vinaynalavade.expensetracker.presentation.settings.components.ImageCropDialog
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfileCard
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfilePhotoOptionsDialog
+import com.vinaynalavade.expensetracker.presentation.settings.components.ThemeSelectionSection
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
@@ -255,39 +256,10 @@ fun SettingsScreen(
 
             // 2. Personalization Section
             SettingsSection(title = "PERSONALIZATION") {
-                Text(
-                    text = "Theme Mode",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                ThemeSelectionSection(
+                    currentThemeMode = userPreferences.themeMode,
+                    onThemeModeSelected = { viewModel.onThemeModeSelected(it) }
                 )
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)
-                ) {
-                    ThemeOptionChip(
-                        label = "Light",
-                        icon = Icons.Default.LightMode,
-                        isSelected = userPreferences.themeMode == ThemeMode.LIGHT,
-                        onClick = { viewModel.onThemeModeSelected(ThemeMode.LIGHT) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ThemeOptionChip(
-                        label = "Dark",
-                        icon = Icons.Default.DarkMode,
-                        isSelected = userPreferences.themeMode == ThemeMode.DARK,
-                        onClick = { viewModel.onThemeModeSelected(ThemeMode.DARK) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ThemeOptionChip(
-                        label = "System",
-                        icon = Icons.Default.SettingsBrightness,
-                        isSelected = userPreferences.themeMode == ThemeMode.SYSTEM,
-                        onClick = { viewModel.onThemeModeSelected(ThemeMode.SYSTEM) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
 
                 SettingsDivider()
 
@@ -1052,7 +1024,7 @@ private fun SettingsDivider() {
 }
 
 @Composable
-private fun ThemeOptionChip(
+private fun SettingOptionChip(
     label: String,
     icon: ImageVector,
     isSelected: Boolean,
@@ -1661,7 +1633,7 @@ private fun DefaultSourceSettingRow(
                         PaymentMethod.CASH -> Icons.Default.Payments
                         PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
                     }
-                    ThemeOptionChip(
+                    SettingOptionChip(
                         label = method.displayName,
                         icon = icon,
                         isSelected = isSelected,

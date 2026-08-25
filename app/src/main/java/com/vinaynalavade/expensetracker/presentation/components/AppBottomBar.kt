@@ -1,7 +1,8 @@
 package com.vinaynalavade.expensetracker.presentation.components
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,8 @@ val BottomNavItems = listOf(
 )
 
 /**
- * Custom polished Bottom Navigation Bar for KharchaFlow.
+ * Premium, modern Bottom Navigation Bar for KharchaFlow.
+ * Provides clear active tab hierarchy, refined pill indicators, and edge-to-edge window inset support.
  */
 @Composable
 fun AppBottomBar(
@@ -35,7 +37,7 @@ fun AppBottomBar(
     onNavigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+    val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
 
     NavigationBar(
         modifier = modifier
@@ -49,7 +51,9 @@ fun AppBottomBar(
                 )
             },
         containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 2.dp,
+        windowInsets = WindowInsets.navigationBars
     ) {
         BottomNavItems.forEach { screen ->
             val isSelected = currentRoute == screen.route ||
@@ -74,23 +78,23 @@ fun AppBottomBar(
                         Icon(
                             imageVector = icon,
                             contentDescription = stringResource(screen.titleResId),
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 label = {
                     Text(
                         text = stringResource(screen.titleResId),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                        style = if (isSelected) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelSmall,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     selectedTextColor = MaterialTheme.colorScheme.primary,
-                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f),
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
                 )
             )
         }

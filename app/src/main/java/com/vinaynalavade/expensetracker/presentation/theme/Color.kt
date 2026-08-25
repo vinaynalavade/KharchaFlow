@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Brand Core Colors
+// Brand Core Colors (Sophisticated Indigo Palette)
 val Indigo950 = Color(0xFF0F0E2A)
 val Indigo900 = Color(0xFF1E1B4B)
 val Indigo800 = Color(0xFF312E81)
@@ -37,23 +37,24 @@ val ExpenseOnContainerLight = Color(0xFF9F1239)
 val ExpenseContainerDark = Color(0xFF4C0519)
 val ExpenseOnContainerDark = Color(0xFFFECDD3)
 
-// Neutral & Surface Grays (Modern Slate Family)
-val Slate950 = Color(0xFF0B0F17)
-val Slate900 = Color(0xFF111827)
-val Slate850 = Color(0xFF182234)
-val Slate800 = Color(0xFF1F2937)
-val Slate700 = Color(0xFF374151)
-val Slate600 = Color(0xFF4B5563)
-val Slate500 = Color(0xFF6B7280)
-val Slate400 = Color(0xFF9CA3AF)
-val Slate300 = Color(0xFFD1D5DB)
-val Slate200 = Color(0xFFE5E7EB)
-val Slate100 = Color(0xFFF3F4F6)
-val Slate50 = Color(0xFFF8FAFC)
+// Neutral & Surface Grays (Multi-tiered Slate & Obsidian System)
+val Slate950 = Color(0xFF0A0E17) // Deep Obsidian Night Canvas
+val Slate900 = Color(0xFF111726) // Elevated Primary Surface / Cards
+val Slate850 = Color(0xFF172033) // Secondary Elevated Surface / Sub-containers
+val Slate800 = Color(0xFF1E293F) // Tertiary Surface / Sheet Backgrounds
+val Slate750 = Color(0xFF243048) // Active / Selected Container Fill
+val Slate700 = Color(0xFF2D3B55) // Subtle Borders & Dividers in Dark
+val Slate600 = Color(0xFF475569) // Inactive Icon Tints
+val Slate500 = Color(0xFF64748B) // Muted Captions & Metadata
+val Slate400 = Color(0xFF94A3B8) // Secondary Body Text
+val Slate300 = Color(0xFFCBD5E1) // Crisp Light Body
+val Slate200 = Color(0xFFE2E8F0) // Subtle Outline in Light / High Contrast Text
+val Slate100 = Color(0xFFF1F5F9) // Primary onSurface Text in Dark
+val Slate50 = Color(0xFFF8FAFC)  // Pure Crisp Light Canvas
 val PureWhite = Color(0xFFFFFFFF)
 
 /**
- * Dedicated semantic colors for financial operations.
+ * Dedicated semantic colors for financial operations across Light and Dark themes.
  */
 @Immutable
 data class FinancialColors(
@@ -85,7 +86,7 @@ val DarkFinancialColors = FinancialColors(
 
 val LocalFinancialColors = staticCompositionLocalOf { LightFinancialColors }
 
-// Material 3 Light Color Scheme
+// Material 3 Light Color Scheme (Crisp, High-Trust Financial Banking)
 val LightColorScheme = lightColorScheme(
     primary = Indigo600,
     onPrimary = PureWhite,
@@ -110,19 +111,22 @@ val LightColorScheme = lightColorScheme(
     surfaceVariant = Slate100,
     onSurfaceVariant = Slate600,
     outline = Slate200,
-    outlineVariant = Slate300
+    outlineVariant = Slate300,
+    inverseSurface = Slate900,
+    inverseOnSurface = Slate50,
+    inversePrimary = Indigo300
 )
 
-// Material 3 Dark Color Scheme
+// Material 3 Dark Color Scheme (Deep Obsidian Multi-Tiered Financial Palette)
 val DarkColorScheme = darkColorScheme(
     primary = Indigo400,
-    onPrimary = Indigo950,
-    primaryContainer = Indigo900,
+    onPrimary = Slate950,
+    primaryContainer = Color(0xFF24274F),
     onPrimaryContainer = Indigo100,
-    secondary = Slate400,
+    secondary = Slate300,
     onSecondary = Slate950,
     secondaryContainer = Slate850,
-    onSecondaryContainer = Slate200,
+    onSecondaryContainer = Slate100,
     tertiary = IncomeEmeraldLight,
     onTertiary = Slate950,
     tertiaryContainer = IncomeContainerDark,
@@ -132,11 +136,14 @@ val DarkColorScheme = darkColorScheme(
     errorContainer = ExpenseContainerDark,
     onErrorContainer = ExpenseOnContainerDark,
     background = Slate950,
-    onBackground = Slate50,
+    onBackground = Slate100,
     surface = Slate900,
-    onSurface = Slate50,
+    onSurface = Slate100,
     surfaceVariant = Slate850,
     onSurfaceVariant = Slate400,
     outline = Slate700,
-    outlineVariant = Slate800
+    outlineVariant = Slate800,
+    inverseSurface = Slate100,
+    inverseOnSurface = Slate950,
+    inversePrimary = Indigo600
 )

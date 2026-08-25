@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,8 +50,8 @@ import com.vinaynalavade.expensetracker.presentation.theme.PillShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 /**
- * Premium Profile Card displayed at the top of the Settings screen.
- * Displays user avatar, custom or Google display name, account status, and actions.
+ * Premium Hero Profile Header displayed at the top of the Settings screen.
+ * Elevates personal financial identity, avatar presentation, display name, and cloud status.
  */
 @Composable
 fun ProfileCard(
@@ -74,7 +77,7 @@ fun ProfileCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .border(
@@ -86,32 +89,35 @@ fun ProfileCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.spacing.md)
+                .padding(MaterialTheme.spacing.lg)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Profile Avatar
+                // Refined Hero Avatar (72.dp)
                 ProfileAvatar(
                     imageUri = userPreferences.profileImageUri,
                     displayName = effectiveDisplayName,
-                    size = 64.dp,
+                    size = 72.dp,
                     showEditBadge = true,
                     onEditClick = onAvatarClick
                 )
 
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
 
-                // Name & Account Status
-                Column(modifier = Modifier.weight(1f)) {
+                // Identity & Account Description
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
                             text = effectiveDisplayName,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
@@ -119,16 +125,22 @@ fun ProfileCard(
                             modifier = Modifier.weight(1f, fill = false)
                         )
 
-                        IconButton(
-                            onClick = onEditNameClick,
-                            modifier = Modifier.size(24.dp)
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .clickable(onClick = onEditNameClick)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = stringResource(R.string.profile_edit_name_title),
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = stringResource(R.string.profile_edit_name_title),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
                         }
                     }
 
@@ -146,40 +158,62 @@ fun ProfileCard(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Account State Pill Badge
                     AccountStateBadge(isConnected = isConnected)
                 }
             }
 
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
+            )
+
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
 
-            // Action row
+            // Action row for Google Cloud Connection
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = if (isConnected) "Google Drive Synced" else "Cloud Backup",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
                 if (isConnected) {
                     OutlinedButton(
                         onClick = onDisconnectGoogleClick,
                         shape = PillShape,
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 4.dp),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
                     ) {
                         Text(
                             text = stringResource(R.string.profile_btn_disconnect),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 } else {
                     Button(
                         onClick = onConnectGoogleClick,
                         shape = PillShape,
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 4.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.CloudDone,
+                            imageVector = Icons.Default.CloudSync,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp)
                         )
@@ -199,7 +233,7 @@ fun ProfileCard(
 @Composable
 private fun AccountStateBadge(isConnected: Boolean) {
     val bgColor = if (isConnected) {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
     } else {
         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
     }
@@ -214,7 +248,7 @@ private fun AccountStateBadge(isConnected: Boolean) {
         color = bgColor,
         modifier = Modifier.border(
             width = 0.5.dp,
-            color = contentColor.copy(alpha = 0.3f),
+            color = contentColor.copy(alpha = 0.25f),
             shape = PillShape
         )
     ) {
