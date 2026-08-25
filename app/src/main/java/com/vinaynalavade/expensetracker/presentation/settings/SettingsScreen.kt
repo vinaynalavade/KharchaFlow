@@ -32,11 +32,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
@@ -1089,6 +1091,14 @@ private fun CurrencySelectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = "Select Default Currency",
@@ -1096,7 +1106,12 @@ private fun CurrencySelectionDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Currency.SUPPORTED_CURRENCIES.forEach { currency ->
                     val isSelected = currency.code == selectedCurrency.code
                     Row(
@@ -1149,6 +1164,14 @@ private fun OpeningBalanceDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = "Set Starting Balance",
@@ -1156,7 +1179,12 @@ private fun OpeningBalanceDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Text(
                     text = "Enter your starting account balance. This will be added to your net total calculations.",
                     style = MaterialTheme.typography.bodySmall,
@@ -1257,6 +1285,14 @@ private fun MonthlyBudgetLimitDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = stringResource(R.string.settings_budget_limit_title),
@@ -1264,7 +1300,12 @@ private fun MonthlyBudgetLimitDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Text(
                     text = "Set your monthly spending target. You will receive alerts when reaching 50%, 75%, 90%, 100%, and when over budget.",
                     style = MaterialTheme.typography.bodySmall,
@@ -1319,6 +1360,14 @@ private fun RecurringAdvanceSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = stringResource(R.string.settings_recurring_advance_title),
@@ -1326,7 +1375,12 @@ private fun RecurringAdvanceSelectionDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 options.forEach { advance ->
                     val isSelected = currentAdvanceDays == advance.days
                     Row(
@@ -1382,6 +1436,14 @@ private fun AutoLockSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = stringResource(R.string.settings_auto_lock_title),
@@ -1389,7 +1451,12 @@ private fun AutoLockSelectionDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 options.forEach { (seconds, label) ->
                     val isSelected = currentDurationSeconds == seconds
                     Row(
@@ -1435,6 +1502,14 @@ private fun UnlockMethodDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = stringResource(R.string.settings_unlock_method_title),
@@ -1442,7 +1517,12 @@ private fun UnlockMethodDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

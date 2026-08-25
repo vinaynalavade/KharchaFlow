@@ -35,6 +35,9 @@ import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.window.DialogProperties
+
 @Composable
 fun RestorePromptDialog(
     backupDate: String,
@@ -45,6 +48,14 @@ fun RestorePromptDialog(
 ) {
     AlertDialog(
         onDismissRequest = onNotNowClick,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 440.dp),
         icon = {
             Surface(
                 shape = CircleShape,

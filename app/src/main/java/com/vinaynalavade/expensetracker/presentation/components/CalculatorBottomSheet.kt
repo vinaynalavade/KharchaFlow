@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Calculate
@@ -88,12 +89,13 @@ fun CalculatorBottomSheet(
         evaluator(expression, currency.decimalDigits)
     }
 
-    val scrollState = rememberScrollState()
+    val expressionHorizontalScroll = rememberScrollState()
+    val contentVerticalScroll = rememberScrollState()
 
     // Auto-scroll expression display to the end as user types
     LaunchedEffect(expression) {
         if (expression.isNotEmpty()) {
-            scrollState.animateScrollTo(scrollState.maxValue)
+            expressionHorizontalScroll.animateScrollTo(expressionHorizontalScroll.maxValue)
         }
     }
 
@@ -108,7 +110,7 @@ fun CalculatorBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
+                .verticalScroll(contentVerticalScroll)
                 .padding(top = MaterialTheme.spacing.md, bottom = MaterialTheme.spacing.lg)
                 .padding(horizontal = MaterialTheme.spacing.lg)
         ) {
@@ -192,7 +194,7 @@ fun CalculatorBottomSheet(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .horizontalScroll(scrollState),
+                            .horizontalScroll(expressionHorizontalScroll),
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(

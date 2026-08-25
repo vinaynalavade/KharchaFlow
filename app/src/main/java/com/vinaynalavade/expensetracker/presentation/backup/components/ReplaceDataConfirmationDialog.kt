@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.vinaynalavade.expensetracker.R
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.window.DialogProperties
+
 @Composable
 fun ReplaceDataConfirmationDialog(
     onConfirmReplace: () -> Unit,
@@ -31,6 +34,14 @@ fun ReplaceDataConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 440.dp),
         icon = {
             Surface(
                 shape = CircleShape,

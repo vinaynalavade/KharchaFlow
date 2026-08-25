@@ -22,10 +22,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AccountCircle
@@ -697,6 +699,14 @@ fun BackupScreen(
 
         AlertDialog(
             onDismissRequest = { viewModel.cancelCloudRestore() },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.94f)
+                .widthIn(max = 480.dp),
             icon = {
                 Icon(
                     imageVector = Icons.Default.CloudDownload,
@@ -714,7 +724,9 @@ fun BackupScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)
                 ) {
                     Text(
@@ -772,6 +784,14 @@ fun BackupScreen(
 
         AlertDialog(
             onDismissRequest = { viewModel.cancelRestore() },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.94f)
+                .widthIn(max = 480.dp),
             icon = {
                 Icon(
                     imageVector = Icons.Default.Warning,
@@ -789,7 +809,9 @@ fun BackupScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)
                 ) {
                     Text(
@@ -844,6 +866,14 @@ fun BackupScreen(
 
         AlertDialog(
             onDismissRequest = { viewModel.cancelImport() },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.94f)
+                .widthIn(max = 480.dp),
             title = {
                 Text(
                     text = "Import Transactions Preview",
@@ -853,7 +883,9 @@ fun BackupScreen(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)
                 ) {
                     Text(

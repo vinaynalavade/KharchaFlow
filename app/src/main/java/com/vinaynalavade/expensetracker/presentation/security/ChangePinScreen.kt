@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,12 +41,11 @@ private enum class ChangePinStep {
     CONFIRM_NEW_PIN
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePinScreen(
     viewModel: AppLockViewModel,
-    onNavigateBack: () -> Unit,
     onPinChanged: () -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -69,6 +70,7 @@ fun ChangePinScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween

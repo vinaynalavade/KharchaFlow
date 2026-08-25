@@ -78,6 +78,13 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+
 @Composable
 fun ImageCropDialog(
     imageUri: Uri,
@@ -121,13 +128,15 @@ fun ImageCropDialog(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black),
+                .background(Color.Black)
+                .statusBarsPadding()
+                .navigationBarsPadding(),
             color = Color(0xFF121212)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Header
@@ -335,18 +344,22 @@ fun ImageCropDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(horizontal = 4.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
                         shape = ButtonShape,
                         enabled = !isCropping
                     ) {
                         Text(
                             text = stringResource(R.string.btn_cancel),
-                            color = Color.White
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
 
@@ -373,7 +386,9 @@ fun ImageCropDialog(
                                 }
                             }
                         },
-                        modifier = Modifier.weight(1.3f),
+                        modifier = Modifier
+                            .weight(1.3f)
+                            .height(50.dp),
                         shape = ButtonShape,
                         enabled = !isCropping && sourceBitmap != null
                     ) {

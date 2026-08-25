@@ -23,6 +23,9 @@ import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun OpeningBalanceDialog(
@@ -35,6 +38,14 @@ fun OpeningBalanceDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp),
         title = {
             Text(
                 text = "Set Starting Balance",

@@ -39,6 +39,10 @@ import com.vinaynalavade.expensetracker.presentation.security.NumericKeypad
 import com.vinaynalavade.expensetracker.presentation.security.PinDotsIndicator
 import kotlinx.coroutines.delay
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun DisableAppLockVerificationDialog(
     onDismiss: () -> Unit,
@@ -84,6 +88,7 @@ fun DisableAppLockVerificationDialog(
         ),
         modifier = Modifier
             .fillMaxWidth(0.92f)
+            .widthIn(max = 420.dp)
             .padding(vertical = 16.dp),
         icon = {
             Surface(
@@ -115,7 +120,9 @@ fun DisableAppLockVerificationDialog(
         text = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
             ) {
                 Text(
                     text = stringResource(R.string.verify_pin_desc),

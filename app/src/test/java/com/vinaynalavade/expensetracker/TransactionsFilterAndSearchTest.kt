@@ -270,8 +270,9 @@ class TransactionsFilterAndSearchTest {
 
     @Test
     fun testCustomDateRangeFiltering() {
-        val start = System.currentTimeMillis() - 48 * 60 * 60 * 1000L
-        val end = System.currentTimeMillis() - 12 * 60 * 60 * 1000L
+        val todayStart = DateTimeUtils.getStartOfDayEpoch()
+        val start = todayStart - 24 * 3600000L // Start of yesterday
+        val end = todayStart - 1L              // End of yesterday
 
         val params = TransactionFilterParams(
             filter = TransactionFilter.ALL,
