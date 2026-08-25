@@ -33,7 +33,9 @@ data class UserPreferences(
     val lastBackupStatus: String? = null,
     val lastBackupError: String? = null,
     val lastDismissedRestoreBackupTimestamp: Long? = null,
-    val isAppTourCompleted: Boolean = false
+    val isAppTourCompleted: Boolean = false,
+    val defaultIncomeSource: PaymentMethod = PaymentMethod.ACCOUNT,
+    val defaultExpenseSource: PaymentMethod = PaymentMethod.CASH
 ) {
     val openingBalance: Amount
         get() = Amount(openingBalanceSubunits)

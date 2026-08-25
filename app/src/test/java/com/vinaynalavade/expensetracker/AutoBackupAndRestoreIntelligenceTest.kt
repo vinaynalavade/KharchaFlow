@@ -129,7 +129,7 @@ class AutoBackupAndRestoreIntelligenceTest {
                 amount = Amount(50000L),
                 type = TransactionType.EXPENSE,
                 category = Category(1L, "Food", "fastfood", "#FF5722", TransactionType.EXPENSE, true),
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 note = "Dinner",
                 timestamp = System.currentTimeMillis()
             )
@@ -356,6 +356,18 @@ class AutoBackupAndRestoreIntelligenceTest {
 
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
             currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultIncomeSource = source)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultExpenseSource = source)
             _flow.value = currentPrefs
             return AppResult.Success(Unit)
         }

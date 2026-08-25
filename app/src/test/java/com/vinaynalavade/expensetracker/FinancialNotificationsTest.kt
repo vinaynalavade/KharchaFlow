@@ -93,7 +93,7 @@ class FinancialNotificationsTest {
 
         // 1. Spend ₹4,000 (40%) -> No threshold
         fakeTransactionRepo.addTransaction(
-            Transaction(1L, Amount(400000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(1L, Amount(400000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
 
         val useCase = CheckBudgetThresholdsUseCase(fakeTransactionRepo, fakePrefsRepo, fakeStateRepo)
@@ -102,7 +102,7 @@ class FinancialNotificationsTest {
 
         // 2. Spend another ₹1,000 -> Total ₹5,000 (50%) -> Triggers FIFTY
         fakeTransactionRepo.addTransaction(
-            Transaction(2L, Amount(100000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(2L, Amount(100000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
         triggered = useCase(testDate)
         assertEquals(listOf(BudgetThreshold.FIFTY), triggered)
@@ -113,28 +113,28 @@ class FinancialNotificationsTest {
 
         // 4. Spend another ₹2,500 -> Total ₹7,500 (75%) -> Triggers SEVENTY_FIVE
         fakeTransactionRepo.addTransaction(
-            Transaction(3L, Amount(250000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(3L, Amount(250000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
         triggered = useCase(testDate)
         assertEquals(listOf(BudgetThreshold.SEVENTY_FIVE), triggered)
 
         // 5. Spend another ₹1,500 -> Total ₹9,000 (90%) -> Triggers NINETY
         fakeTransactionRepo.addTransaction(
-            Transaction(4L, Amount(150000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(4L, Amount(150000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
         triggered = useCase(testDate)
         assertEquals(listOf(BudgetThreshold.NINETY), triggered)
 
         // 6. Spend another ₹1,000 -> Total ₹10,000 (100%) -> Triggers HUNDRED
         fakeTransactionRepo.addTransaction(
-            Transaction(5L, Amount(100000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(5L, Amount(100000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
         triggered = useCase(testDate)
         assertEquals(listOf(BudgetThreshold.HUNDRED), triggered)
 
         // 7. Spend another ₹500 -> Total ₹10,500 (Over Budget) -> Triggers OVER_BUDGET
         fakeTransactionRepo.addTransaction(
-            Transaction(6L, Amount(50000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, null, timestamp)
+            Transaction(6L, Amount(50000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.ACCOUNT, null, timestamp)
         )
         triggered = useCase(testDate)
         assertEquals(listOf(BudgetThreshold.OVER_BUDGET), triggered)
@@ -431,6 +431,18 @@ class FinancialNotificationsTest {
 
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
             currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultIncomeSource = source)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultExpenseSource = source)
             _flow.value = currentPrefs
             return AppResult.Success(Unit)
         }

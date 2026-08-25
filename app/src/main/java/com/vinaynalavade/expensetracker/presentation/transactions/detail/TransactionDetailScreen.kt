@@ -188,7 +188,7 @@ fun TransactionDetailScreen(
                         Column(modifier = Modifier.padding(MaterialTheme.spacing.lg)) {
                             DetailRow(label = "Type", value = tx.type.displayName)
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-                            DetailRow(label = "Payment Method", value = tx.paymentMethod.displayName)
+                            DetailRow(label = "Financial Source", value = tx.paymentMethod.displayName)
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                             DetailRow(label = "Date", value = DateTimeUtils.formatDate(tx.timestamp))
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))

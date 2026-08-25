@@ -49,11 +49,8 @@ class PaymentMethodUiIntegrationTest {
             transactionType = TransactionType.EXPENSE
         )
 
-        state = state.copy(selectedPaymentMethod = PaymentMethod.BANK_ACCOUNT)
-        assertEquals(PaymentMethod.BANK_ACCOUNT, state.selectedPaymentMethod)
-
-        state = state.copy(selectedPaymentMethod = PaymentMethod.UPI)
-        assertEquals(PaymentMethod.UPI, state.selectedPaymentMethod)
+        state = state.copy(selectedPaymentMethod = PaymentMethod.ACCOUNT)
+        assertEquals(PaymentMethod.ACCOUNT, state.selectedPaymentMethod)
 
         state = state.copy(selectedPaymentMethod = PaymentMethod.CASH)
         assertEquals(PaymentMethod.CASH, state.selectedPaymentMethod)
@@ -68,8 +65,8 @@ class PaymentMethodUiIntegrationTest {
             amount = Amount(15000L),
             type = TransactionType.EXPENSE,
             category = testCategory,
-            paymentMethod = PaymentMethod.UPI,
-            note = "UPI payment test",
+            paymentMethod = PaymentMethod.ACCOUNT,
+            note = "Account payment test",
             timestamp = 1000L
         )
 
@@ -78,7 +75,7 @@ class PaymentMethodUiIntegrationTest {
 
         val saved = fakeRepo.savedTransactions
         assertEquals(1, saved.size)
-        assertEquals(PaymentMethod.UPI, saved[0].paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, saved[0].paymentMethod)
     }
 
     @Test
@@ -92,7 +89,7 @@ class PaymentMethodUiIntegrationTest {
             amount = Amount(50000L),
             type = TransactionType.EXPENSE,
             category = testCategory,
-            paymentMethod = PaymentMethod.BANK_ACCOUNT,
+            paymentMethod = PaymentMethod.ACCOUNT,
             note = "Initial Bank Payment",
             timestamp = 2000L
         )
@@ -100,13 +97,13 @@ class PaymentMethodUiIntegrationTest {
 
         val updatedTx = originalTx.copy(
             note = "Updated note",
-            paymentMethod = PaymentMethod.BANK_ACCOUNT
+            paymentMethod = PaymentMethod.ACCOUNT
         )
         val updateResult = updateUseCase(updatedTx)
         assertTrue(updateResult is AppResult.Success)
 
         val saved = fakeRepo.savedTransactions.find { it.id == 42L }
-        assertEquals(PaymentMethod.BANK_ACCOUNT, saved?.paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, saved?.paymentMethod)
         assertEquals("Updated note", saved?.note)
     }
 
@@ -118,14 +115,14 @@ class PaymentMethodUiIntegrationTest {
             amount = Amount(99900L),
             type = TransactionType.EXPENSE,
             category = testCategory,
-            paymentMethod = PaymentMethod.UPI,
+            paymentMethod = PaymentMethod.ACCOUNT,
             frequency = RecurrenceFrequency.MONTHLY,
             dayOfMonth = 1
         )
 
         // Convert recurring to entity
         val entity = RecurringTransactionEntity.fromDomainModel(recurring)
-        assertEquals("UPI", entity.paymentMethod)
+        assertEquals("ACCOUNT", entity.paymentMethod)
 
         // Simulate repository generating transaction entity from recurring item
         val generatedTxEntity = TransactionEntity(
@@ -139,7 +136,7 @@ class PaymentMethodUiIntegrationTest {
             updatedAt = 3000L
         )
 
-        assertEquals("UPI", generatedTxEntity.paymentMethod)
+        assertEquals("ACCOUNT", generatedTxEntity.paymentMethod)
         assertEquals(99900L, generatedTxEntity.amountSubunits)
     }
 

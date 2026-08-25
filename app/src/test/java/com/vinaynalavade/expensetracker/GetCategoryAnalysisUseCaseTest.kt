@@ -40,7 +40,7 @@ class GetCategoryAnalysisUseCaseTest {
                 amount = Amount(400000L),
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = epochMidAug
             ),
             // Transport: ₹3,000 (300000 subunits)
@@ -58,7 +58,7 @@ class GetCategoryAnalysisUseCaseTest {
                 amount = Amount(300000L),
                 type = TransactionType.EXPENSE,
                 category = shoppingCategory,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = epochMidAug
             ),
             // Income (Salary: ₹50,000) - should NOT be in Expense analysis!
@@ -67,7 +67,7 @@ class GetCategoryAnalysisUseCaseTest {
                 amount = Amount(5000000L),
                 type = TransactionType.INCOME,
                 category = salaryCategory,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = epochMidAug
             )
         )
@@ -110,7 +110,7 @@ class GetCategoryAnalysisUseCaseTest {
                 amount = Amount(8000000L), // ₹80,000 Salary
                 type = TransactionType.INCOME,
                 category = salaryCategory,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = epochMidAug
             ),
             Transaction(
@@ -118,7 +118,7 @@ class GetCategoryAnalysisUseCaseTest {
                 amount = Amount(2000000L), // ₹20,000 Freelance
                 type = TransactionType.INCOME,
                 category = freelanceCategory,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = epochMidAug
             ),
             Transaction(

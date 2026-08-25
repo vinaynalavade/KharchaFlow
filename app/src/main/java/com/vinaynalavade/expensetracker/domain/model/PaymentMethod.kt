@@ -2,15 +2,24 @@ package com.vinaynalavade.expensetracker.domain.model
 
 /**
  * Strongly typed representation of financial payment methods / sources.
+ * In Phase 2, standardized strictly to Cash and Account.
  */
 enum class PaymentMethod(val displayName: String) {
     CASH("Cash"),
-    BANK_ACCOUNT("Bank Account"),
-    UPI("UPI");
+    ACCOUNT("Account");
 
     companion object {
-        fun fromString(value: String): PaymentMethod {
-            return entries.firstOrNull { it.name.equals(value.trim(), ignoreCase = true) } ?: CASH
+        val DEFAULT = CASH
+
+        fun fromString(value: String?): PaymentMethod {
+            if (value == null) return CASH
+            val normalized = value.trim().uppercase().replace(" ", "_")
+            return when (normalized) {
+                "CASH" -> CASH
+                "ACCOUNT", "BANK_ACCOUNT", "UPI", "BANK", "CARD", "NET_BANKING" -> ACCOUNT
+                else -> CASH
+            }
         }
     }
 }
+

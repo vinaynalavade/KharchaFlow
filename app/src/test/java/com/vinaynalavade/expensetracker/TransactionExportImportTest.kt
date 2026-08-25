@@ -40,7 +40,7 @@ class TransactionExportImportTest {
                 amount = Amount(150000L),
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.CASH,
                 note = "Dinner, \"special\" with team\nSecond line",
                 timestamp = 1787400000000L
             ),
@@ -49,7 +49,7 @@ class TransactionExportImportTest {
                 amount = Amount(5000000L),
                 type = TransactionType.INCOME,
                 category = salaryCategory,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 note = null,
                 timestamp = 1787300000000L
             )
@@ -62,8 +62,8 @@ class TransactionExportImportTest {
 
         // Check CSV escaping of comma, quote and newline
         assertTrue(csv.contains("\"Dinner, \"\"special\"\" with team\nSecond line\""))
-        assertTrue(csv.contains("UPI"))
-        assertTrue(csv.contains("Bank Account"))
+        assertTrue(csv.contains("Cash"))
+        assertTrue(csv.contains("Account"))
     }
 
     @Test
@@ -81,19 +81,19 @@ class TransactionExportImportTest {
 
         assertEquals(5, parsed.size)
 
-        // Row 1 (valid)
+        // Row 1 (valid with legacy UPI source mapping to ACCOUNT)
         assertTrue(parsed[0].isValid)
         assertEquals(TransactionType.EXPENSE, parsed[0].type)
         assertEquals("Food & Dining", parsed[0].categoryName)
         assertEquals(15000L, parsed[0].amount?.subunits)
-        assertEquals(PaymentMethod.UPI, parsed[0].paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, parsed[0].paymentMethod)
         assertEquals("Groceries and snacks", parsed[0].note)
 
-        // Row 2 (valid)
+        // Row 2 (valid with legacy Bank Account source mapping to ACCOUNT)
         assertTrue(parsed[1].isValid)
         assertEquals(TransactionType.INCOME, parsed[1].type)
         assertEquals(500000L, parsed[1].amount?.subunits)
-        assertEquals(PaymentMethod.BANK_ACCOUNT, parsed[1].paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, parsed[1].paymentMethod)
 
         // Row 3 (invalid date)
         assertFalse(parsed[2].isValid)

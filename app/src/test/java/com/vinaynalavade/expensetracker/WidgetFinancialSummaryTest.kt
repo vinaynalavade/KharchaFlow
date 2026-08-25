@@ -88,7 +88,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = previousMonthEpoch,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // 2. Previous month expense: ₹10,000 (excluded from this month & today)
             Transaction(
@@ -97,7 +97,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = previousMonthEpoch + 1000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // 3. Current month income: ₹35,000 (included in monthly income, excluded from today's expense)
             Transaction(
@@ -106,7 +106,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = startOfToday + 1000L,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // 4. Earlier this month expense: ₹8,000 (included in monthly expense, excluded from today's expense)
             Transaction(
@@ -115,7 +115,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = earlierThisMonthEpoch,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // 5. Today's expense 1: ₹1,500 (included in both today's expense & monthly expense)
             Transaction(
@@ -124,7 +124,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfToday + 5000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // 6. Today's expense 2: ₹2,000 (included in both today's expense & monthly expense)
             Transaction(
@@ -189,7 +189,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfToday + 1000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             )
         )
 
@@ -237,7 +237,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = startOfToday + 1000L,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 2L,
@@ -245,7 +245,7 @@ class WidgetFinancialSummaryTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfToday + 2000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             )
         )
 
@@ -317,6 +317,8 @@ class WidgetFinancialSummaryTest {
         override suspend fun setLastBackupError(error: String?): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
 

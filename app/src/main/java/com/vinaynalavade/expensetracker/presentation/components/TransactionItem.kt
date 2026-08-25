@@ -79,8 +79,7 @@ fun TransactionItem(
 
             val methodIcon = when (transaction.paymentMethod) {
                 PaymentMethod.CASH -> Icons.Default.Payments
-                PaymentMethod.BANK_ACCOUNT -> Icons.Default.AccountBalance
-                PaymentMethod.UPI -> Icons.Default.QrCode
+                PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
             }
 
             Row(

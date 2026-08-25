@@ -84,7 +84,7 @@ class CategoryManagementTest {
             amount = Amount(50000L),
             type = TransactionType.EXPENSE,
             category = defaultFoodCategory,
-            paymentMethod = PaymentMethod.UPI,
+            paymentMethod = PaymentMethod.ACCOUNT,
             note = "Dinner",
             timestamp = System.currentTimeMillis()
         )
@@ -189,7 +189,7 @@ class CategoryManagementTest {
             amount = Amount(200000L),
             type = TransactionType.EXPENSE,
             category = customGymCategory,
-            paymentMethod = PaymentMethod.UPI,
+            paymentMethod = PaymentMethod.ACCOUNT,
             note = null,
             timestamp = System.currentTimeMillis()
         )

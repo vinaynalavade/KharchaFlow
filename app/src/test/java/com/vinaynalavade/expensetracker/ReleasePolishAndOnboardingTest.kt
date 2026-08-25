@@ -77,8 +77,8 @@ class ReleasePolishAndOnboardingTest {
     @Test
     fun testLocalTransactionsPreservedAcrossGoogleAccountOperations() = runBlocking {
         // 1. Add some local transactions
-        val tx1 = Transaction(1L, Amount(50000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.UPI, "Lunch", 1000L)
-        val tx2 = Transaction(2L, Amount(200000L), TransactionType.INCOME, sampleCategory, PaymentMethod.BANK_ACCOUNT, "Salary", 2000L)
+        val tx1 = Transaction(1L, Amount(50000L), TransactionType.EXPENSE, sampleCategory, PaymentMethod.CASH, "Lunch", 1000L)
+        val tx2 = Transaction(2L, Amount(200000L), TransactionType.INCOME, sampleCategory, PaymentMethod.ACCOUNT, "Salary", 2000L)
         fakeTransactionRepo.insertTransaction(tx1)
         fakeTransactionRepo.insertTransaction(tx2)
 
@@ -243,6 +243,18 @@ class ReleasePolishAndOnboardingTest {
 
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
             currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            _prefsFlow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultIncomeSource = source)
+            _prefsFlow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultExpenseSource = source)
             _prefsFlow.value = currentPrefs
             return AppResult.Success(Unit)
         }

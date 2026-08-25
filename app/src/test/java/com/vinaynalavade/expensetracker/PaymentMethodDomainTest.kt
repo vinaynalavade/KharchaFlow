@@ -8,7 +8,6 @@ import com.vinaynalavade.expensetracker.domain.model.RecurringTransaction
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class PaymentMethodDomainTest {
@@ -16,18 +15,24 @@ class PaymentMethodDomainTest {
     @Test
     fun testPaymentMethodEnumEntries() {
         assertEquals("Cash", PaymentMethod.CASH.displayName)
-        assertEquals("Bank Account", PaymentMethod.BANK_ACCOUNT.displayName)
-        assertEquals("UPI", PaymentMethod.UPI.displayName)
+        assertEquals("Account", PaymentMethod.ACCOUNT.displayName)
+        assertEquals(2, PaymentMethod.entries.size)
     }
 
     @Test
     fun testPaymentMethodFromStringParsing() {
         assertEquals(PaymentMethod.CASH, PaymentMethod.fromString("CASH"))
         assertEquals(PaymentMethod.CASH, PaymentMethod.fromString("cash"))
-        assertEquals(PaymentMethod.BANK_ACCOUNT, PaymentMethod.fromString("BANK_ACCOUNT"))
-        assertEquals(PaymentMethod.BANK_ACCOUNT, PaymentMethod.fromString("bank_account"))
-        assertEquals(PaymentMethod.UPI, PaymentMethod.fromString("UPI"))
-        assertEquals(PaymentMethod.UPI, PaymentMethod.fromString("upi"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("ACCOUNT"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("account"))
+
+        // Legacy values normalized to ACCOUNT
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("BANK_ACCOUNT"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("bank_account"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("UPI"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("upi"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("BANK"))
+        assertEquals(PaymentMethod.ACCOUNT, PaymentMethod.fromString("CARD"))
 
         // Unknown or blank values fallback to CASH
         assertEquals(PaymentMethod.CASH, PaymentMethod.fromString("UNKNOWN_METHOD"))
@@ -47,25 +52,15 @@ class PaymentMethodDomainTest {
         )
         assertEquals(PaymentMethod.CASH, expenseCash.paymentMethod)
 
-        val incomeBank = Transaction(
+        val incomeAccount = Transaction(
             id = 2L,
             amount = Amount(150000L),
             type = TransactionType.INCOME,
             category = Category.UNCATEGORIZED,
-            paymentMethod = PaymentMethod.BANK_ACCOUNT,
+            paymentMethod = PaymentMethod.ACCOUNT,
             timestamp = 2000L
         )
-        assertEquals(PaymentMethod.BANK_ACCOUNT, incomeBank.paymentMethod)
-
-        val expenseUpi = Transaction(
-            id = 3L,
-            amount = Amount(25000L),
-            type = TransactionType.EXPENSE,
-            category = Category.UNCATEGORIZED,
-            paymentMethod = PaymentMethod.UPI,
-            timestamp = 3000L
-        )
-        assertEquals(PaymentMethod.UPI, expenseUpi.paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, incomeAccount.paymentMethod)
     }
 
     @Test
@@ -88,10 +83,10 @@ class PaymentMethodDomainTest {
             amount = Amount(200000L),
             type = TransactionType.EXPENSE,
             category = Category.UNCATEGORIZED,
-            paymentMethod = PaymentMethod.UPI,
+            paymentMethod = PaymentMethod.ACCOUNT,
             frequency = RecurrenceFrequency.MONTHLY
         )
-        assertEquals(PaymentMethod.UPI, recurring.paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, recurring.paymentMethod)
 
         val defaultRecurring = RecurringTransaction(
             id = 2L,

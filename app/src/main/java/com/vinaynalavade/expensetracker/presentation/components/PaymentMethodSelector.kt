@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -42,7 +38,7 @@ import com.vinaynalavade.expensetracker.presentation.theme.PillShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 /**
- * Reusable, premium Payment Method selector supporting Cash, Bank Account, and UPI.
+ * Reusable, premium Financial Source selector supporting Cash and Account.
  * Features subtle animations, clear selected states, and accessible semantics.
  */
 @Composable
@@ -61,7 +57,7 @@ fun PaymentMethodSelector(
     ) {
         if (showLabel) {
             Text(
-                text = "PAYMENT METHOD",
+                text = "FINANCIAL SOURCE",
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -98,8 +94,7 @@ private fun PaymentMethodOption(
 ) {
     val icon = when (method) {
         PaymentMethod.CASH -> Icons.Default.Payments
-        PaymentMethod.BANK_ACCOUNT -> Icons.Default.AccountBalance
-        PaymentMethod.UPI -> Icons.Default.QrCode
+        PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
     }
 
     val animatedBgColor by animateColorAsState(
@@ -136,8 +131,7 @@ private fun PaymentMethodOption(
 
     val displayLabel = when (method) {
         PaymentMethod.CASH -> "Cash"
-        PaymentMethod.BANK_ACCOUNT -> if (isCompact) "Bank" else "Bank Account"
-        PaymentMethod.UPI -> "UPI"
+        PaymentMethod.ACCOUNT -> "Account"
     }
 
     Row(
@@ -179,3 +173,4 @@ private fun PaymentMethodOption(
         )
     }
 }
+

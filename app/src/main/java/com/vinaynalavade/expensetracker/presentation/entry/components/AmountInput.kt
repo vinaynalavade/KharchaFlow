@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.core.util.AmountInputFormatter
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.presentation.theme.LocalCurrency
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
@@ -51,7 +52,8 @@ import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 /**
  * Calculator-inspired prominent amount input component.
- * Allows easy numeric entry with currency symbol, automatic decimal validation, and clear error states.
+ * Allows easy numeric entry with currency symbol, automatic comma formatting via AmountVisualTransformation,
+ * decimal validation, and clear error states.
  */
 @Composable
 fun AmountInput(
@@ -152,13 +154,14 @@ fun AmountInput(
                 modifier = Modifier.padding(end = MaterialTheme.spacing.xs)
             )
 
-            // Hidden / Integrated BasicTextField with large styling
+            // Integrated BasicTextField with large styling and live comma transformation
             BasicTextField(
                 value = amountText,
                 onValueChange = { input ->
-                    val filtered = sanitizeAmountInput(input, currency.decimalDigits)
+                    val filtered = AmountInputFormatter.sanitizeAmountInput(input, currency.decimalDigits)
                     onAmountChange(filtered)
                 },
+                visualTransformation = AmountVisualTransformation(),
                 modifier = Modifier
                     .then(
                         if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier
@@ -213,29 +216,4 @@ fun AmountInput(
             }
         }
     }
-}
-
-/**
- * Sanitizes and restricts input string to valid decimal representations.
- */
-private fun sanitizeAmountInput(input: String, maxDecimalDigits: Int): String {
-    val clean = input.filter { it.isDigit() || it == '.' }
-
-    val parts = clean.split('.')
-    if (parts.size > 2) {
-        // Disallow multiple decimal points
-        return parts[0] + "." + parts[1]
-    }
-
-    if (parts.size == 2 && parts[1].length > maxDecimalDigits) {
-        // Restrict to max decimal digits
-        return parts[0] + "." + parts[1].take(maxDecimalDigits)
-    }
-
-    // Handle leading zeros: if "05" -> "5", but allow "0" or "0."
-    if (clean.length > 1 && clean.startsWith("0") && clean[1] != '.') {
-        return clean.dropWhile { it == '0' }
-    }
-
-    return clean
 }

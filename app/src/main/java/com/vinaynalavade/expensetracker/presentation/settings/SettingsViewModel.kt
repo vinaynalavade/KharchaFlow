@@ -12,6 +12,7 @@ import com.vinaynalavade.expensetracker.core.result.AppResult
 import com.vinaynalavade.expensetracker.core.security.SecurePinManager
 import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.domain.repository.UserPreferencesRepository
@@ -419,6 +420,18 @@ class SettingsViewModel(
     fun onHideContentInRecentsToggled(hide: Boolean) {
         viewModelScope.launch {
             setHideContentInRecentsUseCase(hide)
+        }
+    }
+
+    fun onDefaultIncomeSourceSelected(source: PaymentMethod) {
+        viewModelScope.launch {
+            userPreferencesRepository.setDefaultIncomeSource(source)
+        }
+    }
+
+    fun onDefaultExpenseSourceSelected(source: PaymentMethod) {
+        viewModelScope.launch {
+            userPreferencesRepository.setDefaultExpenseSource(source)
         }
     }
 

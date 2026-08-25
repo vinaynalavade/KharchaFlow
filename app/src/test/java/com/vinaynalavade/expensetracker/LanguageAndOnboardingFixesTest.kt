@@ -4,6 +4,7 @@ import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.notification.DailyReminderScheduler
 import com.vinaynalavade.expensetracker.core.result.AppResult
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.domain.repository.UserPreferencesRepository
@@ -306,6 +307,14 @@ class LanguageAndOnboardingFixesTest {
         override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) = AppResult.Success(Unit)
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
             currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            return AppResult.Success(Unit)
+        }
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultIncomeSource = source)
+            return AppResult.Success(Unit)
+        }
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultExpenseSource = source)
             return AppResult.Success(Unit)
         }
     }

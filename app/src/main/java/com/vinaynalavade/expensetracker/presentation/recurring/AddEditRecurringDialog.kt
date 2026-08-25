@@ -31,12 +31,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.core.util.AmountInputFormatter
 import com.vinaynalavade.expensetracker.domain.model.Category
 import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.RecurrenceFrequency
 import com.vinaynalavade.expensetracker.domain.model.RecurringTransaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
+import com.vinaynalavade.expensetracker.presentation.entry.components.AmountVisualTransformation
 import com.vinaynalavade.expensetracker.presentation.entry.components.CategorySelector
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
@@ -138,11 +140,11 @@ fun AddEditRecurringDialog(
                 OutlinedTextField(
                     value = amountText,
                     onValueChange = { input ->
-                        if (input.all { it.isDigit() || it == '.' }) {
-                            amountText = input
-                            if (input.isNotBlank()) amountError = null
-                        }
+                        val sanitized = AmountInputFormatter.sanitizeAmountInput(input, currency.decimalDigits)
+                        amountText = sanitized
+                        if (sanitized.isNotBlank()) amountError = null
                     },
+                    visualTransformation = AmountVisualTransformation(),
                     label = { Text("Amount (${currency.symbol})") },
                     isError = amountError != null,
                     supportingText = amountError?.let { err ->

@@ -1,6 +1,7 @@
 package com.vinaynalavade.expensetracker
 
 import com.vinaynalavade.expensetracker.core.result.AppResult
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.domain.repository.UserPreferencesRepository
@@ -208,6 +209,18 @@ class AppTourTest {
 
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> {
             currentPrefs = currentPrefs.copy(isAppTourCompleted = completed)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultIncomeSource = source)
+            _flow.value = currentPrefs
+            return AppResult.Success(Unit)
+        }
+
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> {
+            currentPrefs = currentPrefs.copy(defaultExpenseSource = source)
             _flow.value = currentPrefs
             return AppResult.Success(Unit)
         }

@@ -59,6 +59,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -117,6 +118,7 @@ import com.vinaynalavade.expensetracker.core.security.BiometricAuthHelper
 import com.vinaynalavade.expensetracker.core.utils.DateTimeUtils
 import com.vinaynalavade.expensetracker.domain.model.GoogleAccountInfo
 import com.vinaynalavade.expensetracker.domain.model.GoogleBackupState
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.RecurringReminderAdvance
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
@@ -295,6 +297,24 @@ fun SettingsScreen(
                     subtitle = userPreferences.currency.name,
                     valueBadge = "${userPreferences.currency.symbol} ${userPreferences.currency.code}",
                     onClick = { showCurrencyDialog = true }
+                )
+
+                SettingsDivider()
+
+                DefaultSourceSettingRow(
+                    title = "Default Expense Source",
+                    subtitle = "Preselected when recording new expenses",
+                    selectedMethod = userPreferences.defaultExpenseSource,
+                    onMethodSelect = { viewModel.onDefaultExpenseSourceSelected(it) }
+                )
+
+                SettingsDivider()
+
+                DefaultSourceSettingRow(
+                    title = "Default Income Source",
+                    subtitle = "Preselected when recording new income",
+                    selectedMethod = userPreferences.defaultIncomeSource,
+                    onMethodSelect = { viewModel.onDefaultIncomeSourceSelected(it) }
                 )
 
                 SettingsDivider()
@@ -1593,4 +1613,62 @@ private fun UnlockMethodDialog(
             }
         }
     )
+}
+
+@Composable
+private fun DefaultSourceSettingRow(
+    title: String,
+    subtitle: String,
+    selectedMethod: PaymentMethod,
+    onMethodSelect: (PaymentMethod) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = MaterialTheme.spacing.xs)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = MaterialTheme.spacing.md)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PaymentMethod.entries.forEach { method ->
+                    val isSelected = selectedMethod == method
+                    val icon = when (method) {
+                        PaymentMethod.CASH -> Icons.Default.Payments
+                        PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
+                    }
+                    ThemeOptionChip(
+                        label = method.displayName,
+                        icon = icon,
+                        isSelected = isSelected,
+                        onClick = { onMethodSelect(method) }
+                    )
+                }
+            }
+        }
+    }
 }

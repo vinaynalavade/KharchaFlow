@@ -123,7 +123,7 @@ class DailyReminderSchedulerTest {
         assertTrue("Notification should be suppressed when expense transaction recorded today", shouldSuppress2)
 
         // Case 3: 1 Income transaction recorded today -> SUPPRESSED (Notification hidden)
-        val incomeTx = Transaction(2L, Amount(500000L), TransactionType.INCOME, cat, PaymentMethod.BANK_ACCOUNT, null, todayStart + 2000L)
+        val incomeTx = Transaction(2L, Amount(500000L), TransactionType.INCOME, cat, PaymentMethod.ACCOUNT, null, todayStart + 2000L)
         val incomeRepo = FakeTxRepo(listOf(incomeTx))
         val todayTx3 = incomeRepo.getTransactionsBetween(todayStart, todayEnd).first()
         val shouldSuppress3 = todayTx3.isNotEmpty()

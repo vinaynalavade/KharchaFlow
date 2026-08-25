@@ -12,6 +12,7 @@ import com.vinaynalavade.expensetracker.domain.model.TransactionType
 import com.vinaynalavade.expensetracker.domain.usecase.AddTransactionUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetCategoriesUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionByIdUseCase
+import com.vinaynalavade.expensetracker.domain.usecase.GetUserPreferencesUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.UpdateTransactionUseCase
 import com.vinaynalavade.expensetracker.domain.validation.TransactionValidator
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,6 +58,7 @@ class AddTransactionViewModel(
     private val updateTransactionUseCase: UpdateTransactionUseCase,
     private val getTransactionByIdUseCase: GetTransactionByIdUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getUserPreferencesUseCase: GetUserPreferencesUseCase? = null,
     private val currency: Currency = Currency.DEFAULT
 ) : ViewModel() {
 
@@ -75,7 +77,7 @@ class AddTransactionViewModel(
 
     private fun loadCategoriesAndInitialData() {
         viewModelScope.launch {
-            // If editing, preload the transaction first
+            // If editing, preload the transaction first (preserves existing payment method)
             if (editTransactionId != null) {
                 val tx = getTransactionByIdUseCase(editTransactionId).firstOrNull()
                 if (tx != null) {
@@ -90,6 +92,17 @@ class AddTransactionViewModel(
                             originalCreatedAt = tx.createdAt
                         )
                     }
+                }
+            } else {
+                // If creating new transaction, load default financial source from preferences
+                val prefs = getUserPreferencesUseCase?.invoke()?.firstOrNull()
+                if (prefs != null) {
+                    val defaultSource = if (transactionType == TransactionType.INCOME) {
+                        prefs.defaultIncomeSource
+                    } else {
+                        prefs.defaultExpenseSource
+                    }
+                    _uiState.update { it.copy(selectedPaymentMethod = defaultSource) }
                 }
             }
 
@@ -244,6 +257,7 @@ class AddTransactionViewModel(
         private val updateTransactionUseCase: UpdateTransactionUseCase,
         private val getTransactionByIdUseCase: GetTransactionByIdUseCase,
         private val getCategoriesUseCase: GetCategoriesUseCase,
+        private val getUserPreferencesUseCase: GetUserPreferencesUseCase? = null,
         private val currency: Currency = Currency.DEFAULT
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -255,6 +269,7 @@ class AddTransactionViewModel(
                 updateTransactionUseCase = updateTransactionUseCase,
                 getTransactionByIdUseCase = getTransactionByIdUseCase,
                 getCategoriesUseCase = getCategoriesUseCase,
+                getUserPreferencesUseCase = getUserPreferencesUseCase,
                 currency = currency
             ) as T
         }

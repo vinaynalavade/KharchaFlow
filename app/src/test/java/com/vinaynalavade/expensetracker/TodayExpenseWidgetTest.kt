@@ -81,7 +81,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = midDay,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 2L,
@@ -89,7 +89,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = midDay + 1000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 3L,
@@ -139,7 +139,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfDay + (6 * 60 * 60 * 1000L),
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             // Tomorrow's expense — should be excluded
             Transaction(
@@ -184,7 +184,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = transportCategory,
                 timestamp = startOfDay + 2000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 3L,
@@ -200,7 +200,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = transportCategory,
                 timestamp = startOfDay + 4000L,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             )
         )
 
@@ -242,7 +242,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = todayStart + (6 * 60 * 60 * 1000L),
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             )
         )
 
@@ -272,7 +272,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfDay + 1000L,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 2L,
@@ -311,7 +311,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = startOfDay + 1000L,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT
+                paymentMethod = PaymentMethod.ACCOUNT
             ),
             Transaction(
                 id = 2L,
@@ -319,7 +319,7 @@ class TodayExpenseWidgetTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = startOfDay + 2000L,
-                paymentMethod = PaymentMethod.UPI
+                paymentMethod = PaymentMethod.ACCOUNT
             )
         )
 
@@ -475,5 +475,7 @@ class TodayExpenseWidgetTest {
         override suspend fun setLastBackupError(error: String?): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun setAppTourCompleted(completed: Boolean): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod): AppResult<Unit> = AppResult.Success(Unit)
     }
 }

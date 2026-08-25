@@ -66,7 +66,7 @@ class WidgetIntentRoutingTest {
                 amount = Amount(100000L), // ₹1,000 Income
                 type = TransactionType.INCOME,
                 category = Category.UNCATEGORIZED,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = 10000L
             ),
             Transaction(
@@ -74,7 +74,7 @@ class WidgetIntentRoutingTest {
                 amount = Amount(25000L), // ₹250 Expense
                 type = TransactionType.EXPENSE,
                 category = Category.UNCATEGORIZED,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.CASH,
                 timestamp = 15000L
             )
         )
@@ -137,5 +137,7 @@ class WidgetIntentRoutingTest {
         override suspend fun setLastBackupError(error: String?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
         override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
         override suspend fun setAppTourCompleted(completed: Boolean) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod) = com.vinaynalavade.expensetracker.core.result.AppResult.Success(Unit)
     }
 }

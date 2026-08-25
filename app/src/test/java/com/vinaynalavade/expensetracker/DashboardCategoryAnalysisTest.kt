@@ -43,7 +43,7 @@ class DashboardCategoryAnalysisTest {
                 amount = Amount(30000L),
                 type = TransactionType.EXPENSE,
                 category = foodCat,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = todayEpoch
             ),
             Transaction(
@@ -51,7 +51,7 @@ class DashboardCategoryAnalysisTest {
                 amount = Amount(80000L),
                 type = TransactionType.INCOME,
                 category = salaryCat,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = todayEpoch
             )
         )
@@ -138,5 +138,7 @@ class DashboardCategoryAnalysisTest {
         override suspend fun setLastBackupError(error: String?) = AppResult.Success(Unit)
         override suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?) = AppResult.Success(Unit)
         override suspend fun setAppTourCompleted(completed: Boolean) = AppResult.Success(Unit)
+        override suspend fun setDefaultIncomeSource(source: PaymentMethod) = AppResult.Success(Unit)
+        override suspend fun setDefaultExpenseSource(source: PaymentMethod) = AppResult.Success(Unit)
     }
 }

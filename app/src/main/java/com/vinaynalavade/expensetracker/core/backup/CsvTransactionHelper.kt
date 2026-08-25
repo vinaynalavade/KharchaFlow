@@ -137,11 +137,7 @@ object CsvTransactionHelper {
             val parsedAmount = parseAmountFlexible(amountRaw, defaultCurrency)
 
             // 4. Parse Payment Method
-            val parsedPaymentMethod = when (paymentMethodRaw.uppercase().replace(" ", "_")) {
-                "BANK", "BANK_ACCOUNT", "ACCOUNT", "NET_BANKING" -> PaymentMethod.BANK_ACCOUNT
-                "UPI", "GPAY", "PHONEPE", "PAYTM" -> PaymentMethod.UPI
-                else -> PaymentMethod.CASH
-            }
+            val parsedPaymentMethod = PaymentMethod.fromString(paymentMethodRaw)
 
             // 5. Validate row
             val errorMessage = when {

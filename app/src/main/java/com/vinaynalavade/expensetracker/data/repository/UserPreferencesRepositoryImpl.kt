@@ -253,4 +253,22 @@ class UserPreferencesRepositoryImpl(
             AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set app tour completed.", e))
         }
     }
+
+    override suspend fun setDefaultIncomeSource(source: com.vinaynalavade.expensetracker.domain.model.PaymentMethod): AppResult<Unit> {
+        return try {
+            dataStore.setDefaultIncomeSource(source)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set default income source.", e))
+        }
+    }
+
+    override suspend fun setDefaultExpenseSource(source: com.vinaynalavade.expensetracker.domain.model.PaymentMethod): AppResult<Unit> {
+        return try {
+            dataStore.setDefaultExpenseSource(source)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(AppError.PreferencesError(e.message ?: "Failed to set default expense source.", e))
+        }
+    }
 }

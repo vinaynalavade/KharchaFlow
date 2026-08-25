@@ -59,45 +59,51 @@ class TransactionEntityMappingTest {
     }
 
     @Test
-    fun testTransactionEntityMappingBankAccount() {
+    fun testTransactionEntityMappingAccount() {
         val domain = Transaction(
             id = 102L,
             amount = Amount(7500000L),
             type = TransactionType.INCOME,
             category = sampleCategory,
-            paymentMethod = PaymentMethod.BANK_ACCOUNT,
+            paymentMethod = PaymentMethod.ACCOUNT,
             note = "Salary direct deposit",
             timestamp = 1700000000000L
         )
 
         val entity = TransactionEntity.fromDomainModel(domain)
-        assertEquals("BANK_ACCOUNT", entity.paymentMethod)
+        assertEquals("ACCOUNT", entity.paymentMethod)
 
         val withCategory = TransactionWithCategory(transaction = entity, category = sampleCategoryEntity)
         val mappedDomain = withCategory.toDomainModel()
 
-        assertEquals(PaymentMethod.BANK_ACCOUNT, mappedDomain.paymentMethod)
+        assertEquals(PaymentMethod.ACCOUNT, mappedDomain.paymentMethod)
     }
 
     @Test
-    fun testTransactionEntityMappingUpi() {
-        val domain = Transaction(
+    fun testLegacyEntityMappingBankAccountAndUpiNormalizeToAccount() {
+        val entityBank = TransactionEntity(
             id = 103L,
-            amount = Amount(12000L),
-            type = TransactionType.EXPENSE,
-            category = sampleCategory,
-            paymentMethod = PaymentMethod.UPI,
-            note = "Street food scan",
+            amountSubunits = 12000L,
+            type = "EXPENSE",
+            categoryId = 10L,
+            paymentMethod = "BANK_ACCOUNT",
             timestamp = 1700000000000L
         )
 
-        val entity = TransactionEntity.fromDomainModel(domain)
-        assertEquals("UPI", entity.paymentMethod)
+        val mappedBank = TransactionWithCategory(transaction = entityBank, category = sampleCategoryEntity).toDomainModel()
+        assertEquals(PaymentMethod.ACCOUNT, mappedBank.paymentMethod)
 
-        val withCategory = TransactionWithCategory(transaction = entity, category = sampleCategoryEntity)
-        val mappedDomain = withCategory.toDomainModel()
+        val entityUpi = TransactionEntity(
+            id = 104L,
+            amountSubunits = 12000L,
+            type = "EXPENSE",
+            categoryId = 10L,
+            paymentMethod = "UPI",
+            timestamp = 1700000000000L
+        )
 
-        assertEquals(PaymentMethod.UPI, mappedDomain.paymentMethod)
+        val mappedUpi = TransactionWithCategory(transaction = entityUpi, category = sampleCategoryEntity).toDomainModel()
+        assertEquals(PaymentMethod.ACCOUNT, mappedUpi.paymentMethod)
     }
 
     @Test

@@ -48,7 +48,7 @@ class RecurringEmiDayOfMonthTest {
             amount = Amount(2500000L), // ₹25,000
             type = TransactionType.EXPENSE,
             category = sampleCategory,
-            paymentMethod = PaymentMethod.BANK_ACCOUNT,
+            paymentMethod = PaymentMethod.ACCOUNT,
             frequency = RecurrenceFrequency.MONTHLY,
             dayOfMonth = day,
             isEnabled = true,

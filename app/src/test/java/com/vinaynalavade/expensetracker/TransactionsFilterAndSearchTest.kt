@@ -70,7 +70,7 @@ class TransactionsFilterAndSearchTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = todayNoon,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 note = "Lunch with team"
             ),
             Transaction(
@@ -79,7 +79,7 @@ class TransactionsFilterAndSearchTest {
                 type = TransactionType.INCOME,
                 category = salaryCategory,
                 timestamp = todayNoon - 3600000L, // 11:00 AM today
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 note = "Monthly salary"
             ),
             Transaction(
@@ -97,7 +97,7 @@ class TransactionsFilterAndSearchTest {
                 type = TransactionType.EXPENSE,
                 category = foodCategory,
                 timestamp = twoMonthsAgo,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 note = "Old restaurant dinner"
             )
         )

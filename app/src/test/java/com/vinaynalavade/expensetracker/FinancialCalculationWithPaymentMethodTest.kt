@@ -14,7 +14,7 @@ class FinancialCalculationWithPaymentMethodTest {
     fun testFinancialTotalsUnchangedByPaymentMethod() {
         val cat = Category.UNCATEGORIZED
 
-        // Mix of transactions across CASH, BANK_ACCOUNT, and UPI
+        // Mix of transactions across CASH and ACCOUNT
         val transactions = listOf(
             Transaction(
                 id = 1L,
@@ -26,18 +26,18 @@ class FinancialCalculationWithPaymentMethodTest {
             ),
             Transaction(
                 id = 2L,
-                amount = Amount(500000L), // ₹5,000 Bank Income
+                amount = Amount(500000L), // ₹5,000 Account Income
                 type = TransactionType.INCOME,
                 category = cat,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = 2000L
             ),
             Transaction(
                 id = 3L,
-                amount = Amount(150000L), // ₹1,500 UPI Expense
+                amount = Amount(150000L), // ₹1,500 Account Expense
                 type = TransactionType.EXPENSE,
                 category = cat,
-                paymentMethod = PaymentMethod.UPI,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = 3000L
             ),
             Transaction(
@@ -50,10 +50,10 @@ class FinancialCalculationWithPaymentMethodTest {
             ),
             Transaction(
                 id = 5L,
-                amount = Amount(200000L), // ₹2,000 Bank Expense
+                amount = Amount(200000L), // ₹2,000 Account Expense
                 type = TransactionType.EXPENSE,
                 category = cat,
-                paymentMethod = PaymentMethod.BANK_ACCOUNT,
+                paymentMethod = PaymentMethod.ACCOUNT,
                 timestamp = 5000L
             )
         )

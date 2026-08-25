@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.vinaynalavade.expensetracker.core.constants.AppConstants
 import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +59,8 @@ class UserPreferencesDataStore(private val context: Context) {
         val LAST_BACKUP_ERROR = stringPreferencesKey("pref_last_backup_error")
         val LAST_DISMISSED_RESTORE_TIMESTAMP = longPreferencesKey("pref_last_dismissed_restore_timestamp")
         val IS_APP_TOUR_COMPLETED = booleanPreferencesKey("pref_is_app_tour_completed")
+        val DEFAULT_INCOME_SOURCE = stringPreferencesKey("pref_default_income_source")
+        val DEFAULT_EXPENSE_SOURCE = stringPreferencesKey("pref_default_expense_source")
     }
 
     val googleConnectedEmailFlow: Flow<String?> = context.dataStore.data
@@ -130,6 +133,10 @@ class UserPreferencesDataStore(private val context: Context) {
             val lastBackupError = preferences[PreferencesKeys.LAST_BACKUP_ERROR]
             val lastDismissedRestoreTimestamp = preferences[PreferencesKeys.LAST_DISMISSED_RESTORE_TIMESTAMP]
             val isAppTourCompleted = preferences[PreferencesKeys.IS_APP_TOUR_COMPLETED] ?: false
+            val defaultIncomeSourceStr = preferences[PreferencesKeys.DEFAULT_INCOME_SOURCE]
+            val defaultIncomeSource = PaymentMethod.fromString(defaultIncomeSourceStr ?: PaymentMethod.ACCOUNT.name)
+            val defaultExpenseSourceStr = preferences[PreferencesKeys.DEFAULT_EXPENSE_SOURCE]
+            val defaultExpenseSource = PaymentMethod.fromString(defaultExpenseSourceStr ?: PaymentMethod.CASH.name)
 
             UserPreferences(
                 themeMode = themeMode,
@@ -158,7 +165,9 @@ class UserPreferencesDataStore(private val context: Context) {
                 lastBackupStatus = lastBackupStatus,
                 lastBackupError = lastBackupError,
                 lastDismissedRestoreBackupTimestamp = lastDismissedRestoreTimestamp,
-                isAppTourCompleted = isAppTourCompleted
+                isAppTourCompleted = isAppTourCompleted,
+                defaultIncomeSource = defaultIncomeSource,
+                defaultExpenseSource = defaultExpenseSource
             )
         }
 
@@ -368,6 +377,18 @@ class UserPreferencesDataStore(private val context: Context) {
     suspend fun setAppTourCompleted(completed: Boolean = true) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.IS_APP_TOUR_COMPLETED] = completed
+        }
+    }
+
+    suspend fun setDefaultIncomeSource(source: PaymentMethod) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DEFAULT_INCOME_SOURCE] = source.name
+        }
+    }
+
+    suspend fun setDefaultExpenseSource(source: PaymentMethod) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DEFAULT_EXPENSE_SOURCE] = source.name
         }
     }
 }

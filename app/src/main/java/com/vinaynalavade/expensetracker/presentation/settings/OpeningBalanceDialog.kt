@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
+import com.vinaynalavade.expensetracker.core.util.AmountInputFormatter
+import com.vinaynalavade.expensetracker.presentation.entry.components.AmountVisualTransformation
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
@@ -66,8 +68,9 @@ fun OpeningBalanceDialog(
                 OutlinedTextField(
                     value = amountText,
                     onValueChange = { input ->
-                        if (input.all { it.isDigit() || it == '.' }) amountText = input
+                        amountText = AmountInputFormatter.sanitizeAmountInput(input, currency.decimalDigits)
                     },
+                    visualTransformation = AmountVisualTransformation(),
                     label = { Text("Starting Balance (${currency.symbol})") },
                     placeholder = { Text("0.00") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

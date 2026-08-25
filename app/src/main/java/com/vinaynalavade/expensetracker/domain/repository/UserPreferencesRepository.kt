@@ -61,8 +61,12 @@ interface UserPreferencesRepository {
     suspend fun setLastBackupStatus(status: String?): AppResult<Unit>
 
     suspend fun setLastBackupError(error: String?): AppResult<Unit>
-
+ 
     suspend fun setLastDismissedRestoreBackupTimestamp(timestamp: Long?): AppResult<Unit>
 
     suspend fun setAppTourCompleted(completed: Boolean = true): AppResult<Unit>
+ 
+    suspend fun setDefaultIncomeSource(source: com.vinaynalavade.expensetracker.domain.model.PaymentMethod): AppResult<Unit>
+ 
+    suspend fun setDefaultExpenseSource(source: com.vinaynalavade.expensetracker.domain.model.PaymentMethod): AppResult<Unit>
 }
