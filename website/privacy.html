@@ -4,22 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy & Security Architecture — KharchaFlow</title>
-  <meta name="description" content="KharchaFlow's complete privacy and security architecture. Learn how our 100% offline-first design keeps your financial data strictly on your device.">
+  <meta name="description" content="KharchaFlow's complete privacy and security architecture. Learn how our 100% offline-first design keeps your financial data strictly on your device with optional Google Drive backup.">
   
   <meta property="og:type" content="website">
   <meta property="og:title" content="Privacy Policy & Security Architecture — KharchaFlow">
-  <meta property="og:description" content="100% offline-first. Zero ads, zero tracking, on-device SQLite storage.">
+  <meta property="og:description" content="100% offline-first. Zero ads, zero tracking, on-device SQLite storage, optional private Google Drive backup.">
   <meta property="og:image" content="assets/images/logo.png">
 
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#047857">
 
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Sticky Navigation Header -->
   <header class="header">
     <div class="container header-inner">
       <a href="index.html" class="logo" aria-label="KharchaFlow Home">
@@ -84,7 +84,7 @@
             <li><strong><code>POST_NOTIFICATIONS</code> (Android 13+):</strong> Used solely to deliver user-enabled daily expense reminder notifications and scheduled EMI due alerts. Requested at runtime when enabled.</li>
             <li><strong><code>RECEIVE_BOOT_COMPLETED</code>:</strong> Used strictly to re-register local alarm reminders after your Android device is restarted.</li>
             <li><strong><code>REQUEST_INSTALL_PACKAGES</code>:</strong> Used only when you manually check for and confirm an in-app APK update from Settings.</li>
-            <li><strong><code>INTERNET</code>:</strong> Used solely for downloading user-initiated in-app APK updates from GitHub and for optional Google Drive cloud backups.</li>
+            <li><strong><code>INTERNET</code>:</strong> Used solely for downloading user-initiated in-app APK updates from GitHub and for optional user-initiated Google Drive cloud backups.</li>
           </ul>
 
           <h2>4. Optional Google Drive Cloud Backup</h2>
@@ -92,10 +92,10 @@
             KharchaFlow supports an optional cloud backup feature. If you choose to enable it:
           </p>
           <ul>
-            <li>Backup operations connect directly between your device and Google's official OAuth 2.0 servers.</li>
-            <li>Backup files are stored inside your private Google Drive app storage (<code>drive.appdata</code> scope).</li>
-            <li>KharchaFlow has no intermediary servers and cannot access your Google Drive or view your stored files.</li>
-            <li>Restoring data requires explicit user confirmation to prevent unintended local overwrites.</li>
+            <li><strong>Direct Connection:</strong> Backup operations connect directly between your device and Google's official OAuth 2.0 servers with zero intermediary KharchaFlow servers.</li>
+            <li><strong>App-Data Sandbox:</strong> Backup files are stored inside your private Google Drive app storage (<code>drive.appdata</code> scope).</li>
+            <li><strong>Complete User Ownership:</strong> KharchaFlow has no servers and cannot access your Google Drive or view your stored files.</li>
+            <li><strong>Guarded Restores:</strong> Restoring data requires explicit user confirmation to prevent unintended local overwrites.</li>
           </ul>
 
           <h2>5. On-Device Security & App Lock</h2>

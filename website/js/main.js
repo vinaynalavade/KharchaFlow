@@ -1,6 +1,7 @@
 /**
  * KharchaFlow Official Website — Main JavaScript Logic
- * Theme toggling, mobile navigation, active states, dynamic release fetching, clipboard helpers.
+ * Theme toggling (Default: Light), mobile navigation with scroll lock,
+ * dynamic release metadata, luxury scroll animations, clipboard helpers.
  */
 
 (function () {
@@ -21,7 +22,7 @@
     releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
   };
 
-  // --- Theme Management ---
+  // --- Theme Management (Light mode is strictly the default) ---
   const THEME_STORAGE_KEY = 'kharchaflow-theme';
 
   function getPreferredTheme() {
@@ -29,7 +30,8 @@
     if (saved === 'dark' || saved === 'light') {
       return saved;
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // Default is explicitly light for luxury finance aesthetic
+    return 'light';
   }
 
   function applyTheme(theme) {
@@ -55,35 +57,49 @@
         applyTheme(next);
       });
     });
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
   }
 
-  // --- Mobile Navigation ---
+  // --- Mobile Navigation Drawer ---
   function initMobileNav() {
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const nav = document.querySelector('.nav');
 
     if (!menuBtn || !nav) return;
 
+    function closeNav() {
+      nav.classList.remove('is-open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`;
+      document.body.style.overflow = '';
+    }
+
+    function openNav() {
+      nav.classList.add('is-open');
+      menuBtn.setAttribute('aria-expanded', 'true');
+      menuBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+      document.body.style.overflow = 'hidden';
+    }
+
     menuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = nav.classList.toggle('is-open');
-      menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      menuBtn.innerHTML = isOpen
-        ? `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`
-        : `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`;
+      if (nav.classList.contains('is-open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
     });
 
+    // Close when clicking any nav link
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeNav();
+      });
+    });
+
+    // Close when clicking outside
     document.addEventListener('click', (e) => {
       if (nav.classList.contains('is-open') && !nav.contains(e.target) && !menuBtn.contains(e.target)) {
-        nav.classList.remove('is-open');
-        menuBtn.setAttribute('aria-expanded', 'false');
-        menuBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`;
+        closeNav();
       }
     });
   }
@@ -105,9 +121,40 @@
     });
   }
 
+  // --- Luxury Scroll Animations ---
+  function initScrollAnimations() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const animTargets = document.querySelectorAll('.animate-on-scroll, .card, .feature-story, .privacy-banner, .download-card, .github-banner');
+    
+    animTargets.forEach(el => {
+      el.classList.add('animate-on-scroll');
+    });
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      animTargets.forEach(el => observer.observe(el));
+    } else {
+      // Fallback
+      animTargets.forEach(el => el.classList.add('is-visible'));
+    }
+  }
+
   // --- Dynamic Release Metadata Fetching ---
   async function initReleaseMetadata() {
-    // Populate defaults first
     updateReleaseUiElements({
       versionName: RELEASE_CONFIG.defaultVersionName,
       downloadUrl: RELEASE_CONFIG.defaultDownloadUrl,
@@ -118,7 +165,6 @@
       fileName: RELEASE_CONFIG.defaultApkFileName
     });
 
-    // Try live GitHub API update
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
@@ -168,7 +214,7 @@
         fileName: apkAsset.name
       });
     } catch (_err) {
-      // Gracefully silent fallback to default values
+      // Graceful silent fallback
     }
   }
 
@@ -222,7 +268,6 @@
             btn.classList.remove('copied');
           }, 2000);
         } catch (_err) {
-          // Fallback for older browsers
           const textarea = document.createElement('textarea');
           textarea.value = textToCopy;
           document.body.appendChild(textarea);
@@ -236,11 +281,12 @@
     });
   }
 
-  // --- DOM Ready Initialization ---
+  // --- Initialize on DOM Ready ---
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initMobileNav();
     initActiveNav();
+    initScrollAnimations();
     initReleaseMetadata();
     initCopyButtons();
   });

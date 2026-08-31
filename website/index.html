@@ -4,34 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KharchaFlow — Simple, Private Personal Finance for Android</title>
-  <meta name="description" content="KharchaFlow is a simple, private, and reliable Android personal finance app for tracking expenses, managing income, and understanding your everyday money flow without ads or cloud trackers.">
-  <meta name="keywords" content="KharchaFlow, Android expense tracker, offline personal finance, money manager, budgeting app, offline finance, private expense manager">
+  <meta name="description" content="KharchaFlow is a private, reliable Android personal finance app for tracking expenses, managing cash and bank accounts, scheduling EMIs, and keeping your money organized.">
+  <meta name="keywords" content="KharchaFlow, Android expense tracker, offline personal finance, money manager, budgeting app, offline finance, private expense manager, Google Drive backup">
   <meta name="author" content="Vinay Nalavade">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://vinaynalavade.github.io/KharchaFlow/">
   <meta property="og:title" content="KharchaFlow — Simple, Private Personal Finance for Android">
-  <meta property="og:description" content="Track expenses, manage income, and stay in control of your finances. 100% offline-first, zero ads, zero trackers.">
+  <meta property="og:description" content="Track expenses, manage income, and stay in control of your finances. 100% offline-first, zero ads, optional Google Drive backup.">
   <meta property="og:image" content="assets/images/logo.png">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="KharchaFlow — Simple, Private Personal Finance for Android">
-  <meta name="twitter:description" content="Track expenses, manage income, and stay in control of your finances. 100% offline-first, zero ads, zero trackers.">
+  <meta name="twitter:description" content="Track expenses, manage income, and stay in control of your finances. 100% offline-first, zero ads, optional Google Drive backup.">
   <meta name="twitter:image" content="assets/images/logo.png">
 
   <!-- Favicons -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#047857">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Sticky Navigation Header -->
   <header class="header">
     <div class="container header-inner">
       <a href="index.html" class="logo" aria-label="KharchaFlow Home">
@@ -71,16 +71,16 @@
           <div class="hero-content">
             <div class="hero-badge">
               <span class="hero-badge-dot"></span>
-              <span>Direct Android Release • <span class="dynamic-version">v1.0.4</span></span>
+              <span>Official Android Release • <span class="dynamic-version">v1.0.4</span></span>
             </div>
             <h1 class="hero-title">Your money.<br><span>Under control.</span></h1>
             <p class="hero-lead">
-              KharchaFlow is a simple, private, and reliable Android app for tracking expenses, managing income, understanding your spending, and keeping your everyday finances organized.
+              KharchaFlow is a simple, private, and reliable Android application for tracking expenses, managing cash and bank accounts, planning budgets, and understanding your everyday money flow without ads or cloud trackers.
             </p>
             <div class="hero-cta">
               <a href="download.html" class="btn btn-primary btn-lg dynamic-download-link">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-                <span>Download for Android</span>
+                <span>Download KharchaFlow</span>
               </a>
               <a href="features.html" class="btn btn-secondary btn-lg">
                 <span>Explore Features</span>
@@ -98,7 +98,7 @@
               </li>
               <li class="hero-trust-item">
                 <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                <span>Strict On-Device Storage</span>
+                <span>Optional Google Drive Backup</span>
               </li>
             </ul>
           </div>
@@ -113,7 +113,10 @@
                     <div class="mockup-greeting">Welcome back</div>
                     <div class="mockup-user">KharchaFlow</div>
                   </div>
-                  <div class="mockup-avatar">KF</div>
+                  <!-- Official Logo in app bar -->
+                  <div class="mockup-logo-badge">
+                    <img src="assets/images/logo.png" alt="KharchaFlow App Logo" class="mockup-logo-img" width="32" height="32">
+                  </div>
                 </div>
 
                 <div class="mockup-balance-card">
@@ -177,7 +180,7 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Core Principles</span>
-          <h2 class="section-title">Built for clarity and reliability</h2>
+          <h2 class="section-title">Built for clarity, privacy and reliability</h2>
           <p class="section-desc">Personal finance software should help you manage your money without complicating your life.</p>
         </div>
 
@@ -186,8 +189,8 @@
             <div class="card-icon">
               <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-10h2v8h-2V6z"/></svg>
             </div>
-            <h3 class="card-title">100% Offline & Private</h3>
-            <p class="card-desc">All your transactions, custom categories, and balances are stored securely in local SQLite on your device. No remote accounts or tracking.</p>
+            <h3 class="card-title">100% Offline-First</h3>
+            <p class="card-desc">All your transactions, custom categories, and balances are stored securely in local SQLite on your device. No remote tracking or mandatory cloud accounts.</p>
           </div>
 
           <div class="card">
@@ -195,7 +198,7 @@
               <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>
             </div>
             <h3 class="card-title">Cash & Account Sources</h3>
-            <p class="card-desc">Separate your cash-in-hand spending from bank account transactions with configurable default sources for seamless record keeping.</p>
+            <p class="card-desc">Separate your cash-in-hand spending from bank account transactions with configurable default sources for seamless everyday record keeping.</p>
           </div>
 
           <div class="card">
@@ -216,9 +219,9 @@
         <div class="feature-story">
           <div class="feature-story-content">
             <span class="section-tag">Fast Recording</span>
-            <h3>Track every rupee with clarity</h3>
+            <h3>Track every rupee with effortless clarity</h3>
             <p>
-              Adding expenses and income is fast and intuitive. Choose between Cash and Account sources, type amounts with automated comma formatting, and use Quick Add for effortless transaction entry on the go.
+              Adding expenses and income is fast and intuitive. Choose between Cash and Account sources, type amounts with automated comma formatting, and use Quick Add for frictionless transaction entry on the go.
             </p>
             <ul class="feature-checklist">
               <li>
@@ -239,26 +242,74 @@
             <div class="card" style="background: var(--bg-surface-elevated);">
               <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Quick Add Transaction</h4>
               <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                <span style="background: var(--expense-bg); color: var(--expense); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem;">Expense</span>
-                <span style="background: var(--bg-surface-subtle); color: var(--text-secondary); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.85rem;">Income</span>
+                <span style="background: var(--expense-bg); color: var(--expense); padding: 0.4rem 0.8rem; border-radius: var(--radius-xs); font-weight: 700; font-size: 0.85rem;">Expense</span>
+                <span style="background: var(--bg-surface-subtle); color: var(--text-secondary); padding: 0.4rem 0.8rem; border-radius: var(--radius-xs); font-weight: 600; font-size: 0.85rem;">Income</span>
               </div>
               <div style="font-family: var(--font-mono); font-size: 1.75rem; font-weight: 800; color: var(--expense); margin-bottom: 1rem;">₹ 450.00</div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem;">
-                <div style="background: var(--bg-surface); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                  <span style="color: var(--text-muted); font-size: 0.75rem;">Source</span>
-                  <div style="font-weight: 700; color: var(--text-primary);">💵 Cash</div>
+                <div style="background: var(--bg-surface); padding: 0.6rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+                  <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">Source</span>
+                  <div style="font-weight: 700; color: var(--text-primary); margin-top: 2px;">💵 Cash</div>
                 </div>
-                <div style="background: var(--bg-surface); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                  <span style="color: var(--text-muted); font-size: 0.75rem;">Category</span>
-                  <div style="font-weight: 700; color: var(--text-primary);">🍔 Dining Out</div>
+                <div style="background: var(--bg-surface); padding: 0.6rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+                  <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">Category</span>
+                  <div style="font-weight: 700; color: var(--text-primary); margin-top: 2px;">🍔 Dining Out</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Story 2 -->
+        <!-- Story 2: Google Drive Backup (Prominent Feature) -->
         <div class="feature-story reversed">
+          <div class="feature-story-content">
+            <span class="section-tag gold">Data Ownership</span>
+            <h3>Your data, backed up your way</h3>
+            <p>
+              KharchaFlow gives you the best of both worlds: complete local offline privacy with optional cloud safety. Connect your private Google Drive whenever you want to back up your database or restore records on a new phone.
+            </p>
+            <ul class="feature-checklist">
+              <li>
+                <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                <span><strong>100% Optional:</strong> You decide if and when to connect Google Drive</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                <span><strong>App-Private Storage:</strong> Backups are saved strictly in your private Google Drive app-data sandbox</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                <span><strong>Safe Restores:</strong> Restoring data always requires explicit confirmation — never silent overwrites</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-story-visual">
+            <div class="gdrive-visual-card">
+              <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Private Cloud Backup Flow</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Direct encrypted transfer via official OAuth 2.0 with zero intermediary servers.</p>
+
+              <div class="gdrive-flow-diagram">
+                <div class="gdrive-flow-node">
+                  <svg viewBox="0 0 24 24"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z"/></svg>
+                  <h5>On-Device App</h5>
+                </div>
+                <div class="gdrive-flow-arrow">➔</div>
+                <div class="gdrive-flow-node">
+                  <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                  <h5>Encrypted Export</h5>
+                </div>
+                <div class="gdrive-flow-arrow">➔</div>
+                <div class="gdrive-flow-node">
+                  <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                  <h5>Your Google Drive</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Story 3: Financial Ledger -->
+        <div class="feature-story">
           <div class="feature-story-content">
             <span class="section-tag">Financial Ledger</span>
             <h3>Understand your spending habits</h3>
@@ -308,8 +359,8 @@
           </div>
         </div>
 
-        <!-- Story 3 -->
-        <div class="feature-story">
+        <!-- Story 4: Recurring & Automation -->
+        <div class="feature-story reversed">
           <div class="feature-story-content">
             <span class="section-tag">Automation</span>
             <h3>Plan recurring payments and EMIs</h3>
@@ -335,14 +386,14 @@
             <div class="card" style="background: var(--bg-surface-elevated);">
               <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Recurring Schedules</h4>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
                   <div>
                     <div style="font-weight: 700; font-size: 0.9rem;">Home Loan EMI</div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">Due on 5th of every month</div>
                   </div>
                   <div style="font-family: var(--font-mono); font-weight: 700; color: var(--expense);">- ₹ 18,500</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
                   <div>
                     <div style="font-weight: 700; font-size: 0.9rem;">Internet Broadband</div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">Due on 15th of every month</div>
@@ -412,8 +463,8 @@
             <span>Latest Release: <strong class="dynamic-version">v1.0.4</strong></span>
           </span>
 
-          <h2 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Get KharchaFlow for Android</h2>
-          <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 540px; margin: 0 auto 1.5rem;">
+          <h2 style="font-size: clamp(1.85rem, 4vw, 2.3rem); margin-bottom: 0.75rem;">Get KharchaFlow for Android</h2>
+          <p style="font-size: clamp(0.95rem, 1.8vw, 1.05rem); color: var(--text-secondary); max-width: 540px; margin: 0 auto 1.5rem;">
             KharchaFlow is currently distributed directly as an official Android APK package. Download directly and install in seconds.
           </p>
 

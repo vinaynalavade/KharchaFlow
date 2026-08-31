@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Features — KharchaFlow Android Expense Manager</title>
-  <meta name="description" content="Explore KharchaFlow's complete feature set: offline transaction tracking, cash and account sources, recurring EMI management, budgeting, and biometric security.">
+  <meta name="description" content="Explore KharchaFlow's complete feature set: offline transaction tracking, cash and account sources, recurring EMI management, optional Google Drive backups, and biometric security.">
   
   <meta property="og:type" content="website">
   <meta property="og:title" content="KharchaFlow Features — Simple, Private Personal Finance">
@@ -13,13 +13,13 @@
 
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#047857">
 
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Sticky Navigation Header -->
   <header class="header">
     <div class="container header-inner">
       <a href="index.html" class="logo" aria-label="KharchaFlow Home">
@@ -29,7 +29,7 @@
 
       <nav class="nav" id="main-nav" aria-label="Primary Navigation">
         <ul class="nav-links">
-          <li><a href="features.html" class="nav-link">Features</a></li>
+          <li><a href="features.html" class="nav-link active" aria-current="page">Features</a></li>
           <li><a href="download.html" class="nav-link">Download</a></li>
           <li><a href="privacy.html" class="nav-link">Privacy</a></li>
           <li><a href="about.html" class="nav-link">About</a></li>
@@ -59,7 +59,7 @@
           <span class="section-tag">Product Capabilities</span>
           <h1 style="margin-bottom: 1rem;">Complete, reliable finance management</h1>
           <p class="section-desc">
-            Explore the tools and architectural features designed into KharchaFlow to keep your daily cash flow organized and accurate.
+            Explore the tools and architectural features designed into KharchaFlow to keep your daily cash flow organized, accurate, and completely under your control.
           </p>
         </div>
       </div>
@@ -161,11 +161,47 @@
       </div>
     </section>
 
-    <!-- Category 3: Recurring & Automation -->
+    <!-- Category 3: Cloud Safety & Google Drive Backup -->
     <section class="section section-muted">
       <div class="container">
         <div style="margin-bottom: 2.5rem;">
-          <span class="section-tag">3. Recurring & Automation</span>
+          <span class="section-tag gold">3. Cloud Backup & Portability</span>
+          <h2>Your Data, Backed Up Your Way</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon gold">
+              <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+            </div>
+            <h3 class="card-title">Optional Google Drive Backup</h3>
+            <p class="card-desc">Back up your local database directly to your personal Google Drive account whenever you want with official OAuth 2.0 authorization.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-icon gold">
+              <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+            <h3 class="card-title">App-Data Isolation</h3>
+            <p class="card-desc">Backups are stored inside your private Google Drive app-data sandbox (<code>drive.appdata</code>). Only your app can access its own backup file.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-icon gold">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-10h-2v6h2V6z"/></svg>
+            </div>
+            <h3 class="card-title">Confirmation-Guarded Restore</h3>
+            <p class="card-desc">Restoring from a Google Drive backup requires explicit user confirmation to ensure your local records are never overwritten accidentally.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category 4: Recurring & Automation -->
+    <section class="section">
+      <div class="container">
+        <div style="margin-bottom: 2.5rem;">
+          <span class="section-tag">4. Recurring & Automation</span>
           <h2>Automate Bills, Salaries & EMIs</h2>
         </div>
 
@@ -197,12 +233,12 @@
       </div>
     </section>
 
-    <!-- Category 4: Security, Backups & Customization -->
-    <section class="section">
+    <!-- Category 5: Security & Personalization -->
+    <section class="section section-muted">
       <div class="container">
         <div style="margin-bottom: 2.5rem;">
-          <span class="section-tag">4. Privacy & Customization</span>
-          <h2>Security and Personalization</h2>
+          <span class="section-tag">5. Security & Customization</span>
+          <h2>Privacy, Locking and Personalization</h2>
         </div>
 
         <div class="grid-3">
@@ -211,15 +247,7 @@
               <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
             </div>
             <h3 class="card-title">Biometric & PIN Lock</h3>
-            <p class="card-desc">Lock your finances behind fingerprint/face unlock or PIN with recent-apps window masking (`FLAG_SECURE`).</p>
-          </div>
-
-          <div class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-            </div>
-            <h3 class="card-title">Google Drive Backup</h3>
-            <p class="card-desc">Optional OAuth 2.0 encrypted backups stored in your private Google Drive space. Restoring requires explicit user confirmation.</p>
+            <p class="card-desc">Lock your finances behind fingerprint/face unlock or PIN with recent-apps window masking (<code>FLAG_SECURE</code>).</p>
           </div>
 
           <div class="card">
@@ -229,12 +257,20 @@
             <h3 class="card-title">Themes & Languages</h3>
             <p class="card-desc">Light, Dark, and System theme modes. Full localization for English, Hindi (हिंदी), and Marathi (मराठी).</p>
           </div>
+
+          <div class="card">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            </div>
+            <h3 class="card-title">In-App APK Updates</h3>
+            <p class="card-desc">Integrated updater in Settings to detect new GitHub releases, verify SHA-256 integrity, and hand off installation safely.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Bottom CTA -->
-    <section class="section section-muted">
+    <section class="section">
       <div class="container container-narrow" style="text-align: center;">
         <h2>Ready to manage your finances with ease?</h2>
         <p class="lead" style="margin-bottom: 2rem;">Download KharchaFlow today and experience simple, private money tracking.</p>
