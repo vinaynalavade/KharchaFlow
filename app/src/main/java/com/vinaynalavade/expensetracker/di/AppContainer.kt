@@ -107,6 +107,11 @@ interface AppContainer {
     val checkUpcomingRecurringPaymentsUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckUpcomingRecurringPaymentsUseCase
     val processFinancialRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.ProcessFinancialRemindersUseCase
     val rescheduleAllRemindersUseCase: com.vinaynalavade.expensetracker.domain.usecase.RescheduleAllRemindersUseCase
+
+    val updateRepository: com.vinaynalavade.expensetracker.domain.repository.UpdateRepository
+    val checkForUpdateUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckForUpdateUseCase
+    val downloadAndVerifyUpdateUseCase: com.vinaynalavade.expensetracker.domain.usecase.DownloadAndVerifyUpdateUseCase
+    val packageInstallerHelper: com.vinaynalavade.expensetracker.core.installer.PackageInstallerHelper
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -409,5 +414,21 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
             userPreferencesRepository,
             dailyReminderScheduler
         )
+    }
+
+    override val updateRepository: com.vinaynalavade.expensetracker.domain.repository.UpdateRepository by lazy {
+        com.vinaynalavade.expensetracker.data.repository.UpdateRepositoryImpl(context)
+    }
+
+    override val checkForUpdateUseCase: com.vinaynalavade.expensetracker.domain.usecase.CheckForUpdateUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.CheckForUpdateUseCase(updateRepository)
+    }
+
+    override val downloadAndVerifyUpdateUseCase: com.vinaynalavade.expensetracker.domain.usecase.DownloadAndVerifyUpdateUseCase by lazy {
+        com.vinaynalavade.expensetracker.domain.usecase.DownloadAndVerifyUpdateUseCase(updateRepository)
+    }
+
+    override val packageInstallerHelper: com.vinaynalavade.expensetracker.core.installer.PackageInstallerHelper by lazy {
+        com.vinaynalavade.expensetracker.core.installer.PackageInstallerHelper(context)
     }
 }

@@ -13,13 +13,16 @@ sealed interface AppResult<out T> {
  */
 sealed interface AppError {
     val message: String
+    val userMessage: String get() = message
 
-    data class DatabaseError(override val message: String, val cause: Throwable? = null) : AppError
-    data class PreferencesError(override val message: String, val cause: Throwable? = null) : AppError
-    data class ValidationError(override val message: String, val field: String? = null) : AppError
-    data class NotFound(override val message: String) : AppError
-    data class SecurityError(override val message: String, val cause: Throwable? = null) : AppError
-    data class UnknownError(override val message: String, val cause: Throwable? = null) : AppError
+    data class DatabaseError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
+    data class PreferencesError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
+    data class ValidationError(override val message: String, val field: String? = null, override val userMessage: String = message) : AppError
+    data class NotFound(override val message: String, override val userMessage: String = message) : AppError
+    data class SecurityError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
+    data class NetworkError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
+    data class UpdateError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
+    data class UnknownError(override val message: String, val cause: Throwable? = null, override val userMessage: String = message) : AppError
 }
 
 inline fun <T, R> AppResult<T>.map(transform: (T) -> R): AppResult<R> = when (this) {

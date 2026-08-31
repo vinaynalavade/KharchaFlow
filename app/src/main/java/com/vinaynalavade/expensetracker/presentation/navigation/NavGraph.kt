@@ -538,7 +538,15 @@ fun NavGraph(
         }
 
         composable(Screen.About.route) {
+            val updateViewModel: com.vinaynalavade.expensetracker.presentation.update.UpdateViewModel = viewModel(
+                factory = com.vinaynalavade.expensetracker.presentation.update.UpdateViewModel.Factory(
+                    checkForUpdateUseCase = container.checkForUpdateUseCase,
+                    downloadAndVerifyUpdateUseCase = container.downloadAndVerifyUpdateUseCase,
+                    packageInstallerHelper = container.packageInstallerHelper
+                )
+            )
             AboutScreen(
+                updateViewModel = updateViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -62,6 +62,15 @@ import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SystemUpdate
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.collectAsState
+import com.vinaynalavade.expensetracker.domain.model.UpdateUiState
+import com.vinaynalavade.expensetracker.presentation.update.UpdateDialog
+import com.vinaynalavade.expensetracker.presentation.update.UpdateViewModel
+
 private enum class AboutDialogType {
     PRIVACY_SECURITY_DETAILS,
     PRIVACY_POLICY,
@@ -75,6 +84,7 @@ private const val GITHUB_REPOSITORY_URL = "https://github.com/vinaynalavade/Khar
 @Composable
 fun AboutScreen(
     onNavigateBack: () -> Unit,
+    updateViewModel: UpdateViewModel? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -127,7 +137,90 @@ fun AboutScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg)
         ) {
-            // App Header & Logo Card
+            // Standalone Update Action Card (ABOVE About section)
+            if (updateViewModel != null) {
+                val updateState by updateViewModel.uiState.collectAsState()
+                val isChecking = updateState is UpdateUiState.Checking
+                val isBusy = isChecking || updateState is UpdateUiState.Downloading || updateState is UpdateUiState.Verifying
+
+                AboutSectionCard(
+                    icon = Icons.Default.SystemUpdate,
+                    title = "App Updates"
+                ) {
+                    AboutInfoRow(
+                        label = "Current Version",
+                        value = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})"
+                    )
+                    AboutDivider()
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Status",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            val statusText = when (val state = updateState) {
+                                is UpdateUiState.Idle -> "Ready to check"
+                                is UpdateUiState.Checking -> "Checking for updates..."
+                                is UpdateUiState.UpToDate -> "You're using the latest version"
+                                is UpdateUiState.UpdateAvailable -> "Update available: v${state.releaseInfo.latestVersionName}"
+                                is UpdateUiState.Downloading -> "Downloading update (${state.progressPercentage}%)..."
+                                is UpdateUiState.Verifying -> "Verifying update..."
+                                is UpdateUiState.ReadyToInstall -> "Verified & ready to install"
+                                is UpdateUiState.InstallPermissionRequired -> "Permission needed to install"
+                                is UpdateUiState.VerificationFailed -> "Verification failed"
+                                is UpdateUiState.DownloadFailed -> "Update check failed"
+                            }
+                            Text(
+                                text = statusText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = when (updateState) {
+                                    is UpdateUiState.UpdateAvailable, is UpdateUiState.ReadyToInstall -> MaterialTheme.colorScheme.primary
+                                    is UpdateUiState.VerificationFailed, is UpdateUiState.DownloadFailed -> MaterialTheme.colorScheme.error
+                                    is UpdateUiState.UpToDate -> MaterialTheme.colorScheme.primary
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.sm))
+
+                        Button(
+                            onClick = { updateViewModel.checkForUpdates() },
+                            enabled = !isBusy,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            if (isChecking) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Checking...")
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Check for Updates")
+                            }
+                        }
+                    }
+                }
+            }
+
+            // About Section — App Header & Logo Card
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -455,6 +548,10 @@ fun AboutScreen(
                 )
             }
         }
+    }
+
+    if (updateViewModel != null) {
+        UpdateDialog(viewModel = updateViewModel)
     }
 }
 
