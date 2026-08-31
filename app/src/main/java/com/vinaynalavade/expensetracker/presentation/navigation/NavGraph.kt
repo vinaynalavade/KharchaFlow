@@ -274,7 +274,8 @@ fun NavGraph(
                     addTransactionUseCase = container.addTransactionUseCase,
                     updateTransactionUseCase = container.updateTransactionUseCase,
                     getTransactionByIdUseCase = container.getTransactionByIdUseCase,
-                    getCategoriesUseCase = container.getCategoriesUseCase
+                    getCategoriesUseCase = container.getCategoriesUseCase,
+                    getUserPreferencesUseCase = container.getUserPreferencesUseCase
                 )
             )
             AddTransactionScreen(

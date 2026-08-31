@@ -42,4 +42,11 @@ data class UserPreferences(
 
     val monthlyBudgetLimit: Amount
         get() = Amount(monthlyBudgetLimitSubunits)
+
+    fun getDefaultSource(type: TransactionType): PaymentMethod {
+        return when (type) {
+            TransactionType.INCOME -> defaultIncomeSource
+            TransactionType.EXPENSE -> defaultExpenseSource
+        }
+    }
 }

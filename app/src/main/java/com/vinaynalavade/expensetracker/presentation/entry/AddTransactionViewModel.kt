@@ -9,17 +9,23 @@ import com.vinaynalavade.expensetracker.domain.model.Category
 import com.vinaynalavade.expensetracker.domain.model.PaymentMethod
 import com.vinaynalavade.expensetracker.domain.model.Transaction
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
+import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import com.vinaynalavade.expensetracker.domain.usecase.AddTransactionUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetCategoriesUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetTransactionByIdUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.GetUserPreferencesUseCase
 import com.vinaynalavade.expensetracker.domain.usecase.UpdateTransactionUseCase
 import com.vinaynalavade.expensetracker.domain.validation.TransactionValidator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -51,6 +57,7 @@ data class AddTransactionUiState(
         }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AddTransactionViewModel(
     private val transactionType: TransactionType,
     private val editTransactionId: Long?,
@@ -59,14 +66,25 @@ class AddTransactionViewModel(
     private val getTransactionByIdUseCase: GetTransactionByIdUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase? = null,
-    private val currency: Currency = Currency.DEFAULT
+    private val currency: Currency = Currency.DEFAULT,
+    coroutineScope: CoroutineScope? = null
 ) : ViewModel() {
+
+    private val scope = coroutineScope ?: viewModelScope
+
+    private var hasUserManuallySelectedSource = false
+    private var currentPrefs = UserPreferences()
 
     private val _uiState = MutableStateFlow(
         AddTransactionUiState(
             transactionType = transactionType,
             isEditMode = editTransactionId != null,
-            editTransactionId = editTransactionId
+            editTransactionId = editTransactionId,
+            selectedPaymentMethod = if (editTransactionId != null) {
+                PaymentMethod.CASH
+            } else {
+                currentPrefs.getDefaultSource(transactionType)
+            }
         )
     )
     val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
@@ -76,9 +94,9 @@ class AddTransactionViewModel(
     }
 
     private fun loadCategoriesAndInitialData() {
-        viewModelScope.launch {
-            // If editing, preload the transaction first (preserves existing payment method)
-            if (editTransactionId != null) {
+        if (editTransactionId != null) {
+            hasUserManuallySelectedSource = true
+            scope.launch {
                 val tx = getTransactionByIdUseCase(editTransactionId).firstOrNull()
                 if (tx != null) {
                     _uiState.update {
@@ -93,33 +111,50 @@ class AddTransactionViewModel(
                         )
                     }
                 }
-            } else {
-                // If creating new transaction, load default financial source from preferences
-                val prefs = getUserPreferencesUseCase?.invoke()?.firstOrNull()
-                if (prefs != null) {
-                    val defaultSource = if (transactionType == TransactionType.INCOME) {
-                        prefs.defaultIncomeSource
-                    } else {
-                        prefs.defaultExpenseSource
+            }
+        } else {
+            scope.launch {
+                getUserPreferencesUseCase?.invoke()?.collectLatest { prefs ->
+                    currentPrefs = prefs
+                    if (!hasUserManuallySelectedSource && !_uiState.value.isEditMode) {
+                        val defaultSource = prefs.getDefaultSource(_uiState.value.transactionType)
+                        _uiState.update { it.copy(selectedPaymentMethod = defaultSource) }
                     }
-                    _uiState.update { it.copy(selectedPaymentMethod = defaultSource) }
                 }
             }
+        }
 
-            // Load categories for the active transaction type
-            val typeToLoad = _uiState.value.transactionType
-            getCategoriesUseCase.getByType(typeToLoad).collectLatest { categories ->
-                _uiState.update { state ->
-                    val selected = state.selectedCategory?.let { current ->
-                        categories.find { it.id == current.id } ?: current
-                    } ?: categories.firstOrNull()
+        scope.launch {
+            _uiState.map { it.transactionType }
+                .distinctUntilChanged()
+                .flatMapLatest { type -> getCategoriesUseCase.getByType(type) }
+                .collectLatest { categories ->
+                    _uiState.update { state ->
+                        val selected = state.selectedCategory?.let { current ->
+                            categories.find { it.id == current.id } ?: current
+                        } ?: categories.firstOrNull()
 
-                    state.copy(
-                        availableCategories = categories,
-                        selectedCategory = selected
-                    )
+                        state.copy(
+                            availableCategories = categories,
+                            selectedCategory = selected
+                        )
+                    }
                 }
-            }
+        }
+    }
+
+    fun onTransactionTypeChange(newType: TransactionType) {
+        if (_uiState.value.isEditMode || _uiState.value.transactionType == newType) return
+        hasUserManuallySelectedSource = false
+        val defaultSource = currentPrefs.getDefaultSource(newType)
+        _uiState.update {
+            it.copy(
+                transactionType = newType,
+                selectedCategory = null,
+                selectedPaymentMethod = defaultSource,
+                categoryError = null,
+                generalError = null
+            )
         }
     }
 
@@ -196,7 +231,7 @@ class AddTransactionViewModel(
 
         _uiState.update { it.copy(isSaving = true, generalError = null) }
 
-        viewModelScope.launch {
+        scope.launch {
             val now = System.currentTimeMillis()
             val transaction = Transaction(
                 id = currentState.editTransactionId ?: 0L,

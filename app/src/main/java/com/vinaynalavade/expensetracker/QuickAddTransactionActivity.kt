@@ -188,11 +188,7 @@ private fun QuickAddOverlay(
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var hasUserManuallySelectedSource by remember { mutableStateOf(false) }
 
-    val defaultSourceForCurrentType = if (currentType == TransactionType.INCOME) {
-        userPreferences.defaultIncomeSource
-    } else {
-        userPreferences.defaultExpenseSource
-    }
+    val defaultSourceForCurrentType = userPreferences.getDefaultSource(currentType)
 
     var selectedPaymentMethod by remember { mutableStateOf(defaultSourceForCurrentType) }
     var selectedDateEpoch by remember { mutableStateOf(System.currentTimeMillis()) }
@@ -209,17 +205,17 @@ private fun QuickAddOverlay(
     val isExpense = currentType == TransactionType.EXPENSE
     val accentColor = if (isExpense) MaterialTheme.financialColors.expense else MaterialTheme.financialColors.income
 
-    // Load categories whenever currentType changes and update default source if not manually overridden
+    // Keep payment method in sync with default preferences & type changes unless manually overridden by user
+    LaunchedEffect(currentType, userPreferences.defaultExpenseSource, userPreferences.defaultIncomeSource) {
+        if (!hasUserManuallySelectedSource) {
+            selectedPaymentMethod = userPreferences.getDefaultSource(currentType)
+        }
+    }
+
+    // Load categories whenever currentType changes
     LaunchedEffect(currentType) {
         categories = container.getCategoriesUseCase.getByType(currentType).firstOrNull() ?: emptyList()
         selectedCategory = categories.firstOrNull()
-        if (!hasUserManuallySelectedSource) {
-            selectedPaymentMethod = if (currentType == TransactionType.INCOME) {
-                userPreferences.defaultIncomeSource
-            } else {
-                userPreferences.defaultExpenseSource
-            }
-        }
     }
 
     // Auto-focus amount field on launch
@@ -321,7 +317,12 @@ private fun QuickAddOverlay(
                     ) {
                         QuickTypeSegmentedButton(
                             selectedType = currentType,
-                            onTypeSelected = { type -> currentType = type }
+                            onTypeSelected = { type ->
+                                if (currentType != type) {
+                                    currentType = type
+                                    hasUserManuallySelectedSource = false
+                                }
+                            }
                         )
 
                         IconButton(
