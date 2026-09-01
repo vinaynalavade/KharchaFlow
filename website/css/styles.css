@@ -241,7 +241,7 @@ a:hover {
   line-height: 1.65;
 }
 
-/* --- Top Sticky Modern Navbar (Top-Aligned, Container-Aligned) --- */
+/* --- Top Sticky Modern Navbar (Two-Sided Composition: Left Logo, Right Nav Cluster) --- */
 .header {
   position: sticky;
   top: 0;
@@ -267,7 +267,7 @@ a:hover {
 }
 
 .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.7rem;
   text-decoration: none;
@@ -290,25 +290,30 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* Nav & CTA Cluster solidly anchored to the FAR RIGHT */
 .nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
+  margin-left: auto; /* Solidly anchors the entire navigation + CTA to the right */
+  flex-shrink: 0;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 1.5rem;
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.4rem 0.1rem;
+  padding: 0.35rem 0.15rem;
   transition: color var(--transition-fast);
   position: relative;
 }
@@ -329,10 +334,7 @@ a:hover {
 }
 
 .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-shrink: 0;
+  display: none;
 }
 
 /* --- Mobile Menu Button --- */
@@ -348,6 +350,7 @@ a:hover {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  margin-left: auto;
   transition: background-color var(--transition-fast);
 }
 
