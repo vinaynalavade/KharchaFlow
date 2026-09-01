@@ -17,7 +17,7 @@
     defaultApkSize: '3.9 MB',
     defaultApkFileName: 'KharchaFlow_v1.0.5.apk',
     defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk',
-    defaultSha256: '9ef32daef27bde5afb2a29963e21219507ffa3984f1f64f52d7dae2424e0d909',
+    defaultSha256: '28552b1d73b20fdabd727b7e1c7cf3f6853d2253be84d167775bedf23ff47ac6',
     repoUrl: 'https://github.com/vinaynalavade/KharchaFlow',
     releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
   };
