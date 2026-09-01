@@ -28,7 +28,7 @@ website/
 ├── css/
 │   └── styles.css        # Responsive design system, theme tokens, and typography
 ├── js/
-│   └── main.js           # Theme toggle, mobile nav, dynamic GitHub Release integration
+│   └── main.js           # Mobile nav, dynamic GitHub Release integration, clipboard helpers
 └── README.md             # This documentation file
 ```
 
@@ -92,12 +92,13 @@ When you publish future releases (e.g. `v1.0.6`), simply update these fallback c
 
 ---
 
-## 🎨 Customizing Design & Theme Tokens
+## 🎨 Design System & Color Tokens
 
-All design tokens, colors, typography, and spacing are defined in `website/css/styles.css`:
+All design tokens, colors, typography, and spacing are defined in `website/css/styles.css` matching the Android app's Material 3 design system:
 
-* **Brand Primary:** `--primary: #4f46e5` (Indigo)
-* **Semantic Income:** `--income: #10b981` (Emerald)
-* **Semantic Expense:** `--expense: #f43f5e` (Rose)
-* **Dark Mode Canvas:** `--bg-page: #0a0e17` (Deep Obsidian)
-* **Light Mode Canvas:** `--bg-page: #f8fafc` (Slate 50)
+* **Brand Primary:** `--primary: #4f46e5` (Indigo 600)
+* **Semantic Income:** `--income: #059669` (Emerald Dark)
+* **Semantic Expense:** `--expense: #e11d48` (Rose Dark)
+* **Canvas Background:** `--bg-page: #f8fafc` (Slate 50)
+* **Card Surface:** `--bg-surface: #ffffff` (Pure White)
+

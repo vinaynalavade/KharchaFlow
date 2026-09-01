@@ -1,126 +1,78 @@
 /* ==========================================================================
-   KharchaFlow Official Website — Luxury Personal Finance Design System
-   Warm Ivory, Deep Emerald, Muted Champagne, Fluid Mobile-First Typography
+   KharchaFlow Official Website — Android v1.0.5 Visual Design System
+   Clean Light Theme, Sophisticated Indigo & Slate Palette, Precise Material 3 Hierarchy
    ========================================================================== */
 
 /* --- Google Fonts Import --- */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-/* --- Root Theme Tokens --- */
+/* --- Root Design Tokens (Light Theme Only) --- */
 :root {
-  /* Brand Core (Refined Luxury Emerald & Champagne Gold) */
-  --primary: #047857;          /* Emerald 700 */
-  --primary-hover: #065f46;    /* Emerald 800 */
-  --primary-active: #022c22;   /* Emerald 950 */
-  --primary-light: #ecfdf5;    /* Soft Mint Tint */
-  --primary-glow: rgba(4, 120, 87, 0.14);
+  /* Brand Core Colors (Android Indigo System) */
+  --primary: #4f46e5;            /* Indigo 600 - Primary Action */
+  --primary-hover: #4338ca;      /* Indigo 700 - Hover State */
+  --primary-active: #312e81;     /* Indigo 800 - Active / Pressed State */
+  --primary-light: #eef2ff;      /* Indigo 50 - Subtle Fill / Container */
+  --primary-border: #c7d2fe;     /* Indigo 200 - Accent Border */
+  --primary-text: #1e1b4b;       /* Indigo 900 - On-Primary Container Text */
+  --primary-glow: rgba(79, 70, 229, 0.12);
 
-  --accent-gold: #b45309;      /* Muted Warm Gold / Amber 700 */
-  --accent-gold-hover: #92400e;/* Amber 800 */
-  --accent-gold-light: #fef3c7;/* Soft Champagne */
-  --accent-gold-border: #fde68a;
+  /* Financial Semantic Colors (Android Emerald & Rose System) */
+  --income: #059669;             /* Income Emerald Dark */
+  --income-light: #10b981;       /* Income Emerald */
+  --income-bg: #ecfdf5;          /* Income Container Light */
+  --income-text: #065f46;        /* On-Income Container Text */
+  --income-border: #a7f3d0;      /* Income Border */
 
-  /* Financial Semantic Colors */
-  --income: #059669;           /* Emerald 600 */
-  --income-dark: #047857;
-  --income-bg: #ecfdf5;
-  --income-border: #a7f3d0;
+  --expense: #e11d48;            /* Expense Rose Dark */
+  --expense-light: #f43f5e;      /* Expense Rose */
+  --expense-bg: #fff1f2;         /* Expense Container Light */
+  --expense-text: #9f1239;       /* On-Expense Container Text */
+  --expense-border: #fecdd3;     /* Expense Border */
 
-  --expense: #e11d48;          /* Rose 600 */
-  --expense-dark: #be123c;
-  --expense-bg: #fff1f2;
-  --expense-border: #fecdd3;
+  /* Surface & Neutral Colors (Android Slate Palette) */
+  --bg-page: #f8fafc;            /* Slate 50 - Crisp Canvas */
+  --bg-surface: #ffffff;         /* Pure White - Level 1 Cards */
+  --bg-surface-elevated: #f1f5f9;/* Slate 100 - Level 2 Containers */
+  --bg-surface-subtle: #e2e8f0;  /* Slate 200 - Dividers & Subtle Fills */
+  --bg-surface-active: #cbd5e1;  /* Slate 300 - Active Chips */
+
+  --border-subtle: #e2e8f0;      /* Slate 200 - Subtle Card Border */
+  --border-strong: #cbd5e1;      /* Slate 300 - Defined Border */
+
+  --text-primary: #0f172a;       /* Slate 900 - High-Contrast Body & Headings */
+  --text-secondary: #475569;     /* Slate 600 - Secondary Body Text */
+  --text-muted: #64748b;         /* Slate 500 - Captions & Subtitles */
+  --text-inverse: #ffffff;
 
   /* Typography */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Dimensions & Spacing */
+  /* Dimensions & Shapes (Matching Android Shape.kt) */
   --container-max: 1180px;
-  --container-narrow: 820px;
-  --header-height: 70px;
+  --container-narrow: 840px;
+  --header-height: 68px;
   --radius-xs: 6px;
   --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --radius-xl: 32px;
+  --radius-md: 16px;             /* CardShape in Android */
+  --radius-lg: 20px;             /* HeroCardShape in Android */
+  --radius-xl: 28px;
   --radius-pill: 9999px;
 
-  /* Transitions */
-  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 280ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 450ms cubic-bezier(0.16, 1, 0.3, 1);
-}
+  /* Elevation Shadows (Android-inspired Subtle Elevation) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.06), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  --shadow-xl: 0 20px 36px -8px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
 
-/* --- Light Mode (DEFAULT) — Warm Ivory & Crisp Charcoal --- */
-[data-theme="light"], :root {
-  --bg-page: #fbfbfa;          /* Warm Ivory Canvas */
-  --bg-surface: #ffffff;       /* Pure White Card Surface */
-  --bg-surface-elevated: #f4f4f0;/* Warm Stone Sub-container */
-  --bg-surface-subtle: #eaeae5;/* Subtle Divider/Chip Fill */
-  --bg-surface-active: #deded8;
+  --header-bg: rgba(248, 250, 252, 0.94);
+  --hero-glow: radial-gradient(circle at 50% 15%, rgba(79, 70, 229, 0.07) 0%, rgba(5, 150, 105, 0.03) 40%, transparent 70%);
 
-  --border-subtle: #e7e7e1;    /* Refined Neutral Border */
-  --border-strong: #d3d3cb;    /* Defined Accent Border */
-
-  --text-primary: #18181b;     /* Deep Zinc 900 / Charcoal */
-  --text-secondary: #52525b;   /* Neutral Gray Body */
-  --text-muted: #71717a;       /* Caption / Muted Meta */
-  --text-inverse: #ffffff;
-
-  --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.04);
-  --shadow-md: 0 4px 12px rgba(24, 24, 27, 0.05), 0 1px 3px rgba(24, 24, 27, 0.03);
-  --shadow-lg: 0 14px 28px -4px rgba(24, 24, 27, 0.07), 0 4px 8px -2px rgba(24, 24, 27, 0.03);
-  --shadow-xl: 0 24px 44px -10px rgba(24, 24, 27, 0.1), 0 8px 16px -4px rgba(24, 24, 27, 0.04);
-
-  --code-bg: #f4f4f0;
-  --code-border: #e7e7e1;
-
-  --header-bg: rgba(251, 251, 250, 0.92);
-  --hero-glow: radial-gradient(circle at 50% 20%, rgba(4, 120, 87, 0.08) 0%, rgba(180, 83, 9, 0.04) 40%, transparent 70%);
-}
-
-/* --- Dark Mode — Deep Obsidian Slate --- */
-[data-theme="dark"] {
-  --bg-page: #0d1117;          /* Deep Obsidian Slate */
-  --bg-surface: #161b22;       /* Elevated Surface */
-  --bg-surface-elevated: #21262d;/* Secondary Surface */
-  --bg-surface-subtle: #30363d;
-  --bg-surface-active: #3b434d;
-
-  --border-subtle: #30363d;
-  --border-strong: #484f58;
-
-  --primary: #10b981;          /* Bright Emerald in Dark */
-  --primary-hover: #34d399;
-  --primary-active: #059669;
-  --primary-light: rgba(16, 185, 129, 0.15);
-  --primary-glow: rgba(16, 185, 129, 0.2);
-
-  --accent-gold: #f59e0b;
-  --accent-gold-light: rgba(245, 158, 11, 0.15);
-  --accent-gold-border: rgba(245, 158, 11, 0.3);
-
-  --income-bg: rgba(16, 185, 129, 0.14);
-  --income-border: rgba(16, 185, 129, 0.3);
-  --expense-bg: rgba(225, 29, 72, 0.14);
-  --expense-border: rgba(225, 29, 72, 0.3);
-
-  --text-primary: #f0f6fc;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
-  --text-inverse: #0d1117;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 14px 28px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 24px 44px rgba(0, 0, 0, 0.7);
-
-  --code-bg: #161b22;
-  --code-border: #30363d;
-
-  --header-bg: rgba(13, 17, 23, 0.92);
-  --hero-glow: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.1) 0%, rgba(245, 158, 11, 0.05) 40%, transparent 70%);
+  /* Transitions (Matching Android Motion.DurationFast & Normal) */
+  --transition-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-normal: 250ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow: 350ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* --- Base & Reset --- */
@@ -149,7 +101,8 @@ body {
   flex-direction: column;
   max-width: 100vw;
   overflow-x: hidden;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* --- Accessibility Focus Outline --- */
@@ -158,7 +111,7 @@ body {
   outline-offset: 3px;
 }
 
-/* --- Typography --- */
+/* --- Typography Hierarchy --- */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   font-weight: 700;
@@ -168,14 +121,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-size: clamp(2.2rem, 5.2vw, 3.5rem);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.15;
 }
 
 h2 {
-  font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+  font-size: clamp(1.6rem, 3.6vw, 2.35rem);
   letter-spacing: -0.025em;
 }
 
@@ -193,7 +146,7 @@ p {
 }
 
 p.lead {
-  font-size: clamp(1.02rem, 2vw, 1.2rem);
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
   line-height: 1.7;
 }
 
@@ -219,34 +172,23 @@ a:hover {
 }
 
 .container-narrow {
-  width: 100%;
   max-width: var(--container-narrow);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: clamp(1rem, 3.5vw, 2rem);
-  padding-right: clamp(1rem, 3.5vw, 2rem);
-  box-sizing: border-box;
 }
 
-main {
-  flex: 1 0 auto;
-  width: 100%;
-  overflow-x: hidden;
-}
-
-/* --- Section Spacing --- */
 .section {
-  padding: clamp(3.5rem, 7vw, 5.5rem) 0;
+  padding-top: clamp(3.5rem, 7vw, 6rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
   position: relative;
   width: 100%;
   box-sizing: border-box;
 }
 
 .section-hero {
-  padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(3.5rem, 7vw, 5.5rem);
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-bottom: clamp(3.5rem, 7vw, 5.5rem);
   background-image: var(--hero-glow);
   background-repeat: no-repeat;
-  background-position: center top;
+  background-position: top center;
 }
 
 .section-muted {
@@ -283,8 +225,8 @@ main {
 }
 
 .section-tag.gold {
-  color: var(--accent-gold);
-  background-color: var(--accent-gold-light);
+  color: #b45309;
+  background-color: #fef3c7;
 }
 
 .section-title {
@@ -296,17 +238,16 @@ main {
   color: var(--text-secondary);
 }
 
-/* --- Fixed / Sticky Luxury Navbar --- */
+/* --- Sticky Modern Navbar --- */
 .header {
   position: sticky;
   top: 0;
   z-index: 1000;
   height: var(--header-height);
   background-color: var(--header-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
-  transition: background-color var(--transition-normal), border-color var(--transition-normal);
   width: 100%;
   max-width: 100vw;
   box-sizing: border-box;
@@ -327,8 +268,8 @@ main {
   text-decoration: none;
   color: var(--text-primary);
   font-weight: 800;
-  font-size: 1.2rem;
-  letter-spacing: -0.02em;
+  font-size: 1.22rem;
+  letter-spacing: -0.025em;
   flex-shrink: 0;
 }
 
@@ -364,7 +305,7 @@ main {
 }
 
 .nav-link:hover, .nav-link.active {
-  color: var(--text-primary);
+  color: var(--primary);
 }
 
 .nav-link.active::after {
@@ -385,34 +326,6 @@ main {
   flex-shrink: 0;
 }
 
-/* --- Theme Toggle --- */
-.theme-toggle {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-
-.theme-toggle:hover {
-  background: var(--bg-surface-elevated);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-}
-
-.theme-toggle svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
 /* --- Mobile Menu Button --- */
 .mobile-menu-btn {
   display: none;
@@ -426,6 +339,11 @@ main {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+}
+
+.mobile-menu-btn:hover {
+  background-color: var(--bg-surface-elevated);
 }
 
 .mobile-menu-btn svg {
@@ -451,30 +369,30 @@ main {
   text-decoration: none;
   transition: all var(--transition-fast);
   white-space: nowrap;
-  min-height: 44px;
+  user-select: none;
   box-sizing: border-box;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
   background-color: var(--primary);
-  color: #ffffff !important;
-  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.25);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 6px 16px rgba(4, 120, 87, 0.3);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
   transform: translateY(-1px);
-}
-
-.btn-primary:active {
-  background-color: var(--primary-active);
-  transform: translateY(0);
 }
 
 .btn-secondary {
   background-color: var(--bg-surface);
-  color: var(--text-primary) !important;
+  color: var(--text-primary);
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-sm);
 }
@@ -482,18 +400,20 @@ main {
 .btn-secondary:hover {
   background-color: var(--bg-surface-elevated);
   border-color: var(--border-strong);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
 .btn-outline {
   background-color: transparent;
-  color: var(--text-primary) !important;
-  border-color: var(--border-strong);
+  color: var(--primary);
+  border-color: var(--primary-border);
 }
 
 .btn-outline:hover {
-  background-color: var(--bg-surface-elevated);
+  background-color: var(--primary-light);
   border-color: var(--primary);
+  color: var(--primary-hover);
 }
 
 .btn-lg {
@@ -547,12 +467,12 @@ main {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--primary);
+  background-color: var(--income);
   flex-shrink: 0;
 }
 
 .hero-title {
-  font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+  font-size: clamp(2.2rem, 5.2vw, 3.6rem);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.15;
@@ -564,7 +484,7 @@ main {
 }
 
 .hero-lead {
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-size: clamp(1.02rem, 2vw, 1.2rem);
   line-height: 1.7;
   color: var(--text-secondary);
   margin-bottom: 1.75rem;
@@ -599,11 +519,11 @@ main {
 .hero-trust-item svg {
   width: 16px;
   height: 16px;
-  fill: var(--primary);
+  fill: var(--income);
   flex-shrink: 0;
 }
 
-/* --- Hero Visual & CSS Phone Mockup --- */
+/* --- Hero Visual & Realistic Android Phone Mockup --- */
 .hero-visual {
   display: flex;
   justify-content: center;
@@ -643,10 +563,10 @@ main {
   background-color: var(--bg-page);
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.85rem;
 }
 
-/* --- Mockup Internal Components --- */
+/* --- Mockup Internal Components (Accurate to Android App) --- */
 .mockup-appbar {
   display: flex;
   align-items: center;
@@ -683,34 +603,36 @@ main {
   object-fit: cover;
 }
 
+/* Balance Hero Card (Accurate to BalanceHeroCard.kt in Android) */
 .mockup-balance-card {
-  background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
-  color: #ffffff;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   padding: 1.15rem;
-  border-radius: var(--radius-md);
-  box-shadow: 0 8px 18px -4px rgba(6, 78, 59, 0.4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
 }
 
 .mockup-balance-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .mockup-balance-amount {
   font-size: 1.65rem;
   font-weight: 800;
-  font-family: var(--font-mono);
-  margin: 0.2rem 0 0.65rem;
-  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  margin: 0.15rem 0 0.65rem;
+  letter-spacing: -0.03em;
 }
 
 .mockup-flow-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 0.65rem;
 }
 
@@ -720,22 +642,22 @@ main {
 }
 
 .mockup-flow-label {
-  font-size: 0.65rem;
-  opacity: 0.8;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .mockup-flow-val {
   font-size: 0.85rem;
   font-weight: 700;
-  font-family: var(--font-mono);
 }
 
 .mockup-flow-val.income {
-  color: #6ee7b7;
+  color: var(--income);
 }
 
 .mockup-flow-val.expense {
-  color: #fca5a5;
+  color: var(--expense);
 }
 
 .mockup-tx-list {
@@ -761,8 +683,8 @@ main {
 }
 
 .mockup-tx-icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -772,20 +694,19 @@ main {
 }
 
 .mockup-tx-info h5 {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   margin-bottom: 1px;
 }
 
 .mockup-tx-info p {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
 }
 
 .mockup-tx-amount {
   font-size: 0.85rem;
   font-weight: 700;
-  font-family: var(--font-mono);
 }
 
 .mockup-tx-amount.expense {
@@ -872,8 +793,8 @@ main {
 }
 
 .card-icon {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-sm);
   background-color: var(--primary-light);
   color: var(--primary);
@@ -885,18 +806,18 @@ main {
 }
 
 .card-icon.gold {
-  background-color: var(--accent-gold-light);
-  color: var(--accent-gold);
+  background-color: #fef3c7;
+  color: #b45309;
 }
 
 .card-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   fill: currentColor;
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   margin-bottom: 0.65rem;
 }
 
@@ -1098,8 +1019,8 @@ main {
 }
 
 .checksum-box {
-  background: var(--code-bg);
-  border: 1px solid var(--code-border);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 0.75rem 1rem;
   display: flex;
@@ -1325,8 +1246,8 @@ main {
 /* --- Scroll Animation Classes --- */
 .animate-on-scroll {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity var(--transition-slow), transform var(--transition-slow);
+  transform: translateY(16px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
   will-change: opacity, transform;
 }
 

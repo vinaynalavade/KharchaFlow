@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,12 @@
   
   <meta property="og:type" content="website">
   <meta property="og:title" content="Privacy Policy & Security Architecture — KharchaFlow">
-  <meta property="og:description" content="100% offline-first. Zero ads, zero tracking, on-device SQLite storage, optional private Google Drive backup.">
+  <meta property="og:description" content="100% offline-first. Zero ads, zero tracking, on-device local storage, optional private Google Drive backup.">
   <meta property="og:image" content="assets/images/logo.png">
 
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/favicon.png">
-  <meta name="theme-color" content="#047857">
+  <meta name="theme-color" content="#4f46e5">
 
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -23,7 +23,7 @@
   <header class="header">
     <div class="container header-inner">
       <a href="index.html" class="logo" aria-label="KharchaFlow Home">
-        <img src="assets/images/logo.png" alt="KharchaFlow Logo" class="logo-img" width="36" height="36">
+        <img src="assets/images/logo.png" alt="KharchaFlow Logo" class="logo-img" width="34" height="34">
         <span>KharchaFlow</span>
       </a>
 
@@ -34,16 +34,13 @@
           <li><a href="privacy.html" class="nav-link active" aria-current="page">Privacy</a></li>
           <li><a href="about.html" class="nav-link">About</a></li>
         </ul>
-        <a href="download.html" class="btn btn-primary btn-sm">
+        <a href="https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk" class="btn btn-primary btn-sm dynamic-download-link" download>
           <span>Download APK</span>
           <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
         </a>
       </nav>
 
       <div class="header-actions">
-        <button class="theme-toggle" type="button" aria-label="Toggle theme">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-5.4-5.4c0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-        </button>
         <button class="mobile-menu-btn" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Open navigation menu">
           <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
@@ -55,36 +52,36 @@
     <section class="section">
       <div class="container container-narrow">
         <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
-          <span class="section-tag" style="background: var(--income-bg); color: var(--income-dark);">Privacy & Data Architecture</span>
+          <span class="section-tag" style="background: var(--income-bg); color: var(--income-text);">Privacy & Data Architecture</span>
           <h1>Privacy Policy</h1>
-          <p class="section-desc">Last updated: August 2026</p>
+          <p class="section-desc">Last updated: September 2026</p>
         </div>
 
         <div class="prose prose-box">
           <h2>1. Core Privacy Philosophy</h2>
           <p>
-            KharchaFlow is designed with strict on-device data privacy as a fundamental architectural principle. We believe personal financial data belongs solely to the user and should never be transmitted to third-party marketing servers, data brokers, or analytics networks.
+            KharchaFlow is designed with strict on-device data privacy as a fundamental principle. We believe personal financial data belongs solely to the user and should never be transmitted to third-party marketing servers, data brokers, or analytics networks.
           </p>
 
           <h2>2. Data Storage & Local Persistence</h2>
           <p>
-            All financial records, transaction entries, amounts, custom category labels, income/expense sources, and user configuration preferences are stored exclusively on your Android device in a local SQLite database using Android's Room persistence framework.
+            All financial records, transaction entries, amounts, custom category labels, income/expense sources, and user configuration preferences are stored exclusively on your Android device in a private local database.
           </p>
           <ul>
             <li><strong>Zero Remote Accounts:</strong> You do not need to register, create a username, or provide an email address to use KharchaFlow.</li>
-            <li><strong>Zero Telemetry:</strong> KharchaFlow does not embed any analytics SDKs (e.g. Firebase Analytics, Mixpanel, Google Analytics).</li>
-            <li><strong>Zero Advertising:</strong> KharchaFlow contains no advertising libraries, promotional banners, or user-tracking identifiers.</li>
+            <li><strong>Zero Telemetry:</strong> KharchaFlow does not embed any tracking or analytics libraries.</li>
+            <li><strong>Zero Advertising:</strong> KharchaFlow contains no advertising SDKs, promotional banners, or tracking identifiers.</li>
           </ul>
 
           <h2>3. Application Permissions & Usage</h2>
           <p>
-            KharchaFlow requests only the minimum necessary Android system permissions required to deliver requested on-device features:
+            KharchaFlow requests only the minimum necessary system permissions required to deliver requested on-device features:
           </p>
           <ul>
-            <li><strong><code>POST_NOTIFICATIONS</code> (Android 13+):</strong> Used solely to deliver user-enabled daily expense reminder notifications and scheduled EMI due alerts. Requested at runtime when enabled.</li>
-            <li><strong><code>RECEIVE_BOOT_COMPLETED</code>:</strong> Used strictly to re-register local alarm reminders after your Android device is restarted.</li>
-            <li><strong><code>REQUEST_INSTALL_PACKAGES</code>:</strong> Used only when you manually check for and confirm an in-app APK update from Settings.</li>
-            <li><strong><code>INTERNET</code>:</strong> Used solely for downloading user-initiated in-app APK updates from GitHub and for optional user-initiated Google Drive cloud backups.</li>
+            <li><strong>Notifications:</strong> Used solely to deliver user-enabled daily expense reminder notifications and scheduled EMI due alerts.</li>
+            <li><strong>Device Startup:</strong> Used strictly to re-register your local daily reminders after your device is restarted.</li>
+            <li><strong>App Updates:</strong> Used only when you manually check for and confirm an in-app APK update from Settings.</li>
+            <li><strong>Internet Access:</strong> Used solely for downloading user-initiated in-app updates from GitHub and for optional user-initiated Google Drive backups.</li>
           </ul>
 
           <h2>4. Optional Google Drive Cloud Backup</h2>
@@ -92,20 +89,20 @@
             KharchaFlow supports an optional cloud backup feature. If you choose to enable it:
           </p>
           <ul>
-            <li><strong>Direct Connection:</strong> Backup operations connect directly between your device and Google's official OAuth 2.0 servers with zero intermediary KharchaFlow servers.</li>
-            <li><strong>App-Data Sandbox:</strong> Backup files are stored inside your private Google Drive app storage (<code>drive.appdata</code> scope).</li>
-            <li><strong>Complete User Ownership:</strong> KharchaFlow has no servers and cannot access your Google Drive or view your stored files.</li>
+            <li><strong>Direct Connection:</strong> Backup operations connect directly between your device and Google's official authorization servers with zero intermediary KharchaFlow servers.</li>
+            <li><strong>Private App Folder:</strong> Backup files are stored inside your private Google Drive app folder where only your personal installation of KharchaFlow can access them.</li>
+            <li><strong>Complete User Ownership:</strong> KharchaFlow has no remote servers and cannot access your Google Drive or view your stored files.</li>
             <li><strong>Guarded Restores:</strong> Restoring data requires explicit user confirmation to prevent unintended local overwrites.</li>
           </ul>
 
           <h2>5. On-Device Security & App Lock</h2>
           <p>
-            KharchaFlow provides optional local security features to prevent unauthorized physical access on your device:
+            KharchaFlow provides optional local security features to protect your privacy on your device:
           </p>
           <ul>
-            <li><strong>Biometric Unlock:</strong> Supports fingerprint and facial recognition via Android BiometricPrompt.</li>
-            <li><strong>PIN Lock:</strong> Secured via salted cryptographic hashing stored in local DataStore.</li>
-            <li><strong>Window Privacy Protection:</strong> When enabled, KharchaFlow applies <code>FLAG_SECURE</code> to mask application screen contents in Android's recent applications switcher.</li>
+            <li><strong>Biometric Unlock:</strong> Supports fingerprint and facial recognition via Android system authentication.</li>
+            <li><strong>PIN Lock:</strong> Secured on-device with cryptographic hashing.</li>
+            <li><strong>Window Privacy Protection:</strong> When enabled, KharchaFlow masks application screen contents in Android's recent applications switcher.</li>
           </ul>
 
           <h2>6. Open Source Transparency</h2>
