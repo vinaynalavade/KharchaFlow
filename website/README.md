@@ -94,11 +94,13 @@ When you publish future releases (e.g. `v1.0.6`), simply update these fallback c
 
 ## 🎨 Design System & Color Tokens
 
-All design tokens, colors, typography, and spacing are defined in `website/css/styles.css` matching the Android app's Material 3 design system:
+All design tokens, colors, typography, and spacing are defined in `website/css/styles.css` matching the KharchaFlow Logo Green brand system:
 
-* **Brand Primary:** `--primary: #4f46e5` (Indigo 600)
-* **Semantic Income:** `--income: #059669` (Emerald Dark)
-* **Semantic Expense:** `--expense: #e11d48` (Rose Dark)
+* **Brand Primary:** `--primary: #028166` (KharchaFlow Logo Green)
+* **Semantic Income:** `--income: #059669` (Positive Income Emerald)
+* **Semantic Expense:** `--expense: #e11d48` (Expense Rose Dark)
 * **Canvas Background:** `--bg-page: #f8fafc` (Slate 50)
 * **Card Surface:** `--bg-surface: #ffffff` (Pure White)
+* **Text / Headings:** `--text-primary: #0f172a` (Slate 900)
+
 

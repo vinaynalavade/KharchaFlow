@@ -1,25 +1,25 @@
 /* ==========================================================================
-   KharchaFlow Official Website — Android v1.0.5 Visual Design System
-   Clean Light Theme, Sophisticated Indigo & Slate Palette, Precise Material 3 Hierarchy
+   KharchaFlow Official Website — Visual Design System
+   Green Brand Identity (Derived from KharchaFlow Logo #028166), Slate Neutrals, Clean White Surfaces
    ========================================================================== */
 
 /* --- Google Fonts Import --- */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-/* --- Root Design Tokens (Light Theme Only) --- */
+/* --- Root Design Tokens (Light / White Theme Only) --- */
 :root {
-  /* Brand Core Colors (Android Indigo System) */
-  --primary: #4f46e5;            /* Indigo 600 - Primary Action */
-  --primary-hover: #4338ca;      /* Indigo 700 - Hover State */
-  --primary-active: #312e81;     /* Indigo 800 - Active / Pressed State */
-  --primary-light: #eef2ff;      /* Indigo 50 - Subtle Fill / Container */
-  --primary-border: #c7d2fe;     /* Indigo 200 - Accent Border */
-  --primary-text: #1e1b4b;       /* Indigo 900 - On-Primary Container Text */
-  --primary-glow: rgba(79, 70, 229, 0.12);
+  /* Brand Core Colors (KharchaFlow Logo Green System #028166) */
+  --primary: #028166;            /* KharchaFlow Logo Green - Primary Brand & CTA */
+  --primary-hover: #026a54;      /* Darker Green - Hover State */
+  --primary-active: #014d3d;     /* Deep Green - Active / Pressed State */
+  --primary-light: #edf7f4;      /* Soft Green Tint - Containers / Badges */
+  --primary-border: #a7f3d0;     /* Refined Green Accent Border */
+  --primary-text: #024b3b;       /* Dark Green Text for Badges */
+  --primary-glow: rgba(2, 129, 102, 0.12);
 
-  /* Financial Semantic Colors (Android Emerald & Rose System) */
-  --income: #059669;             /* Income Emerald Dark */
-  --income-light: #10b981;       /* Income Emerald */
+  /* Financial Semantic Colors */
+  --income: #059669;             /* Positive Income Emerald */
+  --income-light: #10b981;       /* Income Emerald Light */
   --income-bg: #ecfdf5;          /* Income Container Light */
   --income-text: #065f46;        /* On-Income Container Text */
   --income-border: #a7f3d0;      /* Income Border */
@@ -30,7 +30,7 @@
   --expense-text: #9f1239;       /* On-Expense Container Text */
   --expense-border: #fecdd3;     /* Expense Border */
 
-  /* Surface & Neutral Colors (Android Slate Palette) */
+  /* Surface & Neutral Colors (Dark Slate & Pure White) */
   --bg-page: #f8fafc;            /* Slate 50 - Crisp Canvas */
   --bg-surface: #ffffff;         /* Pure White - Level 1 Cards */
   --bg-surface-elevated: #f1f5f9;/* Slate 100 - Level 2 Containers */
@@ -40,7 +40,7 @@
   --border-subtle: #e2e8f0;      /* Slate 200 - Subtle Card Border */
   --border-strong: #cbd5e1;      /* Slate 300 - Defined Border */
 
-  --text-primary: #0f172a;       /* Slate 900 - High-Contrast Body & Headings */
+  --text-primary: #0f172a;       /* Slate 900 - High-Contrast Headings & Wordmark */
   --text-secondary: #475569;     /* Slate 600 - Secondary Body Text */
   --text-muted: #64748b;         /* Slate 500 - Captions & Subtitles */
   --text-inverse: #ffffff;
@@ -49,27 +49,27 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Dimensions & Shapes (Matching Android Shape.kt) */
+  /* Dimensions & Shapes */
   --container-max: 1180px;
   --container-narrow: 840px;
-  --header-height: 68px;
+  --header-height: 70px;
   --radius-xs: 6px;
   --radius-sm: 10px;
-  --radius-md: 16px;             /* CardShape in Android */
-  --radius-lg: 20px;             /* HeroCardShape in Android */
+  --radius-md: 16px;
+  --radius-lg: 20px;
   --radius-xl: 28px;
   --radius-pill: 9999px;
 
-  /* Elevation Shadows (Android-inspired Subtle Elevation) */
+  /* Elevation Shadows */
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
   --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
   --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.06), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
   --shadow-xl: 0 20px 36px -8px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
 
-  --header-bg: rgba(248, 250, 252, 0.94);
-  --hero-glow: radial-gradient(circle at 50% 15%, rgba(79, 70, 229, 0.07) 0%, rgba(5, 150, 105, 0.03) 40%, transparent 70%);
+  --header-bg: rgba(255, 255, 255, 0.98);
+  --hero-glow: radial-gradient(circle at 50% 12%, rgba(2, 129, 102, 0.05) 0%, rgba(248, 250, 252, 0) 55%);
 
-  /* Transitions (Matching Android Motion.DurationFast & Normal) */
+  /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
   --transition-normal: 250ms cubic-bezier(0.2, 0, 0, 1);
   --transition-slow: 350ms cubic-bezier(0.2, 0, 0, 1);
@@ -121,33 +121,42 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: clamp(2.2rem, 5.2vw, 3.5rem);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.15;
 }
 
 h2 {
-  font-size: clamp(1.6rem, 3.6vw, 2.35rem);
-  letter-spacing: -0.025em;
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 h3 {
-  font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.55rem);
+  font-weight: 700;
 }
 
 h4 {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 p {
   color: var(--text-secondary);
-  word-break: break-word;
+  font-size: 1rem;
 }
 
 p.lead {
   font-size: clamp(1.05rem, 2vw, 1.2rem);
   line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 a {
@@ -175,9 +184,9 @@ a:hover {
   max-width: var(--container-narrow);
 }
 
+/* --- Section Containers --- */
 .section {
-  padding-top: clamp(3.5rem, 7vw, 6rem);
-  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -192,23 +201,20 @@ a:hover {
 }
 
 .section-muted {
-  background-color: var(--bg-surface);
+  background-color: var(--bg-surface-elevated);
   border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
 }
 
-/* --- Section Headers --- */
 .section-header {
   text-align: center;
   max-width: 680px;
-  margin: 0 auto clamp(2.25rem, 5vw, 3.5rem);
-  width: 100%;
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
 }
 
 .section-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: inline-block;
+  font-family: var(--font-sans);
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -217,11 +223,7 @@ a:hover {
   background-color: var(--primary-light);
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-pill);
-  margin-bottom: 0.85rem;
-  max-width: 100%;
-  flex-wrap: wrap;
-  justify-content: center;
-  text-align: center;
+  margin-bottom: 0.9rem;
 }
 
 .section-tag.gold {
@@ -230,23 +232,26 @@ a:hover {
 }
 
 .section-title {
-  margin-bottom: 0.85rem;
+  margin-bottom: 1rem;
 }
 
 .section-desc {
-  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  font-size: clamp(1rem, 1.8vw, 1.12rem);
   color: var(--text-secondary);
+  line-height: 1.65;
 }
 
-/* --- Sticky Modern Navbar --- */
+/* --- Top Sticky Modern Navbar (Top-Aligned, Container-Aligned) --- */
 .header {
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   height: var(--header-height);
   background-color: var(--header-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-subtle);
   width: 100%;
   max-width: 100vw;
@@ -264,13 +269,17 @@ a:hover {
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.7rem;
   text-decoration: none;
   color: var(--text-primary);
   font-weight: 800;
-  font-size: 1.22rem;
+  font-size: 1.25rem;
   letter-spacing: -0.025em;
   flex-shrink: 0;
+}
+
+.logo span {
+  color: var(--text-primary); /* Dark Slate 900 wordmark */
 }
 
 .logo-img {
@@ -284,13 +293,13 @@ a:hover {
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 2rem;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
   list-style: none;
 }
 
@@ -299,7 +308,7 @@ a:hover {
   font-weight: 600;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.5rem 0.25rem;
+  padding: 0.4rem 0.1rem;
   transition: color var(--transition-fast);
   position: relative;
 }
@@ -311,7 +320,7 @@ a:hover {
 .nav-link.active::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -4px;
   left: 0;
   right: 0;
   height: 2px;
@@ -380,13 +389,13 @@ a:hover {
 .btn-primary {
   background-color: var(--primary);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 1px 3px rgba(2, 129, 102, 0.2);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 3px 10px rgba(2, 129, 102, 0.28);
   transform: translateY(-1px);
 }
 
@@ -424,8 +433,8 @@ a:hover {
 }
 
 .btn-sm {
-  padding: 0.5rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.55rem 1.05rem;
+  font-size: 0.88rem;
   border-radius: var(--radius-xs);
   min-height: 38px;
 }
@@ -467,7 +476,7 @@ a:hover {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--income);
+  background-color: var(--primary);
   flex-shrink: 0;
 }
 
@@ -480,7 +489,7 @@ a:hover {
 }
 
 .hero-title span {
-  color: var(--primary);
+  color: var(--primary); /* KharchaFlow Logo Green */
 }
 
 .hero-lead {
@@ -519,7 +528,7 @@ a:hover {
 .hero-trust-item svg {
   width: 16px;
   height: 16px;
-  fill: var(--income);
+  fill: var(--primary);
   flex-shrink: 0;
 }
 
@@ -566,7 +575,7 @@ a:hover {
   gap: 0.85rem;
 }
 
-/* --- Mockup Internal Components (Accurate to Android App) --- */
+/* --- Mockup Internal Components --- */
 .mockup-appbar {
   display: flex;
   align-items: center;
@@ -603,7 +612,7 @@ a:hover {
   object-fit: cover;
 }
 
-/* Balance Hero Card (Accurate to BalanceHeroCard.kt in Android) */
+/* Balance Hero Card */
 .mockup-balance-card {
   background: var(--bg-surface);
   color: var(--text-primary);
@@ -975,12 +984,13 @@ a:hover {
   align-items: center;
   gap: 0.5rem;
   background: var(--primary-light);
-  color: var(--primary);
+  color: var(--primary-text);
   font-size: 0.85rem;
   font-weight: 700;
   padding: 0.35rem 0.9rem;
   border-radius: var(--radius-pill);
   margin-bottom: 1.25rem;
+  border: 1px solid var(--primary-border);
 }
 
 .download-meta {
