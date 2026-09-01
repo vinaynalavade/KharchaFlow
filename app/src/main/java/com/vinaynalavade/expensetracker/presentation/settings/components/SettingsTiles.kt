@@ -58,7 +58,7 @@ fun SettingsSectionContainer(
             text = title.uppercase(),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             letterSpacing = 0.8.sp,
             modifier = Modifier.padding(start = MaterialTheme.spacing.xs, bottom = 6.dp)
         )
@@ -81,14 +81,14 @@ fun SettingsSectionContainer(
 
 /**
  * Standardized icon box used across all Settings Tiles.
- * 40dp rounded squircle with soft brand primary tint.
+ * 40dp rounded squircle with neutral surface tint.
  */
 @Composable
 fun SettingsTileIconBox(
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.primary,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -119,8 +119,8 @@ fun SettingsNavigationTile(
     valueBadge: String? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconTint: Color = MaterialTheme.colorScheme.primary,
-    iconContainerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    iconContainerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     enabled: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -169,14 +169,14 @@ fun SettingsNavigationTile(
         if (valueBadge != null) {
             Surface(
                 shape = PillShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.xs)
             ) {
                 Text(
                     text = valueBadge,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                 )
             }
@@ -205,8 +205,8 @@ fun SettingsSwitchTile(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    iconTint: Color = MaterialTheme.colorScheme.primary,
-    iconContainerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    iconContainerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     enabled: Boolean = true
 ) {
     val haptic = LocalHapticFeedback.current
@@ -286,8 +286,8 @@ fun SettingsValueTile(
     currentValue: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconTint: Color = MaterialTheme.colorScheme.primary,
-    iconContainerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    iconContainerColor: Color = MaterialTheme.colorScheme.surfaceVariant
 ) {
     SettingsNavigationTile(
         icon = icon,

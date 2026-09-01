@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
@@ -32,6 +33,11 @@ val MaterialTheme.financialColors: FinancialColors
     @Composable
     @ReadOnlyComposable
     get() = LocalFinancialColors.current
+
+val MaterialTheme.brandGreen: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.colorScheme.secondary
 
 @Composable
 fun ExpenseTrackerTheme(

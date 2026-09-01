@@ -6,20 +6,47 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Brand Core Colors (Sophisticated Indigo Palette)
-val Indigo950 = Color(0xFF0F0E2A)
-val Indigo900 = Color(0xFF1E1B4B)
-val Indigo800 = Color(0xFF312E81)
-val Indigo700 = Color(0xFF4338CA)
-val Indigo600 = Color(0xFF4F46E5)
-val Indigo500 = Color(0xFF6366F1)
-val Indigo400 = Color(0xFF818CF8)
-val Indigo300 = Color(0xFFA5B4FC)
-val Indigo200 = Color(0xFFC7D2FE)
-val Indigo100 = Color(0xFFE0E7FF)
-val Indigo50 = Color(0xFFEEF2FF)
+// ==========================================================================
+// KharchaFlow Monochrome Core Palette (Multinational Fintech Quality)
+// ==========================================================================
 
-// Financial Semantic - Income (Refined Emerald)
+// Charcoal & Near-Black (Authoritative Main Actions, FABs, Primary Controls)
+val Charcoal950 = Color(0xFF111111) // Near-Black Primary Action / Night Canvas
+val Charcoal900 = Color(0xFF18181B) // Elevated Dark Surface / Card
+val Charcoal850 = Color(0xFF202024) // Secondary Elevated Surface in Dark
+val Charcoal800 = Color(0xFF27272A) // Subtle Dark Borders & Outlines
+val Charcoal700 = Color(0xFF3F3F46) // Active Dark Chip Fill
+
+// Pure White & Canvas Neutrals
+val PureWhite = Color(0xFFFFFFFF)
+val CanvasOffWhite = Color(0xFFF7F7F5) // Soft Warm Surface Canvas
+
+// Neutral Grays (Multi-tiered Hierarchy for Secondary Elements, Text, Dividers)
+val NeutralGray900 = Color(0xFF111827)
+val NeutralGray800 = Color(0xFF1F2937)
+val NeutralGray700 = Color(0xFF374151)
+val NeutralGray600 = Color(0xFF4B5563)
+val NeutralGray500 = Color(0xFF6B7280) // Secondary Gray - Captions, Metadata & Subtitles
+val NeutralGray400 = Color(0xFF9CA3AF) // Muted Icons & Disabled States
+val NeutralGray300 = Color(0xFFD1D5DB) // Subtle Dividers
+val NeutralGray200 = Color(0xFFE5E7EB) // Card Outlines & Borders
+val NeutralGray100 = Color(0xFFF3F4F6) // Level 2 Surface / Inactive Pill Background
+val NeutralGray50 = Color(0xFFFAFAFA)
+
+// ==========================================================================
+// KharchaFlow Brand Accent (Logo Green #028166 - Used Subtly & Strategically)
+// ==========================================================================
+val BrandGreen = Color(0xFF028166)          // Primary Brand Accent
+val BrandGreenDark = Color(0xFF014D3D)      // Deep Pressed Green
+val BrandGreenLight = Color(0xFF03A37F)     // Dark Theme Accent Highlight
+val BrandGreenContainer = Color(0xFFEDF7F4) // Light Mode Subtle Tint Container
+val BrandGreenOnContainer = Color(0xFF024B3B)
+val BrandGreenDarkContainer = Color(0xFF0B2E24)
+val BrandGreenDarkOnContainer = Color(0xFFA7F3D0)
+
+// ==========================================================================
+// Financial Semantic Colors (Emerald Income, Rose Expense)
+// ==========================================================================
 val IncomeEmerald = Color(0xFF10B981)
 val IncomeEmeraldDark = Color(0xFF059669)
 val IncomeEmeraldLight = Color(0xFF34D399)
@@ -28,7 +55,6 @@ val IncomeOnContainerLight = Color(0xFF065F46)
 val IncomeContainerDark = Color(0xFF064E3B)
 val IncomeOnContainerDark = Color(0xFFA7F3D0)
 
-// Financial Semantic - Expense (Refined Rose)
 val ExpenseRose = Color(0xFFF43F5E)
 val ExpenseRoseDark = Color(0xFFE11D48)
 val ExpenseRoseLight = Color(0xFFFB7185)
@@ -36,22 +62,6 @@ val ExpenseContainerLight = Color(0xFFFFF1F2)
 val ExpenseOnContainerLight = Color(0xFF9F1239)
 val ExpenseContainerDark = Color(0xFF4C0519)
 val ExpenseOnContainerDark = Color(0xFFFECDD3)
-
-// Neutral & Surface Grays (Multi-tiered Slate & Obsidian System)
-val Slate950 = Color(0xFF0A0E17) // Deep Obsidian Night Canvas
-val Slate900 = Color(0xFF111726) // Elevated Primary Surface / Cards
-val Slate850 = Color(0xFF172033) // Secondary Elevated Surface / Sub-containers
-val Slate800 = Color(0xFF1E293F) // Tertiary Surface / Sheet Backgrounds
-val Slate750 = Color(0xFF243048) // Active / Selected Container Fill
-val Slate700 = Color(0xFF2D3B55) // Subtle Borders & Dividers in Dark
-val Slate600 = Color(0xFF475569) // Inactive Icon Tints
-val Slate500 = Color(0xFF64748B) // Muted Captions & Metadata
-val Slate400 = Color(0xFF94A3B8) // Secondary Body Text
-val Slate300 = Color(0xFFCBD5E1) // Crisp Light Body
-val Slate200 = Color(0xFFE2E8F0) // Subtle Outline in Light / High Contrast Text
-val Slate100 = Color(0xFFF1F5F9) // Primary onSurface Text in Dark
-val Slate50 = Color(0xFFF8FAFC)  // Pure Crisp Light Canvas
-val PureWhite = Color(0xFFFFFFFF)
 
 /**
  * Dedicated semantic colors for financial operations across Light and Dark themes.
@@ -86,16 +96,16 @@ val DarkFinancialColors = FinancialColors(
 
 val LocalFinancialColors = staticCompositionLocalOf { LightFinancialColors }
 
-// Material 3 Light Color Scheme (Crisp, High-Trust Financial Banking)
+// Material 3 Light Color Scheme (Monochrome-First, Charcoal #111111, Pure White, Soft Canvas #F7F7F5)
 val LightColorScheme = lightColorScheme(
-    primary = Indigo600,
+    primary = Charcoal950,
     onPrimary = PureWhite,
-    primaryContainer = Indigo50,
-    onPrimaryContainer = Indigo900,
-    secondary = Slate700,
+    primaryContainer = NeutralGray100,
+    onPrimaryContainer = Charcoal950,
+    secondary = BrandGreen,
     onSecondary = PureWhite,
-    secondaryContainer = Slate100,
-    onSecondaryContainer = Slate900,
+    secondaryContainer = BrandGreenContainer,
+    onSecondaryContainer = BrandGreenOnContainer,
     tertiary = IncomeEmeraldDark,
     onTertiary = PureWhite,
     tertiaryContainer = IncomeContainerLight,
@@ -104,46 +114,46 @@ val LightColorScheme = lightColorScheme(
     onError = PureWhite,
     errorContainer = ExpenseContainerLight,
     onErrorContainer = ExpenseOnContainerLight,
-    background = Slate50,
-    onBackground = Slate900,
+    background = CanvasOffWhite,
+    onBackground = Charcoal950,
     surface = PureWhite,
-    onSurface = Slate900,
-    surfaceVariant = Slate100,
-    onSurfaceVariant = Slate600,
-    outline = Slate200,
-    outlineVariant = Slate300,
-    inverseSurface = Slate900,
-    inverseOnSurface = Slate50,
-    inversePrimary = Indigo300
+    onSurface = Charcoal950,
+    surfaceVariant = NeutralGray100,
+    onSurfaceVariant = NeutralGray500,
+    outline = NeutralGray200,
+    outlineVariant = NeutralGray300,
+    inverseSurface = Charcoal950,
+    inverseOnSurface = CanvasOffWhite,
+    inversePrimary = PureWhite
 )
 
-// Material 3 Dark Color Scheme (Deep Obsidian Multi-Tiered Financial Palette)
+// Material 3 Dark Color Scheme (Deep Obsidian / Charcoal with Crisp Monochrome Contrast & Subtle Green Highlights)
 val DarkColorScheme = darkColorScheme(
-    primary = Indigo400,
-    onPrimary = Slate950,
-    primaryContainer = Color(0xFF24274F),
-    onPrimaryContainer = Indigo100,
-    secondary = Slate300,
-    onSecondary = Slate950,
-    secondaryContainer = Slate850,
-    onSecondaryContainer = Slate100,
+    primary = PureWhite,
+    onPrimary = Charcoal950,
+    primaryContainer = Charcoal850,
+    onPrimaryContainer = PureWhite,
+    secondary = BrandGreenLight,
+    onSecondary = Charcoal950,
+    secondaryContainer = BrandGreenDarkContainer,
+    onSecondaryContainer = BrandGreenDarkOnContainer,
     tertiary = IncomeEmeraldLight,
-    onTertiary = Slate950,
+    onTertiary = Charcoal950,
     tertiaryContainer = IncomeContainerDark,
     onTertiaryContainer = IncomeOnContainerDark,
     error = ExpenseRoseLight,
-    onError = Slate950,
+    onError = Charcoal950,
     errorContainer = ExpenseContainerDark,
     onErrorContainer = ExpenseOnContainerDark,
-    background = Slate950,
-    onBackground = Slate100,
-    surface = Slate900,
-    onSurface = Slate100,
-    surfaceVariant = Slate850,
-    onSurfaceVariant = Slate400,
-    outline = Slate700,
-    outlineVariant = Slate800,
-    inverseSurface = Slate100,
-    inverseOnSurface = Slate950,
-    inversePrimary = Indigo600
+    background = Charcoal950,
+    onBackground = PureWhite,
+    surface = Charcoal900,
+    onSurface = PureWhite,
+    surfaceVariant = Charcoal850,
+    onSurfaceVariant = NeutralGray400,
+    outline = Charcoal800,
+    outlineVariant = Charcoal700,
+    inverseSurface = PureWhite,
+    inverseOnSurface = Charcoal950,
+    inversePrimary = Charcoal950
 )

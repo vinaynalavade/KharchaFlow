@@ -132,7 +132,7 @@ private fun ThemeSegmentItem(
 
     val animatedBg by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
+            MaterialTheme.colorScheme.surface
         } else {
             Color.Transparent
         },
@@ -142,7 +142,7 @@ private fun ThemeSegmentItem(
 
     val animatedContentColor by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.onPrimaryContainer
+            MaterialTheme.colorScheme.onSurface
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
@@ -152,7 +152,7 @@ private fun ThemeSegmentItem(
 
     val animatedBorderColor by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
         } else {
             Color.Transparent
         },
