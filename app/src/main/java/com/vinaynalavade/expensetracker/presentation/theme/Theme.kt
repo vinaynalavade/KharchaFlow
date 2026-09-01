@@ -1,5 +1,6 @@
 package com.vinaynalavade.expensetracker.presentation.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,9 +9,12 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.domain.model.ThemeMode
 
@@ -50,6 +54,20 @@ fun ExpenseTrackerTheme(
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as? Activity)?.window
+            if (window != null) {
+                val insetsController = WindowCompat.getInsetsController(window, view)
+                // In Light theme (darkTheme = false), status/nav bars need dark icons (isAppearanceLight = true)
+                // In Dark theme (darkTheme = true), status/nav bars need light/white icons (isAppearanceLight = false)
+                insetsController.isAppearanceLightStatusBars = !darkTheme
+                insetsController.isAppearanceLightNavigationBars = !darkTheme
+            }
+        }
     }
 
     val context = LocalContext.current
