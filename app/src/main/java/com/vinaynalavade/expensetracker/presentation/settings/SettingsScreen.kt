@@ -20,6 +20,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -129,10 +130,16 @@ import com.vinaynalavade.expensetracker.presentation.settings.components.EditPro
 import com.vinaynalavade.expensetracker.presentation.settings.components.ImageCropDialog
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfileCard
 import com.vinaynalavade.expensetracker.presentation.settings.components.ProfilePhotoOptionsDialog
+import com.vinaynalavade.expensetracker.presentation.settings.components.SettingsCustomTile
+import com.vinaynalavade.expensetracker.presentation.settings.components.SettingsDivider
+import com.vinaynalavade.expensetracker.presentation.settings.components.SettingsNavigationTile
+import com.vinaynalavade.expensetracker.presentation.settings.components.SettingsSectionContainer
+import com.vinaynalavade.expensetracker.presentation.settings.components.SettingsSwitchTile
 import com.vinaynalavade.expensetracker.presentation.settings.components.ThemeSelectionSection
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.PillShape
+import com.vinaynalavade.expensetracker.presentation.theme.pressScale
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 import com.vinaynalavade.expensetracker.presentation.widget.WidgetUpdateManager
 import java.time.LocalTime
@@ -243,7 +250,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg)
         ) {
             // 1. Profile Section
-            SettingsSection(title = stringResource(R.string.settings_section_profile)) {
+            SettingsSectionContainer(title = stringResource(R.string.settings_section_profile)) {
                 ProfileCard(
                     userPreferences = userPreferences,
                     googleBackupState = googleBackupState,
@@ -254,8 +261,8 @@ fun SettingsScreen(
                 )
             }
 
-            // 2. Personalization Section
-            SettingsSection(title = "PERSONALIZATION") {
+            // 2. Preferences Section
+            SettingsSectionContainer(title = "PREFERENCES") {
                 ThemeSelectionSection(
                     currentThemeMode = userPreferences.themeMode,
                     onThemeModeSelected = { viewModel.onThemeModeSelected(it) }
@@ -266,16 +273,22 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.AccountBalance,
                     title = "Default Currency",
-                    subtitle = userPreferences.currency.name,
                     valueBadge = "${userPreferences.currency.symbol} ${userPreferences.currency.code}",
                     onClick = { showCurrencyDialog = true }
                 )
 
                 SettingsDivider()
 
+                SettingsNavigationTile(
+                    icon = Icons.Default.Category,
+                    title = "Manage Categories",
+                    onClick = onNavigateToCategories
+                )
+
+                SettingsDivider()
+
                 DefaultSourceSettingRow(
                     title = "Default Expense Source",
-                    subtitle = "Preselected when recording new expenses",
                     selectedMethod = userPreferences.defaultExpenseSource,
                     onMethodSelect = { viewModel.onDefaultExpenseSourceSelected(it) }
                 )
@@ -284,7 +297,6 @@ fun SettingsScreen(
 
                 DefaultSourceSettingRow(
                     title = "Default Income Source",
-                    subtitle = "Preselected when recording new income",
                     selectedMethod = userPreferences.defaultIncomeSource,
                     onMethodSelect = { viewModel.onDefaultIncomeSourceSelected(it) }
                 )
@@ -294,7 +306,6 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.AccountBalance,
                     title = "Starting Balance",
-                    subtitle = "Opening balance for net worth calculation",
                     valueBadge = userPreferences.openingBalance.format(userPreferences.currency),
                     onClick = { showOpeningBalanceDialog = true }
                 )
@@ -305,28 +316,16 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.Translate,
                     title = stringResource(R.string.settings_language),
-                    subtitle = stringResource(R.string.settings_language_desc),
                     valueBadge = currentLanguage.nativeName,
                     onClick = { showLanguageDialog = true }
                 )
             }
 
-            // 3. Categories Management Section (Moved from Bottom Navigation)
-            SettingsSection(title = "CATEGORIES") {
-                SettingsNavigationTile(
-                    icon = Icons.Default.Category,
-                    title = "Manage Categories",
-                    subtitle = "Customize expense and income categories, icons, and colors",
-                    onClick = onNavigateToCategories
-                )
-            }
-
-            // 4. Security & Privacy Section
-            SettingsSection(title = "SECURITY & PRIVACY") {
+            // 3. Security & Privacy Section
+            SettingsSectionContainer(title = "SECURITY & PRIVACY") {
                 SettingsSwitchTile(
                     icon = Icons.Default.Lock,
                     title = stringResource(R.string.settings_app_lock_title),
-                    subtitle = stringResource(R.string.settings_app_lock_desc),
                     checked = userPreferences.appLockEnabled,
                     onCheckedChange = { isChecked ->
                         if (isChecked) {
@@ -349,7 +348,6 @@ fun SettingsScreen(
                             SettingsNavigationTile(
                                 icon = Icons.Default.Fingerprint,
                                 title = stringResource(R.string.settings_unlock_method_title),
-                                subtitle = "Choose between Biometric or PIN authentication",
                                 valueBadge = if (userPreferences.biometricEnabled) "Biometric + PIN" else "PIN Only",
                                 onClick = { showUnlockMethodDialog = true }
                             )
@@ -358,16 +356,15 @@ fun SettingsScreen(
 
                         val autoLockBadge = when (userPreferences.autoLockDurationSeconds) {
                             0L -> "Immediately"
-                            30L -> "After 30 seconds"
-                            60L -> "After 1 minute"
-                            300L -> "After 5 minutes"
+                            30L -> "30 seconds"
+                            60L -> "1 minute"
+                            300L -> "5 minutes"
                             else -> "${userPreferences.autoLockDurationSeconds}s"
                         }
 
                         SettingsNavigationTile(
                             icon = Icons.Default.Timer,
                             title = stringResource(R.string.settings_auto_lock_title),
-                            subtitle = "How quickly the app locks when minimized",
                             valueBadge = autoLockBadge,
                             onClick = { showAutoLockDialog = true }
                         )
@@ -377,7 +374,6 @@ fun SettingsScreen(
                         SettingsNavigationTile(
                             icon = Icons.Default.LockReset,
                             title = stringResource(R.string.settings_change_pin),
-                            subtitle = "Update your 4-digit security PIN",
                             onClick = onNavigateToChangePin
                         )
 
@@ -386,7 +382,6 @@ fun SettingsScreen(
                         SettingsSwitchTile(
                             icon = Icons.Default.VisibilityOff,
                             title = stringResource(R.string.settings_hide_recents_title),
-                            subtitle = stringResource(R.string.settings_hide_recents_desc),
                             checked = userPreferences.hideContentInRecents,
                             onCheckedChange = { viewModel.onHideContentInRecentsToggled(it) }
                         )
@@ -394,68 +389,26 @@ fun SettingsScreen(
                 }
             }
 
-            // 5. Notifications & Reminders Section
-            SettingsSection(title = "NOTIFICATIONS & REMINDERS") {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = MaterialTheme.spacing.xs),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.Notifications,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
+            // 4. Notifications & Reminders Section
+            SettingsSectionContainer(title = "NOTIFICATIONS") {
+                SettingsSwitchTile(
+                    icon = Icons.Default.Notifications,
+                    title = stringResource(R.string.settings_notifications_master_title),
+                    checked = userPreferences.notificationsMasterEnabled,
+                    onCheckedChange = { isChecked ->
+                        if (isChecked) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                viewModel.onNotificationsMasterToggled(true)
                             }
-                        }
-                        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.settings_notifications_master_title),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = stringResource(R.string.settings_notifications_master_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                        } else {
+                            viewModel.onNotificationsMasterToggled(false)
                         }
                     }
-
-                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.sm))
-
-                    Switch(
-                        checked = userPreferences.notificationsMasterEnabled,
-                        onCheckedChange = { isChecked ->
-                            if (isChecked) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                } else {
-                                    viewModel.onNotificationsMasterToggled(true)
-                                }
-                            } else {
-                                viewModel.onNotificationsMasterToggled(false)
-                            }
-                        }
-                    )
-                }
+                )
 
                 AnimatedVisibility(
                     visible = userPreferences.notificationsMasterEnabled,
@@ -469,7 +422,6 @@ fun SettingsScreen(
                         SettingsSwitchTile(
                             icon = Icons.Default.Schedule,
                             title = stringResource(R.string.settings_daily_reminder_title),
-                            subtitle = stringResource(R.string.settings_daily_reminder_desc),
                             checked = userPreferences.dailyReminderEnabled,
                             onCheckedChange = { viewModel.onDailyReminderToggled(it) }
                         )
@@ -483,7 +435,6 @@ fun SettingsScreen(
                             SettingsNavigationTile(
                                 icon = Icons.Default.Schedule,
                                 title = stringResource(R.string.settings_reminder_time_title),
-                                subtitle = "Daily reminder time",
                                 valueBadge = formattedTime,
                                 onClick = { showTimePickerDialog = true }
                             )
@@ -495,7 +446,6 @@ fun SettingsScreen(
                         SettingsSwitchTile(
                             icon = Icons.Default.PieChart,
                             title = stringResource(R.string.settings_budget_alerts_title),
-                            subtitle = stringResource(R.string.settings_budget_alerts_desc),
                             checked = userPreferences.budgetAlertsEnabled,
                             onCheckedChange = { viewModel.onBudgetAlertsToggled(it) }
                         )
@@ -510,7 +460,6 @@ fun SettingsScreen(
                             SettingsNavigationTile(
                                 icon = Icons.Default.PieChart,
                                 title = stringResource(R.string.settings_budget_limit_title),
-                                subtitle = "Monthly spending target threshold",
                                 valueBadge = budgetLimitBadge,
                                 onClick = { showBudgetLimitDialog = true }
                             )
@@ -522,7 +471,6 @@ fun SettingsScreen(
                         SettingsSwitchTile(
                             icon = Icons.AutoMirrored.Filled.ReceiptLong,
                             title = stringResource(R.string.settings_recurring_reminders_title),
-                            subtitle = stringResource(R.string.settings_recurring_reminders_desc),
                             checked = userPreferences.recurringRemindersEnabled,
                             onCheckedChange = { viewModel.onRecurringRemindersToggled(it) }
                         )
@@ -533,7 +481,6 @@ fun SettingsScreen(
                             SettingsNavigationTile(
                                 icon = Icons.AutoMirrored.Filled.ReceiptLong,
                                 title = stringResource(R.string.settings_recurring_advance_title),
-                                subtitle = "When to receive payment due alerts",
                                 valueBadge = advanceLabel,
                                 onClick = { showRecurringAdvanceDialog = true }
                             )
@@ -545,7 +492,6 @@ fun SettingsScreen(
                         SettingsSwitchTile(
                             icon = Icons.Default.Flag,
                             title = stringResource(R.string.settings_savings_goals_title),
-                            subtitle = stringResource(R.string.settings_savings_goals_desc),
                             checked = userPreferences.savingsGoalNotificationsEnabled,
                             onCheckedChange = { viewModel.onSavingsGoalNotificationsToggled(it) }
                         )
@@ -553,13 +499,12 @@ fun SettingsScreen(
                 }
             }
 
-            // 6. Data & Backup Section
-            SettingsSection(title = "DATA & BACKUP") {
+            // 5. Data & Management Section
+            SettingsSectionContainer(title = "DATA & MANAGEMENT") {
                 // Automatic Backup Toggle
                 SettingsSwitchTile(
                     icon = Icons.Default.CloudSync,
                     title = stringResource(R.string.settings_auto_backup_title),
-                    subtitle = stringResource(R.string.settings_auto_backup_desc),
                     checked = userPreferences.automaticBackupEnabled,
                     onCheckedChange = { enabled ->
                         if (enabled && googleBackupState !is GoogleBackupState.Connected) {
@@ -570,7 +515,9 @@ fun SettingsScreen(
                     }
                 )
 
-                // Backup Status & Manual Action
+                SettingsDivider()
+
+                // Backup Status & Management
                 val lastTimestamp = (googleBackupState as? GoogleBackupState.Connected)?.lastBackupTimestamp
                     ?: userPreferences.lastDismissedRestoreBackupTimestamp
                 val statusText = when {
@@ -589,25 +536,9 @@ fun SettingsScreen(
                 }
 
                 SettingsNavigationTile(
-                    icon = Icons.Default.CloudUpload,
-                    title = stringResource(R.string.backup_btn_now),
-                    subtitle = statusText,
-                    valueBadge = if (isManualBackupRunning) "Backing up..." else null,
-                    onClick = {
-                        if (googleBackupState !is GoogleBackupState.Connected) {
-                            googleSignInLauncher.launch(viewModel.getGoogleSignInIntent())
-                        } else {
-                            viewModel.onBackupNowClick()
-                        }
-                    }
-                )
-
-                SettingsDivider()
-
-                SettingsNavigationTile(
                     icon = Icons.Default.Sync,
                     title = "Backup & Restore",
-                    subtitle = "Google Drive cloud backup and local file export/import",
+                    subtitle = statusText,
                     onClick = onNavigateToBackup
                 )
 
@@ -616,7 +547,6 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.Default.Description,
                     title = "Export & Reports",
-                    subtitle = "Export transactions to CSV or generate financial statements",
                     onClick = onNavigateToStatements
                 )
 
@@ -625,17 +555,15 @@ fun SettingsScreen(
                 SettingsNavigationTile(
                     icon = Icons.AutoMirrored.Filled.ReceiptLong,
                     title = "Recurring & EMIs",
-                    subtitle = "Manage recurring payments, subscriptions, and reminders",
                     onClick = onNavigateToRecurring
                 )
             }
 
-            // 7. About Section
-            SettingsSection(title = "ABOUT") {
+            // 6. About Section
+            SettingsSectionContainer(title = "ABOUT") {
                 SettingsNavigationTile(
                     icon = Icons.Default.Info,
                     title = "About KharchaFlow",
-                    subtitle = "Version ${BuildConfig.VERSION_NAME}, privacy & security, open source",
                     valueBadge = "v${BuildConfig.VERSION_NAME}",
                     onClick = onNavigateToAbout
                 )
@@ -857,171 +785,6 @@ fun SettingsScreen(
     }
 }
 
-@Composable
-private fun SettingsSection(
-    title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = MaterialTheme.spacing.xs, bottom = MaterialTheme.spacing.xs)
-        )
-        Surface(
-            shape = CardShape,
-            color = MaterialTheme.colorScheme.surface,
-            border = androidx.compose.foundation.BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(MaterialTheme.spacing.md),
-                content = content
-            )
-        }
-    }
-}
-
-@Composable
-private fun SettingsNavigationTile(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    valueBadge: String? = null,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = MaterialTheme.spacing.xs),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-            modifier = Modifier.size(36.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        if (valueBadge != null) {
-            Surface(
-                shape = PillShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.xs)
-            ) {
-                Text(
-                    text = valueBadge,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                )
-            }
-        }
-
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-            modifier = Modifier.size(14.dp)
-        )
-    }
-}
-
-@Composable
-private fun SettingsSwitchTile(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = MaterialTheme.spacing.xs),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-            modifier = Modifier.size(36.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(modifier = Modifier.width(MaterialTheme.spacing.sm))
-
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
-}
-
-@Composable
-private fun SettingsDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(vertical = MaterialTheme.spacing.xs),
-        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-    )
-}
 
 @Composable
 private fun SettingOptionChip(
@@ -1031,14 +794,15 @@ private fun SettingOptionChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val animatedBg by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-        animationSpec = tween(200),
+        animationSpec = tween(com.vinaynalavade.expensetracker.presentation.theme.Motion.DurationFast),
         label = "ThemeChipBg"
     )
     val animatedBorderColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.25f),
-        animationSpec = tween(200),
+        animationSpec = tween(com.vinaynalavade.expensetracker.presentation.theme.Motion.DurationFast),
         label = "ThemeChipBorder"
     )
 
@@ -1051,7 +815,12 @@ private fun SettingOptionChip(
         ),
         modifier = modifier
             .clip(PillShape)
-            .clickable(onClick = onClick)
+            .pressScale(interactionSource = interactionSource)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = androidx.compose.material3.ripple(),
+                onClick = onClick
+            )
     ) {
         Row(
             modifier = Modifier.padding(horizontal = MaterialTheme.spacing.sm, vertical = MaterialTheme.spacing.sm),
@@ -1590,56 +1359,32 @@ private fun UnlockMethodDialog(
 @Composable
 private fun DefaultSourceSettingRow(
     title: String,
-    subtitle: String,
     selectedMethod: PaymentMethod,
     onMethodSelect: (PaymentMethod) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    subtitle: String? = null
 ) {
-    Column(
+    SettingsCustomTile(
+        title = title,
+        subtitle = subtitle,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = MaterialTheme.spacing.xs)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = MaterialTheme.spacing.md)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PaymentMethod.entries.forEach { method ->
-                    val isSelected = selectedMethod == method
-                    val icon = when (method) {
-                        PaymentMethod.CASH -> Icons.Default.Payments
-                        PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
-                    }
-                    SettingOptionChip(
-                        label = method.displayName,
-                        icon = icon,
-                        isSelected = isSelected,
-                        onClick = { onMethodSelect(method) }
-                    )
+            PaymentMethod.entries.forEach { method ->
+                val isSelected = selectedMethod == method
+                val icon = when (method) {
+                    PaymentMethod.CASH -> Icons.Default.Payments
+                    PaymentMethod.ACCOUNT -> Icons.Default.AccountBalance
                 }
+                SettingOptionChip(
+                    label = method.displayName,
+                    icon = icon,
+                    isSelected = isSelected,
+                    onClick = { onMethodSelect(method) }
+                )
             }
         }
     }

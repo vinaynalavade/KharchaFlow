@@ -6,20 +6,25 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -60,6 +65,7 @@ import com.vinaynalavade.expensetracker.BuildConfig
 import com.vinaynalavade.expensetracker.R
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
+import com.vinaynalavade.expensetracker.presentation.theme.pressScale
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 import androidx.compose.material.icons.filled.Refresh
@@ -274,7 +280,7 @@ fun AboutScreen(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
-                    val versionName = BuildConfig.VERSION_NAME.ifBlank { "1.0.4" }
+                    val versionName = BuildConfig.VERSION_NAME.ifBlank { "1.0.5" }
                     Text(
                         text = "Version $versionName",
                         style = MaterialTheme.typography.labelMedium,
@@ -628,23 +634,32 @@ private fun AboutActionRow(
     title: String,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .defaultMinSize(minHeight = 48.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .pressScale(interactionSource = interactionSource)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = androidx.compose.material3.ripple(),
+                onClick = onClick
+            )
+            .padding(vertical = 10.dp, horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Icon(
             imageVector = Icons.Default.ChevronRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
             modifier = Modifier.size(18.dp)
         )
     }
@@ -653,8 +668,8 @@ private fun AboutActionRow(
 @Composable
 private fun AboutDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(vertical = 6.dp),
-        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+        modifier = Modifier.padding(vertical = 4.dp),
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
     )
 }
 
@@ -666,6 +681,14 @@ private fun AboutLegalDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.92f)
+            .widthIn(max = 480.dp),
         title = {
             Text(
                 text = title,

@@ -103,32 +103,32 @@ fun NavGraph(
         startDestination = Screen.Dashboard.route,
         enterTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
-                fadeIn(animationSpec = tween(Motion.DurationFast))
+                fadeIn(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             } else {
-                fadeIn(animationSpec = tween(Motion.DurationNormal)) +
-                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, animationSpec = tween(Motion.DurationNormal))
+                fadeIn(animationSpec = tween(Motion.DurationNormal, easing = Motion.EasingStandard)) +
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, animationSpec = tween(Motion.DurationNormal, easing = Motion.EasingEmphasized))
             }
         },
         exitTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
-                fadeOut(animationSpec = tween(Motion.DurationFast))
+                fadeOut(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             } else {
-                fadeOut(animationSpec = tween(Motion.DurationFast))
+                fadeOut(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             }
         },
         popEnterTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
-                fadeIn(animationSpec = tween(Motion.DurationFast))
+                fadeIn(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             } else {
-                fadeIn(animationSpec = tween(Motion.DurationNormal))
+                fadeIn(animationSpec = tween(Motion.DurationNormal, easing = Motion.EasingStandard))
             }
         },
         popExitTransition = {
             if (isPrimaryDestination(initialState.destination.route) && isPrimaryDestination(targetState.destination.route)) {
-                fadeOut(animationSpec = tween(Motion.DurationFast))
+                fadeOut(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             } else {
-                fadeOut(animationSpec = tween(Motion.DurationFast)) +
-                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, animationSpec = tween(Motion.DurationFast))
+                fadeOut(animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard)) +
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, animationSpec = tween(Motion.DurationFast, easing = Motion.EasingStandard))
             }
         },
         modifier = modifier

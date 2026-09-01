@@ -2,7 +2,7 @@
     <string name="app_name">KharchaFlow</string>
     <string name="app_descriptor">Expense Tracker</string>
     <string name="app_creator">Vinay Nalavade</string>
-    <string name="app_version">1.0.4</string>
+    <string name="app_version">1.0.5</string>
     <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
     <string name="about_app_description">KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.</string>
     <string name="about_developer_credit">Developed by Vinay Nalavade</string>

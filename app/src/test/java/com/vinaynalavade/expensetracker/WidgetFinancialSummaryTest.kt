@@ -67,18 +67,14 @@ class WidgetFinancialSummaryTest {
 
     @Test
     fun testTodayAndCurrentMonthExpenseCalculations() = runBlocking {
-        val today = LocalDate.now()
-        val currentMonth = YearMonth.now()
+        val today = LocalDate.of(2026, 9, 15)
+        val currentMonth = YearMonth.of(2026, 9)
         val startOfToday = DateTimeUtils.getStartOfDayEpoch(today)
         val startOfMonth = DateTimeUtils.getStartOfMonthEpoch(currentMonth)
         val previousMonthEpoch = startOfMonth - (15 * 24 * 60 * 60 * 1000L)
 
-        // Earlier in the current month (5 days before today, or at start of month if today is early)
-        val earlierThisMonthEpoch = if (startOfToday > startOfMonth + 86400000L) {
-            startOfToday - 86400000L
-        } else {
-            startOfMonth + 1000L
-        }
+        // Earlier in the current month (5 days before today)
+        val earlierThisMonthEpoch = startOfToday - (5 * 86400000L)
 
         val transactions = listOf(
             // 1. Previous month income: ₹50,000 (excluded from this month & today)

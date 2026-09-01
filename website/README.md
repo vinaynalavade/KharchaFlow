@@ -76,19 +76,19 @@ If GitHub API rate limits or offline conditions occur, the website falls back to
 const RELEASE_CONFIG = {
   owner: 'vinaynalavade',
   repo: 'KharchaFlow',
-  defaultVersionName: '1.0.4',
-  defaultVersionCode: 5,
-  defaultReleaseDate: 'August 24, 2026',
-  defaultApkSize: '3.8 MB',
-  defaultApkFileName: 'KharchaFlow_v1.0.4.apk',
-  defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.4/KharchaFlow_v1.0.4.apk',
+  defaultVersionName: '1.0.5',
+  defaultVersionCode: 6,
+  defaultReleaseDate: 'September 1, 2026',
+  defaultApkSize: '3.9 MB',
+  defaultApkFileName: 'KharchaFlow_v1.0.5.apk',
+  defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk',
   defaultSha256: '9ef32daef27bde5afb2a29963e21219507ffa3984f1f64f52d7dae2424e0d909',
   repoUrl: 'https://github.com/vinaynalavade/KharchaFlow',
   releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
 };
 ```
 
-When you publish future releases (e.g. `v1.0.5`), simply update these fallback constants in `website/js/main.js`.
+When you publish future releases (e.g. `v1.0.6`), simply update these fallback constants in `website/js/main.js`.
 
 ---
 
