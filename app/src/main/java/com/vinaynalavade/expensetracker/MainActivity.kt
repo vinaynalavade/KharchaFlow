@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         val route = intent.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
         if (route != null) {
             pendingNavRoute.value = route
+            intent.removeExtra(NotificationHelper.EXTRA_START_ROUTE)
         }
     }
 
@@ -92,6 +93,9 @@ class MainActivity : AppCompatActivity() {
         val container = app.container
 
         val initialStartRoute = intent?.getStringExtra(NotificationHelper.EXTRA_START_ROUTE)
+        if (initialStartRoute != null) {
+            intent?.removeExtra(NotificationHelper.EXTRA_START_ROUTE)
+        }
 
         setContent {
             val userPreferences by container.getUserPreferencesUseCase()

@@ -15,6 +15,7 @@ import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
 import com.vinaynalavade.expensetracker.di.AppContainer
 import com.vinaynalavade.expensetracker.domain.model.TransactionType
+import com.vinaynalavade.expensetracker.domain.model.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -105,6 +106,7 @@ object WidgetUpdateManager {
     /**
      * Updates all active Total Balance widget instances with live domain data.
      * Displays Total Balance as the hero primary metric, alongside Monthly Income & Expenses.
+     * When App Lock is active and locked, redacts financial values to prevent privacy leaks.
      */
     fun updateFinancialSummaryWidgets(
         context: Context,
@@ -118,11 +120,12 @@ object WidgetUpdateManager {
                 val summary = container.getWidgetFinancialSummaryUseCase().firstOrNull()
                 val prefs = container.getUserPreferencesUseCase().firstOrNull()
                 val currency = prefs?.currency ?: Currency.DEFAULT
+                val isLocked = container.appLockManager.isLocked(prefs ?: UserPreferences())
 
-                val balanceStr = summary?.balance?.format(currency) ?: "₹0.00"
-                val monthlyIncomeStr = "+${summary?.monthlyIncome?.format(currency) ?: "₹0.00"}"
-                val monthlyExpenseStr = "-${summary?.monthlyExpense?.format(currency) ?: "₹0.00"}"
-                val monthLabelStr = summary?.monthLabel?.ifBlank { "This Month" } ?: "This Month"
+                val balanceStr = if (isLocked) "••••••" else (summary?.balance?.format(currency) ?: "₹0.00")
+                val monthlyIncomeStr = if (isLocked) "+••••" else "+${summary?.monthlyIncome?.format(currency) ?: "₹0.00"}"
+                val monthlyExpenseStr = if (isLocked) "-••••" else "-${summary?.monthlyExpense?.format(currency) ?: "₹0.00"}"
+                val monthLabelStr = if (isLocked) "Protected" else (summary?.monthLabel?.ifBlank { "This Month" } ?: "This Month")
 
                 // 1. Root tap -> Open MainActivity (Dashboard)
                 val mainIntent = Intent(context, MainActivity::class.java).apply {
@@ -137,7 +140,7 @@ object WidgetUpdateManager {
 
                 // 2. Expense tap -> Open QuickAddTransactionActivity
                 val expenseIntent = Intent(context, QuickAddTransactionActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     putExtra(QuickAddTransactionActivity.EXTRA_TRANSACTION_TYPE, TransactionType.EXPENSE.name)
                     putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_EXPENSE)
                 }
@@ -150,7 +153,7 @@ object WidgetUpdateManager {
 
                 // 3. Income tap -> Open QuickAddTransactionActivity
                 val incomeIntent = Intent(context, QuickAddTransactionActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     putExtra(QuickAddTransactionActivity.EXTRA_TRANSACTION_TYPE, TransactionType.INCOME.name)
                     putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_INCOME)
                 }
@@ -195,6 +198,7 @@ object WidgetUpdateManager {
     /**
      * Updates all active Today's Expense widget instances with live domain data.
      * Displays Today's spending as a single glanceable metric.
+     * When App Lock is active and locked, redacts the expense metric.
      */
     fun updateTodayExpenseWidgets(
         context: Context,
@@ -208,8 +212,9 @@ object WidgetUpdateManager {
                 val todayExpense = container.getTodayExpenseUseCase().firstOrNull()
                 val prefs = container.getUserPreferencesUseCase().firstOrNull()
                 val currency = prefs?.currency ?: Currency.DEFAULT
+                val isLocked = container.appLockManager.isLocked(prefs ?: UserPreferences())
 
-                val todayExpenseStr = todayExpense?.format(currency) ?: "₹0.00"
+                val todayExpenseStr = if (isLocked) "••••••" else (todayExpense?.format(currency) ?: "₹0.00")
 
                 // 1. Root tap -> Open MainActivity (Dashboard)
                 val mainIntent = Intent(context, MainActivity::class.java).apply {
@@ -268,7 +273,7 @@ object WidgetUpdateManager {
             )
 
             val expenseIntent = Intent(context, QuickAddTransactionActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 putExtra(QuickAddTransactionActivity.EXTRA_TRANSACTION_TYPE, TransactionType.EXPENSE.name)
                 putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_EXPENSE)
             }
@@ -280,7 +285,7 @@ object WidgetUpdateManager {
             )
 
             val incomeIntent = Intent(context, QuickAddTransactionActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 putExtra(QuickAddTransactionActivity.EXTRA_TRANSACTION_TYPE, TransactionType.INCOME.name)
                 putExtra(NotificationHelper.EXTRA_START_ROUTE, NotificationHelper.ROUTE_ADD_INCOME)
             }

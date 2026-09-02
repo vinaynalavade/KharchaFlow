@@ -1,9 +1,10 @@
 package com.vinaynalavade.expensetracker
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -70,6 +71,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vinaynalavade.expensetracker.core.model.Amount
 import com.vinaynalavade.expensetracker.core.model.Currency
 import com.vinaynalavade.expensetracker.core.notification.NotificationHelper
@@ -85,6 +87,8 @@ import com.vinaynalavade.expensetracker.presentation.components.CategoryIcon
 import com.vinaynalavade.expensetracker.presentation.components.PaymentMethodSelector
 import com.vinaynalavade.expensetracker.presentation.entry.components.AmountVisualTransformation
 import com.vinaynalavade.expensetracker.presentation.entry.components.TransactionDateSelector
+import com.vinaynalavade.expensetracker.presentation.security.AppLockViewModel
+import com.vinaynalavade.expensetracker.presentation.security.UnlockScreen
 import com.vinaynalavade.expensetracker.presentation.theme.ButtonShape
 import com.vinaynalavade.expensetracker.presentation.theme.CardShape
 import com.vinaynalavade.expensetracker.presentation.theme.ExpenseTrackerTheme
@@ -102,11 +106,18 @@ import kotlinx.coroutines.launch
  * Lightweight, premium modal Activity for rapid transaction entry.
  * Launches as a translucent overlay with immediate keyboard focus, live comma amount formatting,
  * responsive category & source selection, and a pinned Save action that never occludes behind the IME.
+ * Integrated with App Lock security to require biometric/PIN auth before unlocking.
  */
-class QuickAddTransactionActivity : ComponentActivity() {
+class QuickAddTransactionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TRANSACTION_TYPE = "extra_transaction_type"
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val app = application as ExpenseTrackerApp
+        app.container.appLockManager.onAppBackgrounded()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,26 +147,38 @@ class QuickAddTransactionActivity : ComponentActivity() {
 
             val isLocked = userPreferences.appLockEnabled && !isSessionUnlocked
 
-            LaunchedEffect(isLocked) {
-                if (isLocked) {
-                    val mainIntent = android.content.Intent(this@QuickAddTransactionActivity, MainActivity::class.java).apply {
-                        flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        putExtra(
-                            NotificationHelper.EXTRA_START_ROUTE,
-                            if (initialType == TransactionType.INCOME) NotificationHelper.ROUTE_ADD_INCOME else NotificationHelper.ROUTE_ADD_EXPENSE
-                        )
-                    }
-                    startActivity(mainIntent)
-                    finish()
-                }
-            }
-
             ExpenseTrackerTheme(
                 themeMode = userPreferences.themeMode,
                 dynamicColor = userPreferences.useDynamicColors,
                 currency = userPreferences.currency
             ) {
-                if (!isLocked) {
+                if (isLocked) {
+                    BackHandler {
+                        finish()
+                    }
+
+                    val unlockViewModel: AppLockViewModel = viewModel(
+                        factory = AppLockViewModel.Factory(
+                            container.getUserPreferencesUseCase,
+                            container.appLockManager,
+                            container.securePinManager,
+                            container.verifyPinUseCase,
+                            container.savePinUseCase,
+                            container.changePinUseCase,
+                            container.setAppLockEnabledUseCase,
+                            container.setBiometricEnabledUseCase,
+                            container.disableAppLockUseCase
+                        )
+                    )
+
+                    UnlockScreen(
+                        viewModel = unlockViewModel,
+                        onUnlockSuccess = {
+                            container.appLockManager.unlock()
+                            WidgetUpdateManager.refreshAllWidgets(this@QuickAddTransactionActivity)
+                        }
+                    )
+                } else {
                     QuickAddOverlay(
                         initialType = initialType,
                         container = container,

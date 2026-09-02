@@ -15,10 +15,10 @@
     defaultVersionName: '1.0.5',
     defaultVersionCode: 6,
     defaultReleaseDate: 'September 1, 2026',
-    defaultApkSize: '3.9 MB',
+    defaultApkSize: '3.8 MB',
     defaultApkFileName: 'KharchaFlow_v1.0.5.apk',
     defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk',
-    defaultSha256: '54e5fc7096a24528e12844df25704f8bfdfdaf324282e3c95950ec9b6a222bc7',
+    defaultSha256: 'a54a332e95680ab703d9f461401000786d35066147e77e07ac78ee14134895e0',
     repoUrl: 'https://github.com/vinaynalavade/KharchaFlow',
     releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
   };

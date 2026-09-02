@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,14 +17,14 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -124,79 +125,70 @@ fun ImageCropDialog(
         },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false,
             dismissOnBackPress = !isCropping,
-            dismissOnClickOutside = false
+            dismissOnClickOutside = !isCropping
         )
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(0xFF0F0F10)
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .widthIn(max = 420.dp)
+                .padding(vertical = 16.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = Color(0xFF18181B),
+            border = BorderStroke(1.dp, Color(0xFF27272A))
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 1. Top Navigation Bar (Pinned)
+                // 1. Top Header: Title, Subtitle, and Close Action
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = onDismiss,
-                        enabled = !isCropping,
-                        modifier = Modifier.size(44.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(R.string.btn_cancel),
-                            tint = Color.White
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = stringResource(R.string.crop_photo_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = stringResource(R.string.crop_photo_desc),
-                            style = MaterialTheme.typography.labelSmall,
+                            style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF9CA3AF),
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
 
                     IconButton(
-                        onClick = {
-                            rotationDegrees = (rotationDegrees + 90) % 360
-                            scale = 1f
-                            offset = Offset.Zero
-                        },
-                        enabled = !isCropping && sourceBitmap != null,
-                        modifier = Modifier.size(44.dp)
+                        onClick = onDismiss,
+                        enabled = !isCropping,
+                        modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.RotateRight,
-                            contentDescription = stringResource(R.string.crop_photo_rotate),
-                            tint = Color.White
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.btn_cancel),
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
 
-                // 2. Interactive Crop Viewport Area
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // 2. Interactive Crop Viewport Area (Square bounded container)
                 Box(
                     modifier = Modifier
-                        .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isLoading) {
@@ -208,15 +200,12 @@ fun ImageCropDialog(
                         val currentBitmap = sourceBitmap!!
 
                         BoxWithConstraints(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(Color(0xFF000000)),
+                            modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             val containerWidth = constraints.maxWidth.toFloat()
                             val containerHeight = constraints.maxHeight.toFloat()
-                            val cropSize = min(containerWidth, containerHeight) * 0.82f
+                            val cropSize = min(containerWidth, containerHeight) * 0.90f
 
                             LaunchedEffect(containerWidth, containerHeight, cropSize) {
                                 containerSize = Offset(containerWidth, containerHeight)
@@ -236,7 +225,7 @@ fun ImageCropDialog(
 
                             val baseScale = max(cropSize / effBmpWidth, cropSize / effBmpHeight)
 
-                            // Gesture Handler for Fluid Pan & Pinch-to-Zoom with Clamping
+                            // Gesture Handler for Fluid Pan & Pinch-to-Zoom with Strict Clamping
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -342,145 +331,160 @@ fun ImageCropDialog(
                     }
                 }
 
-                // 3. Bottom Pinned Toolbar & Action Controls
-                Surface(
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                    color = Color(0xFF18181B),
-                    border = BorderStroke(1.dp, Color(0xFF27272A)),
-                    modifier = Modifier.fillMaxWidth()
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 3. Quick Utility Toolbar (Rotate & Reset)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
+                    // Rotate Button
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFF27272A),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(enabled = !isCropping && sourceBitmap != null) {
+                                rotationDegrees = (rotationDegrees + 90) % 360
+                                scale = 1f
+                                offset = Offset.Zero
+                            }
                     ) {
-                        // Quick Utility Tools Row (Reset & Rotate)
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 14.dp),
-                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = Color(0xFF27272A),
-                                modifier = Modifier.padding(horizontal = 6.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(horizontal = 14.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    IconButton(
-                                        onClick = {
-                                            scale = 1f
-                                            offset = Offset.Zero
-                                            rotationDegrees = 0
-                                        },
-                                        enabled = !isCropping,
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Refresh,
-                                            contentDescription = stringResource(R.string.crop_photo_reset),
-                                            tint = Color.White,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = stringResource(R.string.crop_photo_reset),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.RotateRight,
+                                contentDescription = stringResource(R.string.crop_photo_rotate),
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(R.string.crop_photo_rotate),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
+                    }
 
-                        // Primary Action Buttons Row (Cancel & Save Photo)
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // Reset Button
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFF27272A),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(enabled = !isCropping) {
+                                scale = 1f
+                                offset = Offset.Zero
+                                rotationDegrees = 0
+                            }
+                    ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            OutlinedButton(
-                                onClick = onDismiss,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                border = BorderStroke(1.dp, Color(0xFF3F3F46)),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = Color.White
-                                ),
-                                enabled = !isCropping
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.btn_cancel),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 15.sp
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = stringResource(R.string.crop_photo_reset),
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(R.string.crop_photo_reset),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
 
-                            Button(
-                                onClick = {
-                                    if (sourceBitmap != null && !isCropping && calculatedCropSize > 0f) {
-                                        isCropping = true
-                                        coroutineScope.launch {
-                                            val croppedUri = withContext(Dispatchers.IO) {
-                                                cropAndSaveAvatar(
-                                                    context = context,
-                                                    bitmap = sourceBitmap!!,
-                                                    scale = scale,
-                                                    offset = offset,
-                                                    rotation = rotationDegrees,
-                                                    cropSize = calculatedCropSize
-                                                )
-                                            }
-                                            isCropping = false
-                                            if (croppedUri != null) {
-                                                onCropConfirmed(croppedUri)
-                                            } else {
-                                                onDismiss()
-                                            }
-                                        }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 4. Primary Actions (Cancel & Save Photo)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(46.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, Color(0xFF3F3F46)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                        enabled = !isCropping
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_cancel),
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            if (sourceBitmap != null && !isCropping && calculatedCropSize > 0f) {
+                                isCropping = true
+                                coroutineScope.launch {
+                                    val croppedUri = withContext(Dispatchers.IO) {
+                                        cropAndSaveAvatar(
+                                            context = context,
+                                            bitmap = sourceBitmap!!,
+                                            scale = scale,
+                                            offset = offset,
+                                            rotation = rotationDegrees,
+                                            cropSize = calculatedCropSize
+                                        )
                                     }
-                                },
-                                modifier = Modifier
-                                    .weight(1.3f)
-                                    .height(48.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = BrandGreen,
-                                    contentColor = Color.White
-                                ),
-                                enabled = !isCropping && sourceBitmap != null
-                            ) {
-                                if (isCropping) {
-                                    CircularProgressIndicator(
-                                        color = Color.White,
-                                        modifier = Modifier.size(20.dp),
-                                        strokeWidth = 2.dp
-                                    )
-                                } else {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = stringResource(R.string.btn_crop_save),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 15.sp
-                                        )
+                                    isCropping = false
+                                    if (croppedUri != null) {
+                                        onCropConfirmed(croppedUri)
+                                    } else {
+                                        onDismiss()
                                     }
                                 }
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1.3f)
+                            .height(46.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BrandGreen,
+                            contentColor = Color.White
+                        ),
+                        enabled = !isCropping && sourceBitmap != null
+                    ) {
+                        if (isCropping) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(R.string.btn_crop_save),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
                             }
                         }
                     }
