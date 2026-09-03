@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Standardized elevation tokens for KharchaFlow.
+ * Standardized elevation tokens for Leaf.
  * Emphasizes restrained elevation with subtle tonal differences.
  */
 @Immutable

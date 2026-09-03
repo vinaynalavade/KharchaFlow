@@ -1,7 +1,7 @@
 package com.vinaynalavade.expensetracker.core.model
 
 /**
- * Currency configuration abstraction for KharchaFlow.
+ * Currency configuration abstraction for Leaf.
  * Designed to cleanly support any ISO currency with exact subunit scaling.
  *
  * @param code ISO 4217 currency code (e.g. "INR", "USD", "EUR")

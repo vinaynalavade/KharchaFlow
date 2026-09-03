@@ -10,12 +10,12 @@ class AboutScreenMetadataTest {
 
     @Test
     fun testGitHubRepositoryUrlIsValidAndVerified() {
-        val repoUrl = "https://github.com/vinaynalavade/KharchaFlow"
+        val repoUrl = "https://github.com/vinaynalavade/Leaf"
         val uri = URI(repoUrl)
 
         assertEquals("https", uri.scheme)
         assertEquals("github.com", uri.host)
-        assertEquals("/vinaynalavade/KharchaFlow", uri.path)
+        assertEquals("/vinaynalavade/Leaf", uri.path)
     }
 
     @Test

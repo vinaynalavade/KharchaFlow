@@ -23,7 +23,7 @@ class ApkDownloader {
         private const val CONNECT_TIMEOUT_MS = 20000
         private const val READ_TIMEOUT_MS = 30000
         private const val BUFFER_SIZE = 8192
-        private const val USER_AGENT = "KharchaFlow-Android-App"
+        private const val USER_AGENT = "Leaf-Android-App"
         private const val TEMP_FILE_SUFFIX = ".tmp"
     }
 

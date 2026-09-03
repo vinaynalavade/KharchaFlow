@@ -26,13 +26,13 @@
                 android:layout_height="16dp"
                 android:src="@drawable/ic_kharchaflow_logo"
                 android:scaleType="fitCenter"
-                android:contentDescription="KharchaFlow"
+                android:contentDescription="Leaf"
                 android:layout_marginEnd="6dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KharchaFlow"
+                android:text="Leaf"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/widget_text_brand"

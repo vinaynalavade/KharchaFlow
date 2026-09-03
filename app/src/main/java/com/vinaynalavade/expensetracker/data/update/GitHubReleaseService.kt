@@ -18,14 +18,14 @@ import java.time.Instant
  */
 class GitHubReleaseService(
     private val owner: String = "vinaynalavade",
-    private val repo: String = "KharchaFlow"
+    private val repo: String = "Leaf"
 ) {
 
     companion object {
         private const val API_BASE_URL = "https://api.github.com"
         private const val CONNECT_TIMEOUT_MS = 15000
         private const val READ_TIMEOUT_MS = 20000
-        private const val USER_AGENT = "KharchaFlow-Android-App"
+        private const val USER_AGENT = "Leaf-Android-App"
         const val RELEASE_METADATA_FILENAME = "release.json"
 
         // Matches "| **Version Code** | `5` |", "Version Code: 5", "versionCode: 5", "<!-- versionCode: 5 -->"
@@ -112,7 +112,7 @@ class GitHubReleaseService(
         val htmlUrl = releaseObj.getString("html_url") ?: "https://github.com/$owner/$repo/releases"
 
         val versionName = rawTag.removePrefix("v").removePrefix("V").trim().ifBlank {
-            rawName.replace(Regex("(?i)KharchaFlow\\s*v?"), "").trim().ifBlank { "1.0.0" }
+            rawName.replace(Regex("(?i)(?:Leaf|KharchaFlow)\\s*v?"), "").trim().ifBlank { "1.0.0" }
         }
 
         val versionCode = extractVersionCode(body, releaseObj)
@@ -133,7 +133,7 @@ class GitHubReleaseService(
                 )
             )
 
-        val apkFileName = apkAsset.getString("name") ?: "KharchaFlow.apk"
+        val apkFileName = apkAsset.getString("name") ?: "Leaf.apk"
         val apkDownloadUrl = apkAsset.getString("browser_download_url") ?: ""
         val apkSizeBytes = apkAsset.getLong("size") ?: 0L
 
@@ -329,8 +329,9 @@ class GitHubReleaseService(
             .filter { (it.getString("name") ?: "").endsWith(".apk", ignoreCase = true) }
             .filterNot { (it.getString("name") ?: "").contains("debug", ignoreCase = true) }
 
-        // Prefer KharchaFlow named APK
-        return apkAssets.firstOrNull { (it.getString("name") ?: "").contains("KharchaFlow", ignoreCase = true) }
+        // Prefer Leaf or legacy KharchaFlow named APK
+        return apkAssets.firstOrNull { (it.getString("name") ?: "").contains("Leaf", ignoreCase = true) }
+            ?: apkAssets.firstOrNull { (it.getString("name") ?: "").contains("KharchaFlow", ignoreCase = true) }
             ?: apkAssets.firstOrNull()
     }
 

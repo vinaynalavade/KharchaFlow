@@ -101,7 +101,7 @@ fun Step1WelcomeIllustration(modifier: Modifier = Modifier) {
             }
 
             Text(
-                text = "KharchaFlow",
+                text = "Leaf",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface

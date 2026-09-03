@@ -27,29 +27,37 @@ android {
     signingConfigs {
         create("release") {
             val keystorePropertiesFile = rootProject.file("signing.properties")
-            val userHomeKeystoreProperties = File(System.getProperty("user.home"), ".android/kharchaflow-signing.properties")
+            val userHomeLeafProperties = File(System.getProperty("user.home"), ".android/leaf-signing.properties")
+            val userHomeLegacyProperties = File(System.getProperty("user.home"), ".android/kharchaflow-signing.properties")
 
             val props = Properties()
             if (keystorePropertiesFile.exists()) {
                 keystorePropertiesFile.inputStream().use { props.load(it) }
-            } else if (userHomeKeystoreProperties.exists()) {
-                userHomeKeystoreProperties.inputStream().use { props.load(it) }
+            } else if (userHomeLeafProperties.exists()) {
+                userHomeLeafProperties.inputStream().use { props.load(it) }
+            } else if (userHomeLegacyProperties.exists()) {
+                userHomeLegacyProperties.inputStream().use { props.load(it) }
             }
 
-            val defaultKeystoreFile = File(System.getProperty("user.home"), ".android/kharchaflow-upload-key.jks")
+            val defaultLeafKeystore = File(System.getProperty("user.home"), ".android/leaf-upload-key.jks")
+            val defaultLegacyKeystore = File(System.getProperty("user.home"), ".android/kharchaflow-upload-key.jks")
 
-            val storeFilePath = System.getenv("KHARCHAFLOW_KEYSTORE_PATH")
+            val storeFilePath = System.getenv("LEAF_KEYSTORE_PATH")
+                ?: System.getenv("KHARCHAFLOW_KEYSTORE_PATH")
                 ?: props.getProperty("STORE_FILE")
-                ?: if (defaultKeystoreFile.exists()) defaultKeystoreFile.absolutePath else null
+                ?: if (defaultLeafKeystore.exists()) defaultLeafKeystore.absolutePath else if (defaultLegacyKeystore.exists()) defaultLegacyKeystore.absolutePath else null
 
-            val keyAliasVal = System.getenv("KHARCHAFLOW_KEY_ALIAS")
+            val keyAliasVal = System.getenv("LEAF_KEY_ALIAS")
+                ?: System.getenv("KHARCHAFLOW_KEY_ALIAS")
                 ?: props.getProperty("KEY_ALIAS")
-                ?: "kharchaflow-upload"
+                ?: if (defaultLeafKeystore.exists()) "leaf-upload" else "kharchaflow-upload"
 
-            val storePasswordVal = System.getenv("KHARCHAFLOW_KEYSTORE_PASSWORD")
+            val storePasswordVal = System.getenv("LEAF_KEYSTORE_PASSWORD")
+                ?: System.getenv("KHARCHAFLOW_KEYSTORE_PASSWORD")
                 ?: props.getProperty("STORE_PASSWORD")
 
-            val keyPasswordVal = System.getenv("KHARCHAFLOW_KEY_PASSWORD")
+            val keyPasswordVal = System.getenv("LEAF_KEY_PASSWORD")
+                ?: System.getenv("KHARCHAFLOW_KEY_PASSWORD")
                 ?: props.getProperty("KEY_PASSWORD")
                 ?: storePasswordVal
 
@@ -62,7 +70,7 @@ android {
                 val resolvedStoreFile = file(storeFilePath)
                 if (!resolvedStoreFile.exists()) {
                     throw org.gradle.api.GradleException(
-                        "KharchaFlow release keystore file does not exist at specified path: ${resolvedStoreFile.absolutePath}"
+                        "Leaf release keystore file does not exist at specified path: ${resolvedStoreFile.absolutePath}"
                     )
                 }
                 storeFile = resolvedStoreFile
@@ -75,14 +83,14 @@ android {
                 }
                 if (isReleaseBuildRequested) {
                     val missingKeys = buildList {
-                        if (storeFilePath.isNullOrBlank()) add("Keystore path (STORE_FILE / ~/.android/kharchaflow-upload-key.jks)")
+                        if (storeFilePath.isNullOrBlank()) add("Keystore path (STORE_FILE / ~/.android/leaf-upload-key.jks)")
                         if (storePasswordVal.isNullOrBlank()) add("STORE_PASSWORD")
                         if (keyAliasVal.isNullOrBlank()) add("KEY_ALIAS")
                         if (keyPasswordVal.isNullOrBlank()) add("KEY_PASSWORD")
                     }
                     throw org.gradle.api.GradleException(
-                        "Release signing configuration is incomplete for KharchaFlow release build. Missing: ${missingKeys.joinToString(", ")}. " +
-                        "Please configure signing.properties in the project root or ~/.android/kharchaflow-signing.properties."
+                        "Release signing configuration is incomplete for Leaf release build. Missing: ${missingKeys.joinToString(", ")}. " +
+                        "Please configure signing.properties in the project root or ~/.android/leaf-signing.properties."
                     )
                 }
             }

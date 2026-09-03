@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">खर्चाफ्लो</string>
+    <string name="app_name">लीफ</string>
     <string name="app_descriptor">खर्च ट्रैकर</string>
     <string name="app_creator">विनय नलवडे</string>
     <string name="app_version">1.0.5</string>
     <string name="app_tagline">स्मार्ट व्यक्तिगत वित्त और खर्च ट्रैकिंग</string>
-    <string name="about_app_description">खर्चाफ्लो एक व्यक्तिगत वित्त एप्लिकेशन है जो उपयोगकर्ताओं को खर्च ट्रैक करने, आय प्रबंधित करने, आवर्ती भुगतानों को व्यवस्थित करने और अपनी वित्तीय गतिविधियों पर बेहतर नियंत्रण रखने में मदद करता है।</string>
+    <string name="about_app_description">लीफ एक व्यक्तिगत वित्त एप्लिकेशन है जो उपयोगकर्ताओं को खर्च ट्रैक करने, आय प्रबंधित करने, आवर्ती भुगतानों को व्यवस्थित करने और अपनी वित्तीय गतिविधियों पर बेहतर नियंत्रण रखने में मदद करता है।</string>
     <string name="about_developer_credit">विनय नलवडे द्वारा विकसित</string>
 
     <!-- Navigation -->
@@ -90,7 +90,7 @@
 
     <!-- Reminders & Notifications -->
     <string name="reminder_daily_title">आज के खर्च ट्रैक करें</string>
-    <string name="reminder_daily_content">आपने आज कोई लेन-देन नहीं जोड़ा है। खर्चाफ्लो अपडेट करने के लिए कुछ समय निकालें।</string>
+    <string name="reminder_daily_content">आपने आज कोई लेन-देन नहीं जोड़ा है। लीफ अपडेट करने के लिए कुछ समय निकालें।</string>
     <string name="settings_notifications_master_title">सूचनाएं सक्षम करें</string>
     <string name="settings_notifications_master_desc">स्मार्ट रिमाइंडर, बजट अलर्ट और आगामी बिल</string>
     <string name="settings_daily_reminder_title">दैनिक खर्च रिमाइंडर</string>
@@ -132,7 +132,7 @@
     <string name="settings_hide_recents_desc">ऐप स्विच करते समय वित्तीय रिकॉर्ड छुपाएं</string>
 
     <!-- Unlock & PIN Management -->
-    <string name="unlock_title">खर्चाफ्लो अनलॉक करें</string>
+    <string name="unlock_title">लीफ अनलॉक करें</string>
     <string name="unlock_subtitle">आपका वित्तीय डेटा सुरक्षित है</string>
     <string name="unlock_use_biometrics">बायोमेट्रिक्स का उपयोग करें</string>
     <string name="unlock_incorrect_pin">गलत पिन। कृपया पुनः प्रयास करें।</string>
@@ -171,7 +171,7 @@
     <string name="profile_choose_photo">गैलरी से चुनें</string>
     <string name="profile_choose_photo_desc">डिवाइस स्टोरेज से अवतार या तस्वीर चुनें</string>
     <string name="profile_remove_photo">फ़ोटो हटाएं</string>
-    <string name="profile_remove_photo_desc">डिफ़ॉल्ट खर्चाफ्लो अवतार पुनर्स्थापित करें</string>
+    <string name="profile_remove_photo_desc">डिफ़ॉल्ट लीफ अवतार पुनर्स्थापित करें</string>
     <string name="profile_btn_connect_google">कनेक्ट करें</string>
     <string name="profile_btn_disconnect">डिस्कनेक्ट करें</string>
 
@@ -186,7 +186,7 @@
     <string name="backup_btn_now">अभी बैकअप लें</string>
     <string name="restore_btn_now">बैकअप पुनर्स्थापित करें</string>
     <string name="restore_prompt_title">अपना बैकअप पुनर्स्थापित करें?</string>
-    <string name="restore_prompt_desc">हमें इस Google खाते से जुड़ा पिछला खर्चाफ्लो बैकअप मिला है।</string>
+    <string name="restore_prompt_desc">हमें इस Google खाते से जुड़ा पिछला लीफ बैकअप मिला है।</string>
     <string name="restore_prompt_btn_restore">बैकअप पुनर्स्थापित करें</string>
     <string name="restore_prompt_btn_not_now">अभी नहीं</string>
     <string name="restore_prompt_btn_dont_ask">इस बैकअप के लिए दोबारा न पूछें</string>
@@ -201,7 +201,7 @@
     <string name="app_tour_btn_finish">पैसे प्रबंधित करना शुरू करें</string>
     <string name="app_tour_step_indicator">चरण %1$d/%2$d</string>
 
-    <string name="app_tour_step1_title">खर्चाफ्लो में आपका स्वागत है</string>
+    <string name="app_tour_step1_title">लीफ में आपका स्वागत है</string>
     <string name="app_tour_step1_desc">अपनी आय, खर्च, आवर्ती भुगतान और वित्तीय गतिविधि को एक ही स्थान पर ट्रैक करें।</string>
     <string name="app_tour_step1_feature1">तेज़, निजी और ऑफ़लाइन-प्रथम</string>
     <string name="app_tour_step1_feature2">शून्य विज्ञापन या तृतीय-पक्ष ट्रैकिंग</string>

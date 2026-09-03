@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * Standardized animation duration and easing tokens for KharchaFlow v1.0.5.
+ * Standardized animation duration and easing tokens for Leaf v1.0.5.
  * Prioritizes fast, purposeful micro-interactions without causing interaction lag.
  */
 @Immutable

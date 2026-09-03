@@ -18,17 +18,18 @@ import java.time.Instant
 class GoogleDriveRestService {
 
     companion object {
-        const val BACKUP_FILENAME = "kharchaflow_backup.json"
+        const val BACKUP_FILENAME = "leaf_backup.json"
+        const val LEGACY_BACKUP_FILENAME = "kharchaflow_backup.json"
         private const val BASE_API_URL = "https://www.googleapis.com/drive/v3"
         private const val BASE_UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3"
     }
 
     /**
-     * Searches for the primary KharchaFlow backup file inside the user's appDataFolder.
+     * Searches for the primary Leaf (or legacy KharchaFlow) backup file inside the user's appDataFolder.
      */
     suspend fun findBackupFile(accessToken: String): AppResult<GoogleBackupMetadata?> = withContext(Dispatchers.IO) {
         try {
-            val query = URLEncoder.encode("name = '$BACKUP_FILENAME' and trashed = false", "UTF-8")
+            val query = URLEncoder.encode("(name = '$BACKUP_FILENAME' or name = '$LEGACY_BACKUP_FILENAME') and trashed = false", "UTF-8")
             val urlString = "$BASE_API_URL/files?spaces=appDataFolder&q=$query&fields=files(id,name,modifiedTime,size)"
             val url = URL(urlString)
 
@@ -89,7 +90,7 @@ class GoogleDriveRestService {
             val metadataJson = JSONObject().apply {
                 put("name", BACKUP_FILENAME)
                 put("parents", org.json.JSONArray().apply { put("appDataFolder") })
-                put("description", "KharchaFlow automatic application backup")
+                put("description", "Leaf automatic application backup")
             }.toString()
 
             val connection = (url.openConnection() as HttpURLConnection).apply {
@@ -219,7 +220,7 @@ class GoogleDriveRestService {
                 val jsonContent = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
                 AppResult.Success(jsonContent)
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                AppResult.Error(AppError.NotFound("No KharchaFlow backup was found in this Google account."))
+                AppResult.Error(AppError.NotFound("No Leaf backup was found in this Google account."))
             } else {
                 val err = connection.errorStream?.bufferedReader()?.use { it.readText() }
                 AppResult.Error(AppError.UnknownError("Failed to download backup from Google Drive (Code: $responseCode): $err"))

@@ -87,7 +87,7 @@ class ExportTransactionsUseCase(
 
                 if (options.format == ExportFormat.CSV) {
                     val csvText = CsvTransactionHelper.exportToCsv(transactions, currency)
-                    val fileName = "KharchaFlow_Transactions_$timestampStr.csv"
+                    val fileName = "Leaf_Transactions_$timestampStr.csv"
                     AppResult.Success(
                         ExportedFileResult(
                             content = csvText,
@@ -105,7 +105,7 @@ class ExportTransactionsUseCase(
                         BackupTransaction(it.id, it.amount.subunits, it.type.name, it.category.id, it.paymentMethod.name, it.note, it.timestamp)
                     }
                     val jsonText = JsonBackupParser.exportTransactionsToJson(backupTransactions, backupCategories)
-                    val fileName = "KharchaFlow_Transactions_$timestampStr.json"
+                    val fileName = "Leaf_Transactions_$timestampStr.json"
                     AppResult.Success(
                         ExportedFileResult(
                             content = jsonText,

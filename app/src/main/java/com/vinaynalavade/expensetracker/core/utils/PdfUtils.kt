@@ -18,7 +18,7 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * On-device PDF generator for professional KharchaFlow financial statements.
+ * On-device PDF generator for professional Leaf financial statements.
  * Zero external libraries or internet connections required.
  */
 object PdfUtils {
@@ -44,7 +44,7 @@ object PdfUtils {
         textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         textPaint.textSize = 20f
         textPaint.color = Color.rgb(6, 78, 59)
-        canvas.drawText("KHARCHAFLOW", margin, currentY, textPaint)
+        canvas.drawText("LEAF", margin, currentY, textPaint)
 
         textPaint.textSize = 10f
         textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
@@ -244,7 +244,7 @@ object PdfUtils {
         textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
         textPaint.color = Color.rgb(148, 163, 184)
 
-        canvas.drawText("KharchaFlow • Personal Financial Statement", margin, footerY, textPaint)
+        canvas.drawText("Leaf • Personal Financial Statement", margin, footerY, textPaint)
 
         val pageText = "Page $pageNumber"
         val pageTextWidth = textPaint.measureText(pageText)
@@ -261,8 +261,8 @@ object PdfUtils {
         return Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "KharchaFlow Statement")
-            putExtra(Intent.EXTRA_TEXT, "Here is my KharchaFlow financial statement.")
+            putExtra(Intent.EXTRA_SUBJECT, "Leaf Statement")
+            putExtra(Intent.EXTRA_TEXT, "Here is my Leaf financial statement.")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }

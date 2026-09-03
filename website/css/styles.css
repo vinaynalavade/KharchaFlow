@@ -1,6 +1,6 @@
 /* ==========================================================================
-   KharchaFlow Official Website — Visual Design System
-   Green Brand Identity (Derived from KharchaFlow Logo #028166), Slate Neutrals, Clean White Surfaces
+   Leaf Official Website — Visual Design System
+   Green Brand Identity (Derived from Leaf Brand #028166), Slate Neutrals, Clean White Surfaces
    ========================================================================== */
 
 /* --- Google Fonts Import --- */
@@ -8,8 +8,8 @@
 
 /* --- Root Design Tokens (Light / White Theme Only) --- */
 :root {
-  /* Brand Core Colors (KharchaFlow Logo Green System #028166) */
-  --primary: #028166;            /* KharchaFlow Logo Green - Primary Brand & CTA */
+  /* Brand Core Colors (Leaf Brand Green System #028166) */
+  --primary: #028166;            /* Leaf Brand Green - Primary Brand & CTA */
   --primary-hover: #026a54;      /* Darker Green - Hover State */
   --primary-active: #014d3d;     /* Deep Green - Active / Pressed State */
   --primary-light: #edf7f4;      /* Soft Green Tint - Containers / Badges */
@@ -492,7 +492,7 @@ a:hover {
 }
 
 .hero-title span {
-  color: var(--primary); /* KharchaFlow Logo Green */
+  color: var(--primary); /* Leaf Brand Green */
 }
 
 .hero-lead {

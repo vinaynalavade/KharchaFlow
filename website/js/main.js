@@ -1,5 +1,5 @@
 /**
- * KharchaFlow Official Website — Main JavaScript Logic
+ * Leaf Official Website — Main JavaScript Logic
  * Clean light-theme consumer product experience.
  * Mobile navigation with scroll lock, dynamic release metadata,
  * smooth scroll animations, and clipboard helpers.
@@ -11,16 +11,16 @@
   // --- Configuration & Production Release Fallbacks ---
   const RELEASE_CONFIG = {
     owner: 'vinaynalavade',
-    repo: 'KharchaFlow',
+    repo: 'Leaf',
     defaultVersionName: '1.0.5',
     defaultVersionCode: 6,
     defaultReleaseDate: 'September 1, 2026',
     defaultApkSize: '3.8 MB',
-    defaultApkFileName: 'KharchaFlow_v1.0.5.apk',
-    defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk',
-    defaultSha256: '9fbe68129e2d7b47625014706f8acf48a1459c892ce7786086c02f5faa5b3682',
-    repoUrl: 'https://github.com/vinaynalavade/KharchaFlow',
-    releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
+    defaultApkFileName: 'Leaf_v1.0.5.apk',
+    defaultDownloadUrl: 'https://github.com/vinaynalavade/Leaf/releases/download/v1.0.5/Leaf_v1.0.5.apk',
+    defaultSha256: '8f96ca10295c6368d5981b47942a7b2dbef22e4905c92b93bf6cb34f4225fbc7',
+    repoUrl: 'https://github.com/vinaynalavade/Leaf',
+    releasesUrl: 'https://github.com/vinaynalavade/Leaf/releases'
   };
 
   // --- Mobile Navigation Drawer ---

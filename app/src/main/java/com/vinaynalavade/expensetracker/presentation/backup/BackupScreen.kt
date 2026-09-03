@@ -487,7 +487,7 @@ fun BackupScreen(
                     BackupActionTile(
                         icon = Icons.Default.Restore,
                         title = "Restore from Local File",
-                        subtitle = "Select and restore a KharchaFlow JSON backup file from your device",
+                        subtitle = "Select and restore a Leaf JSON backup file from your device",
                         onClick = {
                             openBackupLauncher.launch(arrayOf("application/json", "text/*"))
                         }
@@ -614,7 +614,7 @@ fun BackupScreen(
                     BackupActionTile(
                         icon = Icons.Default.FileUpload,
                         title = "Import from CSV or JSON",
-                        subtitle = "Select a valid KharchaFlow CSV spreadsheet or JSON transaction file to import records",
+                        subtitle = "Select a valid Leaf CSV spreadsheet or JSON transaction file to import records",
                         onClick = {
                             openImportLauncher.launch(arrayOf("text/comma-separated-values", "text/csv", "application/json", "text/*"))
                         }
@@ -652,7 +652,7 @@ fun BackupScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "KharchaFlow has no external servers or analytics. Cloud backups are stored strictly in your own Google Drive app-specific folder, inaccessible to any third parties.",
+                                text = "Leaf has no external servers or analytics. Cloud backups are stored strictly in your own Google Drive app-specific folder, inaccessible to any third parties.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

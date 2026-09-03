@@ -1,7 +1,7 @@
 package com.vinaynalavade.expensetracker.core.backup
 
 /**
- * Pure Kotlin, dependency-free JSON serializer and parser for KharchaFlow backups and transaction exports.
+ * Pure Kotlin, dependency-free JSON serializer and parser for Leaf backups and transaction exports.
  * Guarantees 100% deterministic operation across Android runtime and JVM unit test environments.
  */
 object JsonBackupParser {

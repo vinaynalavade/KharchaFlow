@@ -154,7 +154,7 @@ class GoogleDriveBackupRepositoryImpl(
                 return@withLock AppResult.Error(findResult.error)
             }
             val fileMetadata = (findResult as AppResult.Success).data
-                ?: return@withLock AppResult.Error(AppError.NotFound("No KharchaFlow backup was found in this Google account."))
+                ?: return@withLock AppResult.Error(AppError.NotFound("No Leaf backup was found in this Google account."))
 
             val downloadResult = googleDriveRestService.downloadBackupFile(token, fileMetadata.fileId)
             if (downloadResult is AppResult.Error) {

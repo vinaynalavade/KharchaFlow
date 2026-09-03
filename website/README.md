@@ -1,6 +1,6 @@
-# KharchaFlow — Official Website
+# Leaf — Official Website
 
-This folder contains the complete, production-quality official website for the **KharchaFlow** Android application.
+This folder contains the complete, production-quality official website for the **Leaf** Android application.
 
 Built using lightweight, semantic HTML5, modern CSS3 (with CSS Custom Properties and dark mode support), and clean Vanilla JavaScript with zero external build tools or framework dependencies.
 
@@ -20,7 +20,7 @@ website/
 ├── sitemap.xml           # Search engine sitemap
 ├── assets/
 │   ├── images/           # Official logo, icons, and branding assets
-│   │   ├── logo.png      # High-res KharchaFlow app logo
+│   │   ├── logo.png      # High-res Leaf app logo
 │   │   ├── favicon.png   # Favicon and apple-touch-icon
 │   │   └── icon-round.png
 │   ├── icons/            # Scalable SVG icons
@@ -54,7 +54,7 @@ Then visit: `http://localhost:8000`
 
 ## 🌐 Deploying to GitHub Pages
 
-To host this website on GitHub Pages for `https://vinaynalavade.github.io/KharchaFlow/`:
+To host this website on GitHub Pages for `https://vinaynalavade.github.io/Leaf/`:
 
 ### Method A: From a `gh-pages` Branch
 1. Push the contents of the `website/` folder to a `gh-pages` branch in your repository.
@@ -68,23 +68,23 @@ You can configure a GitHub Actions workflow that automatically publishes the `we
 ## ⚙️ Updating Releases & Download URLs
 
 The website features an automated GitHub Release integration in `website/js/main.js` that attempts to fetch the latest release metadata directly from:
-`https://api.github.com/repos/vinaynalavade/KharchaFlow/releases/latest`
+`https://api.github.com/repos/vinaynalavade/Leaf/releases/latest`
 
 If GitHub API rate limits or offline conditions occur, the website falls back to the constants defined at the top of `website/js/main.js`:
 
 ```javascript
 const RELEASE_CONFIG = {
   owner: 'vinaynalavade',
-  repo: 'KharchaFlow',
+  repo: 'Leaf',
   defaultVersionName: '1.0.5',
   defaultVersionCode: 6,
   defaultReleaseDate: 'September 1, 2026',
   defaultApkSize: '3.8 MB',
-  defaultApkFileName: 'KharchaFlow_v1.0.5.apk',
-  defaultDownloadUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow_v1.0.5.apk',
-  defaultSha256: '9fbe68129e2d7b47625014706f8acf48a1459c892ce7786086c02f5faa5b3682',
-  repoUrl: 'https://github.com/vinaynalavade/KharchaFlow',
-  releasesUrl: 'https://github.com/vinaynalavade/KharchaFlow/releases'
+  defaultApkFileName: 'Leaf_v1.0.5.apk',
+  defaultDownloadUrl: 'https://github.com/vinaynalavade/Leaf/releases/download/v1.0.5/Leaf_v1.0.5.apk',
+  defaultSha256: '8f96ca10295c6368d5981b47942a7b2dbef22e4905c92b93bf6cb34f4225fbc7',
+  repoUrl: 'https://github.com/vinaynalavade/Leaf',
+  releasesUrl: 'https://github.com/vinaynalavade/Leaf/releases'
 };
 ```
 
@@ -94,9 +94,9 @@ When you publish future releases (e.g. `v1.0.6`), simply update these fallback c
 
 ## 🎨 Design System & Color Tokens
 
-All design tokens, colors, typography, and spacing are defined in `website/css/styles.css` matching the KharchaFlow Logo Green brand system:
+All design tokens, colors, typography, and spacing are defined in `website/css/styles.css` matching the Leaf Brand Green theme:
 
-* **Brand Primary:** `--primary: #028166` (KharchaFlow Logo Green)
+* **Brand Primary:** `--primary: #028166` (Leaf Brand Green)
 * **Semantic Income:** `--income: #059669` (Positive Income Emerald)
 * **Semantic Expense:** `--expense: #e11d48` (Expense Rose Dark)
 * **Canvas Background:** `--bg-page: #f8fafc` (Slate 50)

@@ -7,7 +7,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // ==========================================================================
-// KharchaFlow Monochrome Core Palette (Multinational Fintech Quality)
+// Leaf Monochrome Core Palette (Multinational Fintech Quality)
 // ==========================================================================
 
 // Charcoal & Near-Black (Authoritative Main Actions, FABs, Primary Controls)
@@ -34,7 +34,7 @@ val NeutralGray100 = Color(0xFFF3F4F6) // Level 2 Surface / Inactive Pill Backgr
 val NeutralGray50 = Color(0xFFFAFAFA)
 
 // ==========================================================================
-// KharchaFlow Brand Accent (Logo Green #028166 - Used Subtly & Strategically)
+// Leaf Brand Accent (Logo Green #028166 - Used Subtly & Strategically)
 // ==========================================================================
 val BrandGreen = Color(0xFF028166)          // Primary Brand Accent
 val BrandGreenDark = Color(0xFF014D3D)      // Deep Pressed Green

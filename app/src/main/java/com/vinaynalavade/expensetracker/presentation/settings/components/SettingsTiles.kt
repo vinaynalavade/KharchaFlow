@@ -44,7 +44,7 @@ import com.vinaynalavade.expensetracker.presentation.theme.pressScale
 import com.vinaynalavade.expensetracker.presentation.theme.spacing
 
 /**
- * Unified Section Container for Settings & Configuration screens in KharchaFlow v1.0.5.
+ * Unified Section Container for Settings & Configuration screens in Leaf v1.0.5.
  * Provides a clean Level 1 card surface with uppercase category label.
  */
 @Composable

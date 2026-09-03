@@ -8,7 +8,7 @@ object AppConstants {
     const val PREF_KEY_IS_FIRST_LAUNCH = "pref_is_first_launch"
     const val PREF_KEY_DYNAMIC_COLORS = "pref_dynamic_colors"
     const val DEFAULT_CURRENCY_CODE = "INR"
-    const val APP_NAME = "KharchaFlow"
+    const val APP_NAME = "Leaf"
     const val APP_DESCRIPTOR = "Expense Tracker"
     const val APP_CREATOR = "Vinay Nalavade"
     const val APP_VERSION = "1.0.0"

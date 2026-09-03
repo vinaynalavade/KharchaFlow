@@ -10,7 +10,7 @@ data class GoogleAccountInfo(
 )
 
 /**
- * Metadata for a KharchaFlow backup file stored in Google Drive appDataFolder.
+ * Metadata for a Leaf backup file stored in Google Drive appDataFolder.
  */
 data class GoogleBackupMetadata(
     val fileId: String,

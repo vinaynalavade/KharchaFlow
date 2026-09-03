@@ -30,7 +30,7 @@ object BiometricAuthHelper {
 
     fun showBiometricPrompt(
         activity: FragmentActivity,
-        title: String = "Unlock KharchaFlow",
+        title: String = "Unlock Leaf",
         subtitle: String = "Authenticate using fingerprint or face",
         negativeButtonText: String = "Use PIN",
         onResult: (BiometricAuthResult) -> Unit

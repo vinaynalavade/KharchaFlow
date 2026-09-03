@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Standardized spacing scale tokens for KharchaFlow.
+ * Standardized spacing scale tokens for Leaf.
  * Ensures consistent visual rhythm and generous, calm breathing room throughout the UI.
  */
 @Immutable

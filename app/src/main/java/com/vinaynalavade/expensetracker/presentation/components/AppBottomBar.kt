@@ -28,7 +28,7 @@ val BottomNavItems = listOf(
 )
 
 /**
- * Premium, modern Bottom Navigation Bar for KharchaFlow.
+ * Premium, modern Bottom Navigation Bar for Leaf.
  * Provides clear active tab hierarchy, refined pill indicators, and edge-to-edge window inset support.
  */
 @Composable

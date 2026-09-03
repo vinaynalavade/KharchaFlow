@@ -78,7 +78,7 @@ def generate_all_icons(src_path: str = "logo_source.png", res_base: str = "app/s
 
         print(f"Generated {folder_name}: ic_launcher ({icon_size}x{icon_size}), ic_launcher_round ({icon_size}x{icon_size}), ic_launcher_foreground ({adaptive_size}x{adaptive_size})")
 
-    print("\nAll KharchaFlow launcher and branding icon assets generated successfully!")
+    print("\nAll Leaf launcher and branding icon assets generated successfully!")
 
 if __name__ == "__main__":
     generate_all_icons()

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vinaynalavade.github.io/KharchaFlow/sitemap.xml
+Sitemap: https://vinaynalavade.github.io/Leaf/sitemap.xml

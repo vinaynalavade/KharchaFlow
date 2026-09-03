@@ -261,7 +261,7 @@ fun WelcomeScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "KharchaFlow works 100% offline. A Google account is completely optional and only used for Google Drive backup.",
+                        text = "Leaf works 100% offline. A Google account is completely optional and only used for Google Drive backup.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,

@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">KharchaFlow</string>
+    <string name="app_name">Leaf</string>
     <string name="app_descriptor">Expense Tracker</string>
     <string name="app_creator">Vinay Nalavade</string>
     <string name="app_version">1.0.5</string>
     <string name="app_tagline">Smart Personal Finance &amp; Expense Tracking</string>
-    <string name="about_app_description">KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.</string>
+    <string name="about_app_description">Leaf is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.</string>
     <string name="about_developer_credit">Developed by Vinay Nalavade</string>
 
     <!-- Navigation -->
@@ -89,7 +89,7 @@
 
     <!-- Reminders & Notifications -->
     <string name="reminder_daily_title">Track today\'s expenses</string>
-    <string name="reminder_daily_content">You haven\'t added any transactions today. Take a moment to update KharchaFlow.</string>
+    <string name="reminder_daily_content">You haven\'t added any transactions today. Take a moment to update Leaf.</string>
     <string name="settings_notifications_master_title">Allow Notifications</string>
     <string name="settings_notifications_master_desc">Smart reminders, budget alerts, and upcoming bills</string>
     <string name="settings_daily_reminder_title">Daily Expense Reminder</string>
@@ -131,7 +131,7 @@
     <string name="settings_hide_recents_desc">Mask financial records when switching apps</string>
 
     <!-- Unlock & PIN Management -->
-    <string name="unlock_title">Unlock KharchaFlow</string>
+    <string name="unlock_title">Unlock Leaf</string>
     <string name="unlock_subtitle">Your financial data is protected</string>
     <string name="unlock_use_biometrics">Use Biometrics</string>
     <string name="unlock_incorrect_pin">Incorrect PIN. Please try again.</string>
@@ -142,7 +142,7 @@
     <string name="setup_pin_confirm_subtitle">Re-enter your 4-digit PIN to confirm</string>
     <string name="setup_pin_mismatch">PINs do not match. Please try again.</string>
     <string name="setup_biometric_title">Enable Biometric Unlock?</string>
-    <string name="setup_biometric_subtitle">Unlock KharchaFlow quickly and securely using fingerprint or face recognition.</string>
+    <string name="setup_biometric_subtitle">Unlock Leaf quickly and securely using fingerprint or face recognition.</string>
     <string name="change_pin_current_title">Enter Current PIN</string>
     <string name="change_pin_current_subtitle">Verify your identity before setting a new PIN</string>
     <string name="change_pin_new_title">Enter New PIN</string>
@@ -170,7 +170,7 @@
     <string name="profile_choose_photo">Choose from Gallery</string>
     <string name="profile_choose_photo_desc">Select an avatar or picture from device storage</string>
     <string name="profile_remove_photo">Remove Photo</string>
-    <string name="profile_remove_photo_desc">Restore the default KharchaFlow avatar</string>
+    <string name="profile_remove_photo_desc">Restore the default Leaf avatar</string>
     <string name="profile_btn_connect_google">Connect</string>
     <string name="profile_btn_disconnect">Disconnect</string>
 
@@ -185,7 +185,7 @@
     <string name="backup_btn_now">Backup Now</string>
     <string name="restore_btn_now">Restore Backup</string>
     <string name="restore_prompt_title">Restore your backup?</string>
-    <string name="restore_prompt_desc">We found a previous KharchaFlow backup associated with this Google account.</string>
+    <string name="restore_prompt_desc">We found a previous Leaf backup associated with this Google account.</string>
     <string name="restore_prompt_btn_restore">Restore Backup</string>
     <string name="restore_prompt_btn_not_now">Not Now</string>
     <string name="restore_prompt_btn_dont_ask">Don\'t ask again</string>
@@ -200,7 +200,7 @@
     <string name="app_tour_btn_finish">Start Managing Your Money</string>
     <string name="app_tour_step_indicator">Step %1$d of %2$d</string>
 
-    <string name="app_tour_step1_title">Welcome to KharchaFlow</string>
+    <string name="app_tour_step1_title">Welcome to Leaf</string>
     <string name="app_tour_step1_desc">Track your income, expenses, recurring payments, and financial activity in one place.</string>
     <string name="app_tour_step1_feature1">Fast, private &amp; offline-first</string>
     <string name="app_tour_step1_feature2">Zero ads or third-party tracking</string>

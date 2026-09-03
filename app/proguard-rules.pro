@@ -17,7 +17,7 @@
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
 
-# KharchaFlow Entities, DAOs & Backup Models
+# Leaf Entities, DAOs & Backup Models
 -keep class com.vinaynalavade.expensetracker.data.local.entity.** { *; }
 -keep class com.vinaynalavade.expensetracker.data.local.dao.** { *; }
 -keep class com.vinaynalavade.expensetracker.core.backup.** { *; }

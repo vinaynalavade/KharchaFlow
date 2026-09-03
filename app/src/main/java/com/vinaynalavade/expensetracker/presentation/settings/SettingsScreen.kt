@@ -563,7 +563,7 @@ fun SettingsScreen(
             SettingsSectionContainer(title = "ABOUT") {
                 SettingsNavigationTile(
                     icon = Icons.Default.Info,
-                    title = "About KharchaFlow",
+                    title = "About Leaf",
                     valueBadge = "v${BuildConfig.VERSION_NAME}",
                     onClick = onNavigateToAbout
                 )

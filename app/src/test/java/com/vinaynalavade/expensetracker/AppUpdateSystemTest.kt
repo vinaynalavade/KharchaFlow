@@ -20,7 +20,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 /**
- * Comprehensive test suite for the KharchaFlow In-App APK Update System.
+ * Comprehensive test suite for the Leaf In-App APK Update System.
  */
 class AppUpdateSystemTest {
 
@@ -28,14 +28,50 @@ class AppUpdateSystemTest {
     val tempFolder = TemporaryFolder()
 
     // =========================================================================
-    // 1. Real-World GitHub Release Parsing Tests (Matching Production Structure)
+    // 1. GitHub Release Parsing Tests (Leaf & Legacy KharchaFlow)
     // =========================================================================
 
     @Test
-    fun testParseRealWorldKharchaFlowV104Release() {
+    fun testParseRealWorldLeafRelease() {
         val service = GitHubReleaseService()
 
-        // Actual JSON payload format from https://api.github.com/repos/vinaynalavade/KharchaFlow/releases/latest
+        val rawJson = """
+        {
+          "tag_name": "v1.0.5",
+          "name": "Leaf v1.0.5",
+          "html_url": "https://github.com/vinaynalavade/Leaf/releases/tag/v1.0.5",
+          "published_at": "2026-09-03T10:00:00Z",
+          "body": "## What's New\r\n\r\n- Brand migration to Leaf\r\n- Edit transaction time feature\r\n\r\n## 📦 Version Information\r\n| | |\r\n|---|---|\r\n| **Version** | `1.0.5` |\r\n| **Version Code** | `6` |\r\n",
+          "assets": [
+            {
+              "name": "Leaf_v1.0.5.apk",
+              "content_type": "application/vnd.android.package-archive",
+              "size": 3953040,
+              "digest": "sha256:8f96ca10295c6368d5981b47942a7b2dbef22e4905c92b93bf6cb34f4225fbc7",
+              "browser_download_url": "https://github.com/vinaynalavade/Leaf/releases/download/v1.0.5/Leaf_v1.0.5.apk"
+            }
+          ]
+        }
+        """.trimIndent()
+
+        val parsed = SimpleJsonParser.parse(rawJson) as SimpleJsonParser.JsonObject
+        val result = runBlocking { service.parseGitHubRelease(parsed) }
+
+        assertTrue("Expected parsing to succeed", result is AppResult.Success)
+        val info = (result as AppResult.Success).data
+
+        assertEquals("1.0.5", info.latestVersionName)
+        assertEquals(6L, info.latestVersionCode)
+        assertEquals("Leaf_v1.0.5.apk", info.apkFileName)
+        assertEquals("https://github.com/vinaynalavade/Leaf/releases/download/v1.0.5/Leaf_v1.0.5.apk", info.apkDownloadUrl)
+        assertEquals(3953040L, info.apkSizeBytes)
+        assertEquals("8f96ca10295c6368d5981b47942a7b2dbef22e4905c92b93bf6cb34f4225fbc7", info.expectedSha256)
+    }
+
+    @Test
+    fun testParseLegacyKharchaFlowV104Release() {
+        val service = GitHubReleaseService(owner = "vinaynalavade", repo = "KharchaFlow")
+
         val rawJson = """
         {
           "tag_name": "v1.0.4",
@@ -70,40 +106,6 @@ class AppUpdateSystemTest {
     }
 
     @Test
-    fun testParseFutureReleaseV105WithNewVersionCode() {
-        val service = GitHubReleaseService()
-
-        val rawJson = """
-        {
-          "tag_name": "v1.0.5",
-          "name": "KharchaFlow v1.0.5",
-          "html_url": "https://github.com/vinaynalavade/KharchaFlow/releases/tag/v1.0.5",
-          "published_at": "2026-09-01T10:00:00Z",
-          "body": "## What's New\r\n\r\n• In-app updates enabled\r\n\r\n| **Version** | `1.0.5` |\r\n| **Version Code** | `6` |\r\n",
-          "assets": [
-            {
-              "name": "KharchaFlow-v1.0.5.apk",
-              "size": 4100000,
-              "digest": "sha256:112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00",
-              "browser_download_url": "https://github.com/vinaynalavade/KharchaFlow/releases/download/v1.0.5/KharchaFlow-v1.0.5.apk"
-            }
-          ]
-        }
-        """.trimIndent()
-
-        val parsed = SimpleJsonParser.parse(rawJson) as SimpleJsonParser.JsonObject
-        val result = runBlocking { service.parseGitHubRelease(parsed) }
-
-        assertTrue(result is AppResult.Success)
-        val info = (result as AppResult.Success).data
-
-        assertEquals("1.0.5", info.latestVersionName)
-        assertEquals(6L, info.latestVersionCode)
-        assertEquals("KharchaFlow-v1.0.5.apk", info.apkFileName)
-        assertEquals(6L, info.latestVersionCode)
-    }
-
-    @Test
     fun testParseReleaseWithDedicatedReleaseJsonAsset() {
         val service = GitHubReleaseService()
 
@@ -111,8 +113,8 @@ class AppUpdateSystemTest {
         {
           "versionName": "1.0.5",
           "versionCode": 6,
-          "apkFileName": "KharchaFlow-v1.0.5.apk",
-          "sha256FileName": "KharchaFlow-v1.0.5.apk.sha256",
+          "apkFileName": "Leaf-v1.0.5.apk",
+          "sha256FileName": "Leaf-v1.0.5.apk.sha256",
           "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
           "releaseNotes": "Release with manifest"
         }
@@ -122,17 +124,17 @@ class AppUpdateSystemTest {
         {
           "tag_name": "v1.0.5",
           "body": "Fallback body",
-          "html_url": "https://github.com/vinaynalavade/KharchaFlow/releases/tag/v1.0.5",
+          "html_url": "https://github.com/vinaynalavade/Leaf/releases/tag/v1.0.5",
           "assets": [
             {
-              "name": "KharchaFlow-v1.0.5.apk",
+              "name": "Leaf-v1.0.5.apk",
               "size": 4000000,
-              "browser_download_url": "https://example.com/KharchaFlow-v1.0.5.apk"
+              "browser_download_url": "https://example.com/Leaf-v1.0.5.apk"
             },
             {
-              "name": "KharchaFlow-v1.0.5.apk.sha256",
+              "name": "Leaf-v1.0.5.apk.sha256",
               "size": 64,
-              "browser_download_url": "https://example.com/KharchaFlow-v1.0.5.apk.sha256"
+              "browser_download_url": "https://example.com/Leaf-v1.0.5.apk.sha256"
             }
           ]
         }
@@ -147,7 +149,7 @@ class AppUpdateSystemTest {
         val info = (result as AppResult.Success).data
         assertEquals("1.0.5", info.latestVersionName)
         assertEquals(6L, info.latestVersionCode)
-        assertEquals("KharchaFlow-v1.0.5.apk", info.apkFileName)
+        assertEquals("Leaf-v1.0.5.apk", info.apkFileName)
         assertEquals("abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", info.expectedSha256)
     }
 
@@ -159,66 +161,66 @@ class AppUpdateSystemTest {
     fun testUpdateCheck_CurrentVersionCode_ReportsUpToDate() {
         val fakeRepo = createFakeRepository(
             RemoteReleaseInfo(
-                latestVersionName = "1.0.4",
-                latestVersionCode = 5L,
-                apkFileName = "KharchaFlow_v1.0.4.apk",
+                latestVersionName = "1.0.5",
+                latestVersionCode = 6L,
+                apkFileName = "Leaf_v1.0.5.apk",
                 apkDownloadUrl = "https://example.com/apk",
                 apkSizeBytes = 3000000L
             )
         )
         val useCase = CheckForUpdateUseCase(fakeRepo)
 
-        val result = runBlocking { useCase(localVersionCode = 5L, localVersionName = "1.0.4") }
+        val result = runBlocking { useCase(localVersionCode = 6L, localVersionName = "1.0.5") }
         assertTrue(result is AppResult.Success)
 
         val checkResult = (result as AppResult.Success).data
-        assertTrue("Installed version 5 == remote 5 must report UpToDate", checkResult is UpdateCheckResult.UpToDate)
-        assertEquals("1.0.4", (checkResult as UpdateCheckResult.UpToDate).currentVersionName)
-        assertEquals(5L, checkResult.currentVersionCode)
+        assertTrue("Installed version 6 == remote 6 must report UpToDate", checkResult is UpdateCheckResult.UpToDate)
+        assertEquals("1.0.5", (checkResult as UpdateCheckResult.UpToDate).currentVersionName)
+        assertEquals(6L, checkResult.currentVersionCode)
     }
 
     @Test
     fun testUpdateCheck_NewerVersionCode_ReportsUpdateAvailable() {
         val fakeRepo = createFakeRepository(
             RemoteReleaseInfo(
-                latestVersionName = "1.0.5",
-                latestVersionCode = 6L,
-                apkFileName = "KharchaFlow-v1.0.5.apk",
+                latestVersionName = "1.0.6",
+                latestVersionCode = 7L,
+                apkFileName = "Leaf-v1.0.6.apk",
                 apkDownloadUrl = "https://example.com/apk",
                 apkSizeBytes = 4000000L,
-                releaseNotes = "New features in 1.0.5"
+                releaseNotes = "New features in 1.0.6"
             )
         )
         val useCase = CheckForUpdateUseCase(fakeRepo)
 
-        val result = runBlocking { useCase(localVersionCode = 5L, localVersionName = "1.0.4") }
+        val result = runBlocking { useCase(localVersionCode = 6L, localVersionName = "1.0.5") }
         assertTrue(result is AppResult.Success)
 
         val checkResult = (result as AppResult.Success).data
-        assertTrue("Remote 6 > installed 5 must report UpdateAvailable", checkResult is UpdateCheckResult.UpdateAvailable)
+        assertTrue("Remote 7 > installed 6 must report UpdateAvailable", checkResult is UpdateCheckResult.UpdateAvailable)
         val available = checkResult as UpdateCheckResult.UpdateAvailable
-        assertEquals("1.0.5", available.releaseInfo.latestVersionName)
-        assertEquals(6L, available.releaseInfo.latestVersionCode)
+        assertEquals("1.0.6", available.releaseInfo.latestVersionName)
+        assertEquals(7L, available.releaseInfo.latestVersionCode)
     }
 
     @Test
     fun testUpdateCheck_OlderRemoteVersionCode_RejectsDowngrade() {
         val fakeRepo = createFakeRepository(
             RemoteReleaseInfo(
-                latestVersionName = "1.0.3",
-                latestVersionCode = 4L,
-                apkFileName = "KharchaFlow_v1.0.3.apk",
+                latestVersionName = "1.0.4",
+                latestVersionCode = 5L,
+                apkFileName = "Leaf_v1.0.4.apk",
                 apkDownloadUrl = "https://example.com/apk",
                 apkSizeBytes = 2500000L
             )
         )
         val useCase = CheckForUpdateUseCase(fakeRepo)
 
-        val result = runBlocking { useCase(localVersionCode = 5L, localVersionName = "1.0.4") }
+        val result = runBlocking { useCase(localVersionCode = 6L, localVersionName = "1.0.5") }
         assertTrue(result is AppResult.Success)
 
         val checkResult = (result as AppResult.Success).data
-        assertTrue("Remote 4 < installed 5 must be treated as UpToDate (downgrade prevention)", checkResult is UpdateCheckResult.UpToDate)
+        assertTrue("Remote 5 < installed 6 must be treated as UpToDate (downgrade prevention)", checkResult is UpdateCheckResult.UpToDate)
     }
 
     // =========================================================================
@@ -307,7 +309,7 @@ class AppUpdateSystemTest {
         assertEquals(clean64, verifier.extractCleanChecksum(clean64))
         assertEquals(clean64, verifier.extractCleanChecksum("E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"))
         assertEquals(clean64, verifier.extractCleanChecksum("\n  $clean64 \r\n"))
-        assertEquals(clean64, verifier.extractCleanChecksum("$clean64  KharchaFlow-v1.0.5.apk\n"))
+        assertEquals(clean64, verifier.extractCleanChecksum("$clean64  Leaf-v1.0.5.apk\n"))
     }
 
     // =========================================================================
@@ -315,15 +317,15 @@ class AppUpdateSystemTest {
     // =========================================================================
 
     @Test
-    fun testFindApkAsset_IgnoresDebug_PrefersKharchaFlow() {
+    fun testFindApkAsset_IgnoresDebug_PrefersLeaf() {
         val service = GitHubReleaseService()
 
         val assetsJson = """
         [
           {"name": "app-debug.apk", "browser_download_url": "https://example.com/debug.apk", "size": 100},
           {"name": "source.zip", "browser_download_url": "https://example.com/source.zip", "size": 200},
-          {"name": "KharchaFlow_v1.0.5.apk", "browser_download_url": "https://example.com/kharcha.apk", "size": 300},
-          {"name": "KharchaFlow_v1.0.5.apk.sha256", "browser_download_url": "https://example.com/sha", "size": 64}
+          {"name": "Leaf_v1.0.5.apk", "browser_download_url": "https://example.com/leaf.apk", "size": 300},
+          {"name": "Leaf_v1.0.5.apk.sha256", "browser_download_url": "https://example.com/sha", "size": 64}
         ]
         """.trimIndent()
 
@@ -331,7 +333,7 @@ class AppUpdateSystemTest {
         val chosen = service.findApkAsset(assets)
 
         assertNotNull(chosen)
-        assertEquals("KharchaFlow_v1.0.5.apk", chosen!!.getString("name"))
+        assertEquals("Leaf_v1.0.5.apk", chosen!!.getString("name"))
     }
 
     // =========================================================================
@@ -369,7 +371,7 @@ class AppUpdateSystemTest {
           "tag_name": "v1.0.5",
           "body": "No version information in this body",
           "assets": [
-            {"name": "KharchaFlow_v1.0.5.apk", "browser_download_url": "https://example.com/apk", "size": 1000}
+            {"name": "Leaf_v1.0.5.apk", "browser_download_url": "https://example.com/apk", "size": 1000}
           ]
         }
         """.trimIndent()

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Reusable responsive layout modifiers and safe inset utilities for KharchaFlow.
+ * Reusable responsive layout modifiers and safe inset utilities for Leaf.
  * Ensures consistent, accessible layout behavior across standard phones, compact screens,
  * 3-button/gesture navigation bars, edge-to-edge system bars, and software keyboard (IME).
  */

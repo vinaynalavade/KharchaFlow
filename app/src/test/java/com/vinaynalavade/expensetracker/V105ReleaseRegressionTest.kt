@@ -15,7 +15,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Contract and regression suite for KharchaFlow v1.0.5 Release.
+ * Contract and regression suite for Leaf v1.0.5 Release.
  * Validates UX motion duration ordering, semantic contracts, backup integrity, and version metadata.
  */
 class V105ReleaseRegressionTest {

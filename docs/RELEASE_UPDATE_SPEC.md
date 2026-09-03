@@ -1,8 +1,8 @@
-# KharchaFlow — GitHub Release & In-App APK Update Specification
+# Leaf — GitHub Release & In-App APK Update Specification
 
-This document defines the release specification and publication procedures for KharchaFlow Android application releases on GitHub Releases (`vinaynalavade/KharchaFlow`).
+This document defines the release specification and publication procedures for Leaf Android application releases on GitHub Releases (`vinaynalavade/Leaf`).
 
-The KharchaFlow in-app update client supports seamless, reliable update checks, asset downloads, integrity validation, and package installer handoff.
+The Leaf in-app update client supports seamless, reliable update checks, asset downloads, integrity validation, and package installer handoff.
 
 ---
 
@@ -30,7 +30,7 @@ The output APK is located at:
 ### Step 3: Name the Release APK
 Rename the generated APK according to the version:
 ```powershell
-Copy-Item "app\build\outputs\apk\release\app-release.apk" "KharchaFlow_v1.0.5.apk"
+Copy-Item "app\build\outputs\apk\release\app-release.apk" "Leaf_v1.0.5.apk"
 ```
 
 ### Step 4: Publish to GitHub Releases
@@ -45,7 +45,7 @@ Copy-Item "app\build\outputs\apk\release\app-release.apk" "KharchaFlow_v1.0.5.ap
    | **Version Code** | `6` |
    | **Release Type** | APK / Direct Distribution |
    ```
-4. Attach the release APK: `KharchaFlow_v1.0.5.apk`.
+4. Attach the release APK: `Leaf_v1.0.5.apk`.
 5. Publish the release.
 
 The in-app updater automatically discovers the release, extracts the remote `versionCode` (6 > 5), downloads the APK, verifies package integrity, and launches the Android installer.
@@ -56,10 +56,10 @@ The in-app updater automatically discovers the release, extracts the remote `ver
 
 For additional validation support, you can also attach either/both of the following optional assets:
 
-### Optional: SHA-256 Checksum Asset (`KharchaFlow_vX.Y.Z.apk.sha256`)
+### Optional: SHA-256 Checksum Asset (`Leaf_vX.Y.Z.apk.sha256`)
 ```powershell
-$hash = (Get-FileHash -Path "KharchaFlow_v1.0.5.apk" -Algorithm SHA256).Hash.ToLower()
-"$hash  KharchaFlow_v1.0.5.apk" | Out-File -FilePath "KharchaFlow_v1.0.5.apk.sha256" -Encoding ascii -NoNewline
+$hash = (Get-FileHash -Path "Leaf_v1.0.5.apk" -Algorithm SHA256).Hash.ToLower()
+"$hash  Leaf_v1.0.5.apk" | Out-File -FilePath "Leaf_v1.0.5.apk.sha256" -Encoding ascii -NoNewline
 ```
 
 ### Optional: Machine-Readable Manifest (`release.json`)
@@ -67,10 +67,10 @@ $hash = (Get-FileHash -Path "KharchaFlow_v1.0.5.apk" -Algorithm SHA256).Hash.ToL
 {
   "versionName": "1.0.5",
   "versionCode": 6,
-  "apkFileName": "KharchaFlow_v1.0.5.apk",
-  "sha256FileName": "KharchaFlow_v1.0.5.apk.sha256",
+  "apkFileName": "Leaf_v1.0.5.apk",
+  "sha256FileName": "Leaf_v1.0.5.apk.sha256",
   "releaseNotes": "• What's new in v1.0.5\n• Performance optimizations",
-  "releaseUrl": "https://github.com/vinaynalavade/KharchaFlow/releases/tag/v1.0.5"
+  "releaseUrl": "https://github.com/vinaynalavade/Leaf/releases/tag/v1.0.5"
 }
 ```
 
@@ -78,7 +78,7 @@ $hash = (Get-FileHash -Path "KharchaFlow_v1.0.5.apk" -Algorithm SHA256).Hash.ToL
 
 ## 3. Client Validation & Update Lifecycle
 
-1. **Discovery**: Queries `https://api.github.com/repos/vinaynalavade/KharchaFlow/releases/latest`.
+1. **Discovery**: Queries `https://api.github.com/repos/vinaynalavade/Leaf/releases/latest`.
 2. **Version Code Evaluation**:
    - `remote versionCode > installed versionCode` $\to$ **Update Available**
    - `remote versionCode == installed versionCode` $\to$ **Up To Date** ("You're using the latest version.")

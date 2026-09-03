@@ -42,7 +42,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Premium Profile Avatar component supporting custom selected image URIs
- * with fail-safe fallback to high-contrast initials or stylized KharchaFlow icon.
+ * with fail-safe fallback to high-contrast initials or stylized Leaf icon.
  */
 @Composable
 fun ProfileAvatar(

@@ -246,7 +246,7 @@ class BackupViewModel(
                 is AppResult.Success -> {
                     val json = JsonBackupParser.toJson(result.data)
                     val timestampStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss"))
-                    val fileName = "KharchaFlow_Backup_$timestampStr.json"
+                    val fileName = "Leaf_Backup_$timestampStr.json"
                     _opState.value = BackupOpState.Idle
                     onReadyToSave(json, fileName)
                 }

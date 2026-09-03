@@ -1,6 +1,6 @@
 # Security Policy
 
-The security and privacy of our users are of paramount importance. KharchaFlow is designed with privacy-by-design principles: 100% of user data is stored locally on the user's Android device, with zero telemetry, zero analytics, and zero external network calls.
+The security and privacy of our users are of paramount importance. Leaf is designed with privacy-by-design principles: 100% of user data is stored locally on the user's Android device, with zero telemetry, zero analytics, and zero proprietary backend servers.
 
 ---
 
@@ -17,7 +17,7 @@ Only the latest release and the current `main` branch are actively supported wit
 
 ## Reporting a Vulnerability
 
-If you discover a potential security vulnerability, unintended data leakage, or cryptographic flaw in KharchaFlow, please **do NOT** open a public issue or discuss it publicly.
+If you discover a potential security vulnerability, unintended data leakage, or cryptographic flaw in Leaf, please **do NOT** open a public issue or discuss it publicly.
 
 Instead, please report it privately through one of the following channels:
 
@@ -36,4 +36,4 @@ Instead, please report it privately through one of the following channels:
 - We will work with you to analyze, reproduce, and remediate the issue.
 - Once a fix is verified and ready for release, a security patch will be published alongside an advisory crediting your responsible disclosure.
 
-Thank you for helping keep KharchaFlow secure and private for everyone!
+Thank you for helping keep Leaf secure and private for everyone!

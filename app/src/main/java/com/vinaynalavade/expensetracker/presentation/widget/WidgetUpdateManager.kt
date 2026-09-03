@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 /**
- * Centralized widget management and update engine for KharchaFlow.
+ * Centralized widget management and update engine for Leaf.
  * Decouples widget rendering, data fetching, and intent binding from Android AppWidgetProvider lifecycle.
  *
  * Supports three independent widget types:

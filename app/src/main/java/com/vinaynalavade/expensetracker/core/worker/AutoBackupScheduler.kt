@@ -18,10 +18,15 @@ class WorkManagerAutoBackupScheduler(
 ) : AutoBackupScheduler {
 
     companion object {
-        const val UNIQUE_AUTO_BACKUP_WORK = "KharchaFlow_AutoBackup"
+        const val UNIQUE_AUTO_BACKUP_WORK = "Leaf_AutoBackup"
+        private const val LEGACY_AUTO_BACKUP_WORK = "KharchaFlow_AutoBackup"
     }
 
     override fun schedule() {
+        val workManager = WorkManager.getInstance(context)
+        // Ensure any legacy scheduled periodic work from previous installations is cancelled
+        workManager.cancelUniqueWork(LEGACY_AUTO_BACKUP_WORK)
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresBatteryNotLow(true)
@@ -34,7 +39,7 @@ class WorkManagerAutoBackupScheduler(
             .setConstraints(constraints)
             .build()
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        workManager.enqueueUniquePeriodicWork(
             UNIQUE_AUTO_BACKUP_WORK,
             ExistingPeriodicWorkPolicy.UPDATE,
             autoBackupWorkRequest
@@ -42,6 +47,8 @@ class WorkManagerAutoBackupScheduler(
     }
 
     override fun cancel() {
-        WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_AUTO_BACKUP_WORK)
+        val workManager = WorkManager.getInstance(context)
+        workManager.cancelUniqueWork(UNIQUE_AUTO_BACKUP_WORK)
+        workManager.cancelUniqueWork(LEGACY_AUTO_BACKUP_WORK)
     }
 }

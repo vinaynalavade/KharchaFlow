@@ -1,22 +1,24 @@
-# KharchaFlow
+# Leaf
 
 > **Personal Expense Tracker for Android**
 
-KharchaFlow is a modern, fast, 100% offline-first personal finance and expense tracking application built natively for Android using modern Jetpack Compose and Kotlin. It is designed to give you complete control over your personal finances with zero advertisements, zero third-party trackers, zero cloud servers, and strict on-device data privacy.
+Leaf is a modern, fast, 100% offline-first personal finance and expense tracking application built natively for Android using modern Jetpack Compose and Kotlin. It is designed to give you complete control over your personal finances with zero advertisements, zero third-party trackers, zero proprietary cloud servers, and strict on-device data privacy.
 
 ---
 
 ## 🌟 Key Principles & Features
 
 ### 🔒 100% Offline-First & Strictly Private
-- **Zero Network Permissions:** All financial records, recurring schedules, and preferences are stored exclusively on your device in local SQLite/Room and Preferences DataStore.
+- **Zero Proprietary Servers:** All financial records, recurring schedules, and preferences are stored exclusively on your device in local SQLite/Room and Preferences DataStore.
 - **Privacy by Design:** No accounts required, no telemetry, no analytics SDKs, no advertising libraries, and no third-party cloud synchronization.
+- **Optional Google Drive Backup:** Connect your personal Google Drive to store and restore encrypted database backups inside your private `appDataFolder`.
 
 ### 💰 Precision Monetary Engine
 - **Zero Rounding Errors:** Built on a specialized `@JvmInline value class Amount` modeling currency in exact integer subunits (e.g., paise/cents as `Long`), preventing floating-point rounding discrepancies in financial statements and ledger totals.
 
 ### 📊 Complete Financial Management
 - **Transaction Lifecycle:** Create, view, edit with preloaded forms, and delete transactions with instant non-destructive undo snackbars.
+- **Precision Timestamp Editing:** Full control over transaction date and time using native Material 3 date and time pickers.
 - **Month-wise Grouping & Search:** Grouped automatically by month and day ("Today", "Yesterday", exact dates). Real-time search across notes and categories with instant type filters (All / Expense / Income).
 - **Custom Categories with Duplicate Protection:** Create custom categories with custom icons and curated colors. Includes strict case-insensitive duplicate protection and protected system defaults to prevent orphaned transactions.
 - **Financial Continuity & Carry-Forward:** Set a base opening balance and automatically calculate month-to-month carry-forward surplus/deficit into the next month's opening ledger balance.
@@ -74,7 +76,7 @@ KharchaFlow is a modern, fast, 100% offline-first personal finance and expense t
 ### Permissions Used
 - `android.permission.POST_NOTIFICATIONS` — Requested at runtime on Android 13+ only when daily reminders or recurring EMI notifications are enabled in Settings.
 - `android.permission.RECEIVE_BOOT_COMPLETED` — Used to re-register scheduled alarm reminders upon device reboot.
-- **`android.permission.INTERNET` is NOT requested or used.** The app has zero network access.
+- `android.permission.INTERNET` — Used exclusively for user-initiated in-app updates from GitHub and optional Google Drive backup sync.
 
 ---
 
@@ -87,8 +89,8 @@ KharchaFlow is a modern, fast, 100% offline-first personal finance and expense t
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/vinaynalavade/kharchaflow.git
-cd kharchaflow
+git clone https://github.com/vinaynalavade/Leaf.git
+cd Leaf
 ```
 
 ### 3. Build Debug APK
@@ -116,7 +118,7 @@ The debug APK will be located at:
 
 ## 🔑 Release Build & Signing Configuration
 
-Release builds in KharchaFlow use R8 code shrinking, resource minification, and strict ProGuard rules.
+Release builds in Leaf use R8 code shrinking, resource minification, and strict ProGuard rules.
 
 Release signing credentials are kept strictly local and are never committed to the repository.
 
@@ -124,7 +126,7 @@ Release signing credentials are kept strictly local and are never committed to t
 You can configure your release signing in any of the following ways:
 
 #### Option A: Local Properties File (Outside Git)
-Create a file at `~/.android/kharchaflow-signing.properties` (or copy `signing.properties.example` to `signing.properties` in the project root):
+Create a file at `~/.android/leaf-signing.properties` (or copy `signing.properties.example` to `signing.properties` in the project root):
 ```properties
 STORE_FILE=/path/to/your/upload-keystore.jks
 STORE_PASSWORD=your_keystore_password
@@ -135,24 +137,22 @@ KEY_PASSWORD=your_key_password
 #### Option B: Environment Variables
 Export the following environment variables:
 ```bash
-export KHARCHAFLOW_KEYSTORE_PATH="/path/to/your/upload-keystore.jks"
-export KHARCHAFLOW_KEYSTORE_PASSWORD="your_keystore_password"
-export KHARCHAFLOW_KEY_ALIAS="your_key_alias"
-export KHARCHAFLOW_KEY_PASSWORD="your_key_password"
+export LEAF_KEYSTORE_PATH="/path/to/your/upload-keystore.jks"
+export LEAF_KEYSTORE_PASSWORD="your_keystore_password"
+export LEAF_KEY_ALIAS="your_key_alias"
+export LEAF_KEY_PASSWORD="your_key_password"
 ```
 
-### Build Production Android App Bundle (AAB)
+### Build Production Release APK
 ```bash
 # On Linux / macOS
-./gradlew clean bundleRelease
+./gradlew clean assembleRelease
 
 # On Windows PowerShell / Command Prompt
-.\gradlew.bat clean bundleRelease
+.\gradlew.bat clean assembleRelease
 ```
-The output will be generated at:
-`app/build/outputs/bundle/release/app-release.aab`
-
-*(Note: If no release signing credentials are provided, Gradle will build an unsigned release bundle suitable for local verification.)*
+The signed release APK will be generated at:
+`app/build/outputs/apk/release/app-release.apk`
 
 ---
 
@@ -171,7 +171,7 @@ For instructions on reporting security vulnerabilities, please refer to our [Sec
 ## 📄 License
 
 ```text
-KharchaFlow - Personal Expense Tracker for Android
+Leaf - Personal Expense Tracker for Android
 Copyright (C) 2026 Vinay Nalavade
 
 This program is free software: you can redistribute it and/or modify

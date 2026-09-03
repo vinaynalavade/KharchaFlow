@@ -112,7 +112,7 @@ fun UnlockScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_kharchaflow_logo),
-                    contentDescription = "KharchaFlow",
+                    contentDescription = stringResource(R.string.app_name),
                     modifier = Modifier.size(56.dp)
                 )
 

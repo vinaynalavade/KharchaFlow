@@ -285,7 +285,7 @@ fun UpdateDownloadingDialog(
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Downloading KharchaFlow v${releaseInfo.latestVersionName}...",
+                    text = "Downloading Leaf v${releaseInfo.latestVersionName}...",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -500,7 +500,7 @@ fun UpdatePermissionRequiredDialog(
         },
         text = {
             Text(
-                text = "To install the verified KharchaFlow update, Android requires permission to install apps from this source.\n\nTap 'Allow Installation' to open Settings, toggle on 'Allow from this source', and return to complete the update.",
+                text = "To install the verified Leaf update, Android requires permission to install apps from this source.\n\nTap 'Allow Installation' to open Settings, toggle on 'Allow from this source', and return to complete the update.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -545,7 +545,7 @@ fun UpdateReadyToInstallDialog(
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "KharchaFlow v${releaseInfo.latestVersionName} has been downloaded and verified.",
+                    text = "Leaf v${releaseInfo.latestVersionName} has been downloaded and verified.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )

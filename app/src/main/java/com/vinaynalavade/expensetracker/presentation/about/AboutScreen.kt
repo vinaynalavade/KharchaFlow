@@ -84,7 +84,7 @@ private enum class AboutDialogType {
     OPEN_SOURCE_LICENSES
 }
 
-private const val GITHUB_REPOSITORY_URL = "https://github.com/vinaynalavade/KharchaFlow"
+private const val GITHUB_REPOSITORY_URL = "https://github.com/vinaynalavade/Leaf"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +112,7 @@ fun AboutScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "About KharchaFlow",
+                        text = "About Leaf",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -299,19 +299,19 @@ fun AboutScreen(
                 }
             }
 
-            // Section A: About KharchaFlow
+            // Section A: About Leaf
             AboutSectionCard(
                 icon = Icons.Default.Info,
-                title = "About KharchaFlow"
+                title = "About Leaf"
             ) {
                 Text(
-                    text = "KharchaFlow is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.",
+                    text = "Leaf is a personal finance application designed to help users track expenses, manage income, monitor spending, organize recurring payments, and maintain better control over their financial activity.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.sm))
                 Text(
-                    text = "KharchaFlow is an on-device tracking utility and does not offer banking, investment, credit, or financial advisory services.",
+                    text = "Leaf is an on-device tracking utility and does not offer banking, investment, credit, or financial advisory services.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -376,8 +376,8 @@ fun AboutScreen(
                 )
                 AboutDivider()
                 AboutInfoRow(
-                    label = "Copyright",
-                    value = "© 2026 KharchaFlow. All rights reserved."
+                    label = "Copyright & License",
+                    value = "© 2026 Vinay Nalavade • GNU GPLv3"
                 )
             }
 
@@ -443,7 +443,7 @@ fun AboutScreen(
                         Spacer(modifier = Modifier.width(MaterialTheme.spacing.md))
                         Column {
                             Text(
-                                text = "KharchaFlow on GitHub",
+                                text = "Leaf on GitHub",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -475,13 +475,13 @@ fun AboutScreen(
                 AboutLegalDialog(
                     title = "Privacy & Security Architecture",
                     content = """
-                        KharchaFlow is architected with strict on-device privacy as its core principle:
+                        Leaf is architected with strict on-device privacy as its core principle:
 
                         • 100% Local Storage: All financial records, accounts, transactions, categories, budgets, and recurring schedules are stored exclusively on your device in a local SQLite database (managed by Room).
 
-                        • Zero Telemetry: KharchaFlow does not run proprietary backend servers to collect user financial data. The application contains zero advertising networks and zero third-party analytics SDKs.
+                        • Zero Telemetry: Leaf does not run proprietary backend servers to collect user financial data. The application contains zero advertising networks and zero third-party analytics SDKs.
 
-                        • Optional Cloud Backup: When you choose to link Google Drive, backups are stored in your personal Google Drive private Application Data folder (appDataFolder). Other apps cannot access KharchaFlow backups, and KharchaFlow cannot access your personal Drive documents.
+                        • Optional Cloud Backup: When you choose to link Google Drive, backups are stored in your personal Google Drive private Application Data folder (appDataFolder). Other apps cannot access Leaf backups, and Leaf cannot access your personal Drive documents.
 
                         • On-Device App Lock: Protects your financial records using biometric authentication or salted SHA-256 PIN security. Enabling App Lock automatically enables window security (FLAG_SECURE) to prevent unauthorized screenshots and recent-apps preview capture.
 
@@ -497,7 +497,7 @@ fun AboutScreen(
                         Effective Date: August 2026
 
                         1. Information Collection and Handling
-                        KharchaFlow is designed as an offline-first personal finance application. All personal financial entries, notes, categories, and account balances remain solely on your local Android device. We do not transmit, collect, monetize, or sell your financial data.
+                        Leaf is designed as an offline-first personal finance application. All personal financial entries, notes, categories, and account balances remain solely on your local Android device. We do not transmit, collect, monetize, or sell your financial data.
 
                         2. Device Permissions
                         • Biometric / Fingerprint: Used strictly on-device to verify your identity when App Lock is enabled.
@@ -505,7 +505,7 @@ fun AboutScreen(
                         • Google Account (Optional): Used solely for OAuth 2.0 authentication if you opt in to backup your database to your private Google Drive app data storage.
 
                         3. Third-Party Services
-                        KharchaFlow does not embed third-party advertising SDKs, marketing trackers, or commercial telemetry frameworks.
+                        Leaf does not embed third-party advertising SDKs, marketing trackers, or commercial telemetry frameworks.
 
                         4. User Rights and Data Deletion
                         You have complete control over your data. You can delete individual transactions, reset categories, or delete all application data directly through the in-app Settings.
@@ -518,16 +518,16 @@ fun AboutScreen(
                     title = "Terms of Service & Disclaimer",
                     content = """
                         1. Personal Expense Tracking Utility
-                        KharchaFlow is an offline-first bookkeeping and expense tracking tool provided solely for personal informational and record-keeping purposes.
+                        Leaf is an offline-first bookkeeping and expense tracking tool provided solely for personal informational and record-keeping purposes.
 
                         2. No Financial, Legal, or Tax Advice
-                        KharchaFlow is not a bank, deposit-taking institution, credit provider, investment broker, or licensed financial advisor. The calculations, budget indicators, and summaries generated within the app do not constitute financial, investment, accounting, tax, or legal advice.
+                        Leaf is not a bank, deposit-taking institution, credit provider, investment broker, or licensed financial advisor. The calculations, budget indicators, and summaries generated within the app do not constitute financial, investment, accounting, tax, or legal advice.
 
                         3. User Responsibility
                         Users are solely responsible for verifying the accuracy of transaction records, managing backup archives, and securing access to their physical devices and App Lock credentials.
 
                         4. Limitation of Liability
-                        To the maximum extent permitted by applicable law, KharchaFlow and its developers shall not be liable for any financial decisions, loss of data, calculation discrepancies, or damages resulting from the use of this software.
+                        To the maximum extent permitted by applicable law, Leaf and its developers shall not be liable for any financial decisions, loss of data, calculation discrepancies, or damages resulting from the use of this software.
                     """.trimIndent(),
                     onDismiss = { activeDialog = null }
                 )
@@ -536,7 +536,7 @@ fun AboutScreen(
                 AboutLegalDialog(
                     title = "Open-Source Licenses",
                     content = """
-                        KharchaFlow is free and open-source software licensed under the GNU General Public License v3.0 (GPL-3.0).
+                        Leaf is free and open-source software licensed under the GNU General Public License v3.0 (GPL-3.0).
 
                         Copyright (C) 2026 Vinay Nalavade
 

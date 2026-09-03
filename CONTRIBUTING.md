@@ -1,6 +1,6 @@
-# Contributing to KharchaFlow
+# Contributing to Leaf
 
-Thank you for your interest in contributing to KharchaFlow! We welcome contributions from the community to make KharchaFlow the best open-source, privacy-first personal finance application for Android.
+Thank you for your interest in contributing to Leaf! We welcome contributions from the community to make Leaf the best open-source, privacy-first personal finance application for Android.
 
 Please take a moment to review this guide before submitting issues or pull requests.
 
@@ -17,13 +17,13 @@ Please take a moment to review this guide before submitting issues or pull reque
 ### Getting Started
 1. **Fork & Clone:**
    ```bash
-   git clone https://github.com/vinaynalavade/kharchaflow.git
-   cd kharchaflow
+   git clone https://github.com/vinaynalavade/Leaf.git
+   cd Leaf
    ```
 
 2. **Open in Android Studio:**
    - Launch Android Studio.
-   - Select **Open** and choose the `kharchaflow` root folder.
+   - Select **Open** and choose the `Leaf` root folder.
    - Allow Gradle to sync dependencies and generate KSP sources.
 
 3. **Building the Project:**
@@ -43,7 +43,7 @@ Please take a moment to review this guide before submitting issues or pull reque
 
 ## 📐 Architecture & Coding Guidelines
 
-KharchaFlow follows a strict **Clean 4-Layer Architecture** to keep business logic independent of UI and platform frameworks:
+Leaf follows a strict **Clean 4-Layer Architecture** to keep business logic independent of UI and platform frameworks:
 
 ```text
 com.vinaynalavade.expensetracker
@@ -56,7 +56,7 @@ com.vinaynalavade.expensetracker
 
 ### Key Principles:
 - **Precision Monetary Values:** Never use floating-point types (`Float` / `Double`) for money. Always use `Amount` (which wraps integer subunit `Long`).
-- **Offline-First:** KharchaFlow is 100% offline. Do not introduce network calls, cloud syncing, analytics, or third-party telemetry.
+- **Offline-First:** Leaf is 100% offline. Do not introduce proprietary servers, analytics, or third-party telemetry.
 - **Compose UI Standards:** Keep Composables stateless where possible, hoist state to ViewModels, and utilize Material 3 theme tokens (`MaterialTheme.spacing`, `MaterialTheme.colorScheme`).
 - **Database & DataStore:** Room migrations must be written explicitly for any schema alterations. DataStore preferences must maintain backward compatibility.
 - **Kotlin Style:** Follow official Kotlin coding conventions (`camelCase` for functions/variables, `PascalCase` for classes/composables).
@@ -98,4 +98,4 @@ If you discover a security vulnerability or sensitive data leakage, please do **
 
 ## 📄 License
 
-By contributing to KharchaFlow, you agree that your contributions will be licensed under the **GNU General Public License v3.0 (GPLv3)**.
+By contributing to Leaf, you agree that your contributions will be licensed under the **GNU General Public License v3.0 (GPLv3)**.

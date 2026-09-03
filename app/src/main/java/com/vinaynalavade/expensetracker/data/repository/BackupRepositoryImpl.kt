@@ -136,7 +136,7 @@ class BackupRepositoryImpl(
             val backup = JsonBackupParser.fromJson(jsonString)
 
             if (backup.backupVersion > BackupData.CURRENT_VERSION) {
-                return BackupValidationResult.Invalid("Backup version ${backup.backupVersion} is newer than supported version (${BackupData.CURRENT_VERSION}). Please update KharchaFlow.")
+                return BackupValidationResult.Invalid("Backup version ${backup.backupVersion} is newer than supported version (${BackupData.CURRENT_VERSION}). Please update Leaf.")
             }
             if (backup.backupVersion <= 0) {
                 return BackupValidationResult.Invalid("Invalid backup version ${backup.backupVersion}.")

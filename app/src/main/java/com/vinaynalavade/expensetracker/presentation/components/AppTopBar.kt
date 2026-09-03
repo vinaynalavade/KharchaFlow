@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.vinaynalavade.expensetracker.R
 
 /**
- * Polished, minimal top app bar for KharchaFlow.
+ * Polished, minimal top app bar for Leaf.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
