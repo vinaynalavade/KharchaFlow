@@ -40,6 +40,7 @@ fun TransactionItem(
     showDateInSubtitle: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val context = androidx.compose.ui.platform.LocalContext.current
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +78,7 @@ fun TransactionItem(
             val timeOrDate = if (showDateInSubtitle) {
                 DateTimeUtils.formatDate(transaction.timestamp)
             } else {
-                DateTimeUtils.formatTime(transaction.timestamp)
+                DateTimeUtils.formatTime(transaction.timestamp, context)
             }
 
             val notePrefix = if (!transaction.note.isNullOrBlank()) {

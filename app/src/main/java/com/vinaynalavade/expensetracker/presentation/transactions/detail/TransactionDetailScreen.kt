@@ -173,6 +173,7 @@ fun TransactionDetailScreen(
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.xl))
 
                     // Detail Information Card
+                    val context = androidx.compose.ui.platform.LocalContext.current
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -192,9 +193,11 @@ fun TransactionDetailScreen(
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                             DetailRow(label = "Date", value = DateTimeUtils.formatDate(tx.timestamp))
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                            DetailRow(label = "Time", value = DateTimeUtils.formatTime(tx.timestamp, context))
+                            HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                             DetailRow(label = "Note", value = tx.note?.ifBlank { "None" } ?: "None")
                             HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.spacing.md), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-                            DetailRow(label = "Recorded", value = DateTimeUtils.formatDateTime(tx.createdAt))
+                            DetailRow(label = "Recorded", value = DateTimeUtils.formatDateTime(tx.createdAt, context))
                         }
                     }
                 }

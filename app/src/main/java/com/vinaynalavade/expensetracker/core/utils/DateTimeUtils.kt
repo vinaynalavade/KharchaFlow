@@ -39,14 +39,81 @@ object DateTimeUtils {
         }
     }
 
+    /**
+     * Formats the time portion of an epoch timestamp respecting explicit 24-hour flag.
+     */
+    fun formatTime(
+        epochMillis: Long,
+        is24Hour: Boolean,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): String {
+        val dateTime = epochToLocalDateTime(epochMillis, zoneId)
+        val pattern = if (is24Hour) "HH:mm" else "hh:mm a"
+        return dateTime.format(DateTimeFormatter.ofPattern(pattern, Locale.getDefault()))
+    }
+
+    /**
+     * Formats the time portion of an epoch timestamp respecting the user's Android device 12/24-hour setting.
+     */
+    fun formatTime(
+        epochMillis: Long,
+        context: android.content.Context,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): String {
+        val is24Hour = android.text.format.DateFormat.is24HourFormat(context)
+        return formatTime(epochMillis, is24Hour, zoneId)
+    }
+
+    /**
+     * Standard formatTime overload defaulting to device locale.
+     */
     fun formatTime(epochMillis: Long, zoneId: ZoneId = ZoneId.systemDefault()): String {
         val dateTime = epochToLocalDateTime(epochMillis, zoneId)
         return dateTime.format(TIME_FORMATTER)
     }
 
+    /**
+     * Formats date and time respecting explicit 24-hour flag.
+     */
+    fun formatDateTime(
+        epochMillis: Long,
+        is24Hour: Boolean,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): String {
+        val dateTime = epochToLocalDateTime(epochMillis, zoneId)
+        val timePattern = if (is24Hour) "HH:mm" else "hh:mm a"
+        return dateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy, $timePattern", Locale.getDefault()))
+    }
+
+    /**
+     * Formats date and time respecting the user's Android device 12/24-hour setting.
+     */
+    fun formatDateTime(
+        epochMillis: Long,
+        context: android.content.Context,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): String {
+        val is24Hour = android.text.format.DateFormat.is24HourFormat(context)
+        return formatDateTime(epochMillis, is24Hour, zoneId)
+    }
+
+    /**
+     * Standard formatDateTime overload.
+     */
     fun formatDateTime(epochMillis: Long, zoneId: ZoneId = ZoneId.systemDefault()): String {
         val dateTime = epochToLocalDateTime(epochMillis, zoneId)
         return dateTime.format(DATE_TIME_FORMATTER)
+    }
+
+    /**
+     * Combines a given [LocalDate] and [java.time.LocalTime] into epoch milliseconds.
+     */
+    fun combineDateAndTime(
+        date: LocalDate,
+        time: java.time.LocalTime,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ): Long {
+        return date.atTime(time).atZone(zoneId).toInstant().toEpochMilli()
     }
 
     fun formatMonthYear(yearMonth: YearMonth): String = yearMonth.format(MONTH_YEAR_FORMATTER)
